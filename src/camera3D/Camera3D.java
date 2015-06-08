@@ -72,9 +72,7 @@ public class Camera3D implements PConstants {
 		pixelCount = parent.width * parent.height;
 		pixelsAlt = new int[pixelCount];
 
-		parent.lights();
 		camera();
-		// action();
 		perspective();
 		setCameraDivergence(3);
 		renderAnaglyph();
