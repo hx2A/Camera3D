@@ -4,15 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.Math;
 
-import camera3D.generators.AnaglyphGenerator;
-import camera3D.generators.BitMaskFilterAnaglyphGenerator;
-import camera3D.generators.DuboisAnaglyphGeneratorNaive;
-import camera3D.generators.DuboisAnaglyphGenerator64bitLUT;
-import camera3D.generators.DuboisAnaglyphGenerator;
-import camera3D.generators.MatrixAnaglyphGenerator;
-import camera3D.generators.util.AnaglyphMatrix;
 import processing.core.*;
 import processing.event.KeyEvent;
+
+import camera3D.generators.AnaglyphGenerator;
+import camera3D.generators.BitMaskFilterAnaglyphGenerator;
 
 public class Camera3D implements PConstants {
 
@@ -118,24 +114,12 @@ public class Camera3D implements PConstants {
 	}
 
 	public void renderAnaglyph(int leftFilter, int rightFilter) {
-		// anaglyphGenerator = new BitMaskFilterAnaglyphGenerator(leftFilter,
-		// rightFilter);
+		anaglyphGenerator = new BitMaskFilterAnaglyphGenerator(leftFilter, rightFilter);
+		renderer = Renderer.ANAGLYPH;
+	}
 
-		// Red Cyan
-		AnaglyphMatrix left = new AnaglyphMatrix(437, 449, 164, -62, -62, -24, -48, -50, -17);
-		AnaglyphMatrix right = new AnaglyphMatrix(-11, -32, -7, 377, 761, 9, -26, -93, 1234);
-
-		// Magenta Green
-		// Matrix left = new Matrix(-62, -158, -39, 284, 668, 143, -15, -27,
-		// 21);
-		// Matrix right = new Matrix(529, 705, 24, -16, -15, -65, 9, 75, 937);
-
-		// Amber Blue
-		// Matrix left = new Matrix(1062, -205, 299, -26, 908, 68, -38, -173,
-		// 22);
-		// Matrix right = new Matrix(-16, -123, -17, 6, 62, -17, 94, 185, 911);
-
-		anaglyphGenerator = new DuboisAnaglyphGenerator(left, right);
+	public void renderAnaglyph(AnaglyphGenerator anaglyphGenerator) {
+		this.anaglyphGenerator = anaglyphGenerator;
 		renderer = Renderer.ANAGLYPH;
 	}
 
@@ -283,10 +267,7 @@ public class Camera3D implements PConstants {
 				parent.saveFrame("####-" + parentClassName + "-left.png");
 
 			anaglyphGenerator.generateAnaglyph(parent.pixels, pixelsAlt);
-			// for (int ii = 0; ii < pixelCount; ++ii) {
-			// parent.pixels[ii] = (pixelsAlt[ii] & rightFilter)
-			// | (parent.pixels[ii] & leftFilter);
-			// }
+
 			parent.updatePixels();
 
 			if (saveNextFrame || saveAllFrames)

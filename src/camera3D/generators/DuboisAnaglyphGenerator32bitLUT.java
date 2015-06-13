@@ -3,7 +3,7 @@ package camera3D.generators;
 import camera3D.generators.util.AnaglyphMatrix;
 import camera3D.generators.util.ColorVector;
 
-public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
+public class DuboisAnaglyphGenerator32bitLUT extends AnaglyphGenerator {
 
 	private long[] leftLUT;
 	private long[] rightLUT;
@@ -11,9 +11,9 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 	private int[] gammaCorrectionLUT;
 	private int maxEncodedValue;
 
-	public DuboisAnaglyphGenerator64bitLUT(AnaglyphMatrix left,
+	public DuboisAnaglyphGenerator32bitLUT(AnaglyphMatrix left,
 			AnaglyphMatrix right) {
-		maxEncodedValue = (int) Math.pow(2, 20);
+		maxEncodedValue = (int) Math.pow(2, 9);
 
 		removeGammaCorrectionLUT = makeLUTremoveGammaCorrectionStandardRGB();
 
@@ -24,19 +24,19 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 	}
 
 	public static AnaglyphGenerator createRedCyanGenerator() {
-		return new DuboisAnaglyphGenerator64bitLUT(
+		return new DuboisAnaglyphGenerator32bitLUT(
 				AnaglyphConstants.LEFT_DUBOIS_REDCYAN,
 				AnaglyphConstants.RIGHT_DUBOIS_REDCYAN);
 	}
 
 	public static AnaglyphGenerator createMagentaGreenGenerator() {
-		return new DuboisAnaglyphGenerator64bitLUT(
+		return new DuboisAnaglyphGenerator32bitLUT(
 				AnaglyphConstants.LEFT_DUBOIS_MAGENTAGREEN,
 				AnaglyphConstants.RIGHT_DUBOIS_MAGENTAGREEN);
 	}
 
 	public static AnaglyphGenerator createAmberBlueGenerator() {
-		return new DuboisAnaglyphGenerator64bitLUT(
+		return new DuboisAnaglyphGenerator32bitLUT(
 				AnaglyphConstants.LEFT_DUBOIS_AMBERBLUE,
 				AnaglyphConstants.RIGHT_DUBOIS_AMBERBLUE);
 	}
@@ -56,7 +56,7 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 			long encodedGreen = (long) (clip(val.green) * (maxEncodedValue - 1));
 			long encodedBlue = (long) (clip(val.blue) * (maxEncodedValue - 1));
 
-			lut[col] = (encodedRed << 42) | (encodedGreen << 21) | encodedBlue;
+			lut[col] = (encodedRed << 20) | (encodedGreen << 10) | encodedBlue;
 		}
 
 		return lut;
@@ -69,22 +69,22 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 			encodedColor = leftLUT[pixels[ii] & 0x00FFFFFF]
 					+ rightLUT[pixelsAlt[ii] & 0x00FFFFFF];
 
-			if (0 < (encodedColor & 0x4000000000000000L)) {
+			if (0 < (encodedColor & 0x20000000)) {
 				pixels[ii] = 0xFFFF0000;
 			} else {
-				pixels[ii] = 0xFF000000 | (gammaCorrectionLUT[(int) ((encodedColor & 0x3FFFFC0000000000L) >> 42)] << 16);
+				pixels[ii] = 0xFF000000 | (gammaCorrectionLUT[(int) ((encodedColor & 0x1FF00000) >> 20)] << 16);
 			}
 
-			if (0 < (encodedColor & 0x20000000000L)) {
+			if (0 < (encodedColor & 0x80000)) {
 				pixels[ii] |= 0x0000FF00;
 			} else {
-				pixels[ii] |= (gammaCorrectionLUT[(int) ((encodedColor & 0x1FFFFE00000L) >> 21)] << 8);
+				pixels[ii] |= (gammaCorrectionLUT[(int) ((encodedColor & 0x7FC00) >> 10)] << 8);
 			}
 
-			if (0 < (encodedColor & 0x100000L)) {
+			if (0 < (encodedColor & 0x200)) {
 				pixels[ii] |= 0x000000FF;
 			} else {
-				pixels[ii] |= (gammaCorrectionLUT[(int) (encodedColor & 0xFFFFFL)]);
+				pixels[ii] |= (gammaCorrectionLUT[(int) (encodedColor & 0x1FF)]);
 			}
 		}
 

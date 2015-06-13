@@ -18,5 +18,4 @@ public class BitMaskFilterAnaglyphGenerator extends AnaglyphGenerator {
 
 		return pixels;
 	}
-
 }
