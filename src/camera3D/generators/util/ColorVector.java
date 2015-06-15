@@ -16,4 +16,10 @@ public class ColorVector {
 		this.blue = blue;
 	}
 
+	public ColorVector add(ColorVector that) {
+		ColorVector out = new ColorVector(red + that.red, green + that.green,
+				blue + that.blue);
+
+		return out;
+	}
 }

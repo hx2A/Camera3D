@@ -1,5 +1,7 @@
 package camera3D.generators;
 
+import camera3D.generators.AnaglyphGenerator;
+
 public class BitMaskFilterAnaglyphGenerator extends AnaglyphGenerator {
 
 	private int leftFilter;

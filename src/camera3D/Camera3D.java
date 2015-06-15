@@ -6,9 +6,10 @@ import java.lang.Math;
 
 import processing.core.*;
 import processing.event.KeyEvent;
-
 import camera3D.generators.AnaglyphGenerator;
 import camera3D.generators.BitMaskFilterAnaglyphGenerator;
+import camera3D.generators.DuboisAnaglyphGenerator64bitLUT;
+import camera3D.generators.MatrixAnaglyphGenerator;
 
 public class Camera3D implements PConstants {
 
@@ -20,8 +21,8 @@ public class Camera3D implements PConstants {
 
 	private PApplet parent;
 
-	private int height;
 	private int width;
+	private int height;
 	private int pixelCount;
 	private int[] pixelsAlt;
 
@@ -114,8 +115,36 @@ public class Camera3D implements PConstants {
 	}
 
 	public void renderAnaglyph(int leftFilter, int rightFilter) {
-		anaglyphGenerator = new BitMaskFilterAnaglyphGenerator(leftFilter, rightFilter);
-		renderer = Renderer.ANAGLYPH;
+		anaglyphGenerator = new BitMaskFilterAnaglyphGenerator(leftFilter,
+				rightFilter);
+		renderAnaglyph(anaglyphGenerator);
+	}
+
+	public void renderDuboisRedCyanAnaglyph() {
+		renderAnaglyph(DuboisAnaglyphGenerator64bitLUT.createRedCyanGenerator());
+	}
+
+	public void renderDuboisMagentaGreenAnaglyph() {
+		renderAnaglyph(DuboisAnaglyphGenerator64bitLUT
+				.createMagentaGreenGenerator());
+	}
+
+	public void renderDuboisAmberBlueAnaglyph() {
+		renderAnaglyph(DuboisAnaglyphGenerator64bitLUT
+				.createAmberBlueGenerator());
+	}
+
+	public void renderTrueAnaglyph() {
+		renderAnaglyph(MatrixAnaglyphGenerator.createTrueAnaglyphGenerator());
+	}
+
+	public void renderGrayAnaglyph() {
+		renderAnaglyph(MatrixAnaglyphGenerator.createGrayAnaglyphGenerator());
+	}
+
+	public void renderHalfColorAnaglyph() {
+		renderAnaglyph(MatrixAnaglyphGenerator
+				.createHalfColorAnaglyphGenerator());
 	}
 
 	public void renderAnaglyph(AnaglyphGenerator anaglyphGenerator) {
