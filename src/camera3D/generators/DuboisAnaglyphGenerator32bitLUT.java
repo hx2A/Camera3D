@@ -16,12 +16,16 @@ public class DuboisAnaglyphGenerator32bitLUT extends AnaglyphGenerator {
 			AnaglyphMatrix right) {
 		maxEncodedValue = (int) Math.pow(2, 9);
 
+		System.out.println("precomputing lookup tables...");
+
 		removeGammaCorrectionLUT = makeLUTremoveGammaCorrectionStandardRGB();
 
 		leftLUT = preComputeLUT(left);
 		rightLUT = preComputeLUT(right);
 
 		gammaCorrectionLUT = makeLUTapplyGammaCorrectionStandardRGB(maxEncodedValue);
+
+		System.out.println("done!");
 	}
 
 	public static AnaglyphGenerator createRedCyanGenerator() {

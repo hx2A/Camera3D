@@ -89,7 +89,7 @@ public class Camera3D implements PConstants {
 		camera();
 		perspective();
 		setCameraDivergence(3);
-		renderAnaglyph();
+		renderDefaultAnaglyph();
 
 		welcome();
 	}
@@ -110,44 +110,53 @@ public class Camera3D implements PConstants {
 		this.backgroundColor = backgroundColor;
 	}
 
-	public void renderAnaglyph() {
-		renderAnaglyph(0xFFFF0000, 0x0000FFFF);
+	public void renderDefaultAnaglyph() {
+		renderBitMaskRedCyanAnaglyph();
 	}
 
-	public void renderAnaglyph(int leftFilter, int rightFilter) {
+	public void renderBitMaskRedCyanAnaglyph() {
+		renderBitMaskFilterAnaglyph(0xFFFF0000, 0x0000FFFF);
+	}
+
+	public void renderBitMaskMagentaGreenAnaglyph() {
+		renderBitMaskFilterAnaglyph(0xFFFF00FF, 0x0000FF00);
+	}
+
+	public void renderBitMaskFilterAnaglyph(int leftFilter, int rightFilter) {
 		anaglyphGenerator = new BitMaskFilterAnaglyphGenerator(leftFilter,
 				rightFilter);
-		renderAnaglyph(anaglyphGenerator);
+		setAnaglyphRender(anaglyphGenerator);
 	}
 
 	public void renderDuboisRedCyanAnaglyph() {
-		renderAnaglyph(DuboisAnaglyphGenerator64bitLUT.createRedCyanGenerator());
+		setAnaglyphRender(DuboisAnaglyphGenerator64bitLUT
+				.createRedCyanGenerator());
 	}
 
 	public void renderDuboisMagentaGreenAnaglyph() {
-		renderAnaglyph(DuboisAnaglyphGenerator64bitLUT
+		setAnaglyphRender(DuboisAnaglyphGenerator64bitLUT
 				.createMagentaGreenGenerator());
 	}
 
 	public void renderDuboisAmberBlueAnaglyph() {
-		renderAnaglyph(DuboisAnaglyphGenerator64bitLUT
+		setAnaglyphRender(DuboisAnaglyphGenerator64bitLUT
 				.createAmberBlueGenerator());
 	}
 
 	public void renderTrueAnaglyph() {
-		renderAnaglyph(MatrixAnaglyphGenerator.createTrueAnaglyphGenerator());
+		setAnaglyphRender(MatrixAnaglyphGenerator.createTrueAnaglyphGenerator());
 	}
 
 	public void renderGrayAnaglyph() {
-		renderAnaglyph(MatrixAnaglyphGenerator.createGrayAnaglyphGenerator());
+		setAnaglyphRender(MatrixAnaglyphGenerator.createGrayAnaglyphGenerator());
 	}
 
 	public void renderHalfColorAnaglyph() {
-		renderAnaglyph(MatrixAnaglyphGenerator
+		setAnaglyphRender(MatrixAnaglyphGenerator
 				.createHalfColorAnaglyphGenerator());
 	}
 
-	public void renderAnaglyph(AnaglyphGenerator anaglyphGenerator) {
+	public void setAnaglyphRender(AnaglyphGenerator anaglyphGenerator) {
 		this.anaglyphGenerator = anaglyphGenerator;
 		renderer = Renderer.ANAGLYPH;
 	}
