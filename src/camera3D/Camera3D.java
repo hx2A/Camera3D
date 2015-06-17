@@ -88,8 +88,8 @@ public class Camera3D implements PConstants {
 
 		camera();
 		perspective();
-		setCameraDivergence(3);
 		renderDefaultAnaglyph();
+		setCameraDivergence(3);
 
 		welcome();
 	}
@@ -240,7 +240,16 @@ public class Camera3D implements PConstants {
 	}
 
 	public void setCameraDivergence(float divergence) {
-		cameraDivergence = divergence;
+		if (renderer == Renderer.ANAGLYPH) {
+			cameraDivergence = divergence;
+		} else {
+			if (divergence != 0) {
+				System.out
+				.println("setting camera divergence when using the standard renderer?");
+				System.out.println("setting divergence = 0");
+			}
+			cameraDivergence = 0;
+		}
 
 		recalculateDivergence();
 	}
