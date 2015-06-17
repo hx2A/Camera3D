@@ -13,8 +13,6 @@ int zTrans;
 void setup() {
   size(500, 500, P3D);
   camera3D = new Camera3D(this);
-  camera3D.setBackgroundColor(255);
-  camera3D.setCameraDivergence(3);
 
   /*
    * Camera3D does not always play nice with other libraries such as
@@ -29,7 +27,7 @@ void setup() {
   cp5.addSlider("zTrans").setRange(-500, 500).setValue(-200)
       .setPosition(10, 60).setSize(100, 30)
       .setCaptionLabel("Z Translation")
-      .setColorCaptionLabel(0x000000);
+      .setColorCaptionLabel(color(0));
 
   strokeWeight(4);
   stroke(0);

@@ -10,8 +10,26 @@ float rotZ = 0;
 void setup() {
   size(500, 500, P3D);
   camera3D = new Camera3D(this);
+  
+  /*
+  Camera3D calls the draw method twice and clears the drawing
+  canvas before the second call. It needs to know what background
+  color to use to do this. Here, I am explicitly setting it to the
+  (default) color white.
+  */
   camera3D.setBackgroundColor(255);
-  camera3D.renderDuboisRedCyanAnaglyph();
+
+  /*
+  Camera3D supports a variety of rendering algorithms to make
+  anaglyphs. Here, I am setting it to a simple bitmask filter.
+  */
+  camera3D.renderBitMaskRedCyanAnaglyph();
+
+  /*
+  Divergence is the distance between the two camera locations used
+  to make the two images. Suitable values are small positive numbers
+  less than 5.
+  */
   camera3D.setCameraDivergence(3);
 
   label = createGraphics(140, 60);

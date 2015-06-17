@@ -1,3 +1,13 @@
+/*
+This sketch is a utility to help you explore the Camera3D options. Not all renderers
+will work with all object and background color combinations. Experimenting with the
+possibilities can be tedious, and this sketch is designed to help make that easier.
+
+Don't look at the actual code if you are a beginner. Just run it and play with the sliders.
+
+On the other hand, if you want to see some awesome ControlP5 coding, read on...
+*/
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;

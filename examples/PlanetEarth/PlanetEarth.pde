@@ -9,7 +9,7 @@ void setup() {
   size(800, 600, P3D);
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(0);
-  camera3D.renderHalfColorAnaglyph();
+  camera3D.renderDuboisRedCyanAnaglyph();
   camera3D.setCameraDivergence(1f);
   camera3D.setCameraTarget(width / 2f, height / 2f, -700);
 

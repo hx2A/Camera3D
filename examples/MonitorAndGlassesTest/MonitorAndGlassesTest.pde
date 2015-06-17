@@ -1,3 +1,15 @@
+/*
+This sketch is a simple utility for evaluating the quality of your
+monitor and glasses.
+
+Run the sketch with your glasses on and cover one eye. You should
+see either the horizontal or vertical lines disappear or diminish.
+
+Ideally one set of lines will disappear. If it doesn't, try making small
+adjustments to the brightness/contrast settings on your monitor to see
+if it improves.
+*/
+
 import camera3D.*;
 
 Camera3D camera3D;

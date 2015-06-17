@@ -10,9 +10,6 @@ float rotZ = 0;
 void setup() {
   size(500, 500, P3D);
   camera3D = new Camera3D(this);
-  camera3D.setBackgroundColor(255);
-  camera3D.renderDuboisRedCyanAnaglyph();
-  camera3D.setCameraDivergence(3);
 
   label = createGraphics(140, 60);
   label.beginDraw();
@@ -23,6 +20,11 @@ void setup() {
   label.endDraw();
 }
 
+/*
+This optional preDraw method will be called ONCE for each
+frame, and will be called before the first call to the draw
+method.
+*/
 void preDraw() {
   println("executing " + camera3D.currentActivity());
   rotX += 0.5;
@@ -30,6 +32,15 @@ void preDraw() {
   rotZ += 0.3;
 }
 
+/*
+This is the usual draw method for your sketch. With Camera3D, it
+will be called TWICE for each frame. The second call is to draw
+your scene from a second perspective.
+
+Since it is called twice, code that must only be run once should
+be moved to the preDraw method. Examples of code that belongs in
+preDraw are position or rotation calculations.
+*/
 void draw() {
   println("executing " + camera3D.currentActivity());
   println("frameRate: " + str(frameRate));
@@ -43,6 +54,10 @@ void draw() {
   box(200);
 }
 
+/*
+This optional postDraw method will be called ONCE for each frame,
+and will be called after the second call to the draw method.
+*/
 void postDraw() {
   println("executing " + camera3D.currentActivity());
   copy(label, 0, 0, label.width, label.height, width - label.width,
