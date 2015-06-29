@@ -10,6 +10,7 @@ import camera3D.generators.AnaglyphGenerator;
 import camera3D.generators.BitMaskFilterAnaglyphGenerator;
 import camera3D.generators.DuboisAnaglyphGenerator64bitLUT;
 import camera3D.generators.MatrixAnaglyphGenerator;
+import camera3D.generators.StereogramGenerator;
 
 public class Camera3D implements PConstants {
 
@@ -156,14 +157,17 @@ public class Camera3D implements PConstants {
 				.createHalfColorAnaglyphGenerator());
 	}
 
+	public void renderStereogram() {
+		setAnaglyphRender(new StereogramGenerator(parent.width, parent.height));
+	}
+
 	public void setAnaglyphRender(AnaglyphGenerator anaglyphGenerator) {
 		this.anaglyphGenerator = anaglyphGenerator;
 		renderer = Renderer.ANAGLYPH;
 	}
 
-	public void renderStandard() {
+	public void renderRegular() {
 		renderer = Renderer.REGULAR;
-		setCameraDivergence(0);
 	}
 
 	public void enableDebugTools() {
@@ -245,7 +249,7 @@ public class Camera3D implements PConstants {
 		} else {
 			if (divergence != 0) {
 				System.out
-				.println("setting camera divergence when using the standard renderer?");
+						.println("setting camera divergence when using the regular P3D renderer?");
 				System.out.println("setting divergence = 0");
 			}
 			cameraDivergence = 0;
@@ -281,13 +285,17 @@ public class Camera3D implements PConstants {
 
 		if (renderer == Renderer.ANAGLYPH) {
 			currentActivity = "right";
+
+			parent.camera(cameraX + cameraDivergenceX, cameraY
+					+ cameraDivergenceY, cameraZ + cameraDivergenceZ, targetX,
+					targetY, targetZ, upX, upY, upZ);
 		} else {
 			currentActivity = "regular";
+
+			parent.camera(cameraX, cameraY, cameraZ, targetX, targetY, targetZ,
+					upX, upY, upZ);
 		}
 
-		parent.camera(cameraX + cameraDivergenceX, cameraY + cameraDivergenceY,
-				cameraZ + cameraDivergenceZ, targetX, targetY, targetZ, upX,
-				upY, upZ);
 	}
 
 	public void draw() {
