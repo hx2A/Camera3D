@@ -26,6 +26,7 @@ public class Camera3D implements PConstants {
 	private int height;
 	private int pixelCount;
 	private int[] pixelsAlt;
+	float avgAnaglyphRenderTimeMillis;
 
 	private boolean debugTools;
 	private boolean saveNextFrame;
@@ -82,6 +83,7 @@ public class Camera3D implements PConstants {
 		width = parent.width;
 		pixelCount = parent.width * parent.height;
 		pixelsAlt = new int[pixelCount];
+		avgAnaglyphRenderTimeMillis = 1;
 
 		debugTools = false;
 		saveNextFrame = false;
@@ -164,10 +166,12 @@ public class Camera3D implements PConstants {
 	public void setAnaglyphRender(AnaglyphGenerator anaglyphGenerator) {
 		this.anaglyphGenerator = anaglyphGenerator;
 		renderer = Renderer.ANAGLYPH;
+		avgAnaglyphRenderTimeMillis = 1;
 	}
 
 	public void renderRegular() {
 		renderer = Renderer.REGULAR;
+		avgAnaglyphRenderTimeMillis = Float.NaN;
 	}
 
 	public void enableDebugTools() {
@@ -176,6 +180,10 @@ public class Camera3D implements PConstants {
 
 	public void saveAllFrames() {
 		saveAllFrames = true;
+	}
+
+	public float getAnaglyphRenderTime() {
+		return avgAnaglyphRenderTimeMillis;
 	}
 
 	/*
@@ -321,7 +329,13 @@ public class Camera3D implements PConstants {
 			if (saveNextFrame || saveAllFrames)
 				parent.saveFrame("####-" + parentClassName + "-left.png");
 
-			anaglyphGenerator.generateAnaglyph(parent.pixels, pixelsAlt);
+			long startTime = System.nanoTime();
+
+			parent.pixels = anaglyphGenerator.generateAnaglyph(parent.pixels,
+					pixelsAlt);
+
+			avgAnaglyphRenderTimeMillis = 0.9f * avgAnaglyphRenderTimeMillis
+					+ 0.1f * (System.nanoTime() - startTime) / 1000000f;
 
 			parent.updatePixels();
 
@@ -357,7 +371,7 @@ public class Camera3D implements PConstants {
 	 */
 	private boolean checkForMethod(String method) {
 		try {
-			Method m = parent.getClass().getMethod(method);
+			parent.getClass().getMethod(method);
 		} catch (NoSuchMethodException e) {
 			return false;
 		}
