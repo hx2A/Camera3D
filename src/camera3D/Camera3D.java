@@ -1,6 +1,7 @@
 package camera3D;
 
 import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 import java.lang.Math;
 
@@ -9,7 +10,7 @@ import processing.event.KeyEvent;
 import camera3D.generators.AnaglyphGenerator;
 import camera3D.generators.BitMaskFilterAnaglyphGenerator;
 import camera3D.generators.DuboisAnaglyphGenerator64bitLUT;
-import camera3D.generators.MatrixAnaglyphGenerator;
+import camera3D.generators.MatrixAnaglyphGeneratorLUT;
 import camera3D.generators.StereogramGenerator;
 
 public class Camera3D implements PConstants {
@@ -147,15 +148,17 @@ public class Camera3D implements PConstants {
 	}
 
 	public void renderTrueAnaglyph() {
-		setAnaglyphRender(MatrixAnaglyphGenerator.createTrueAnaglyphGenerator());
+		setAnaglyphRender(MatrixAnaglyphGeneratorLUT
+				.createTrueAnaglyphGenerator());
 	}
 
 	public void renderGrayAnaglyph() {
-		setAnaglyphRender(MatrixAnaglyphGenerator.createGrayAnaglyphGenerator());
+		setAnaglyphRender(MatrixAnaglyphGeneratorLUT
+				.createGrayAnaglyphGenerator());
 	}
 
 	public void renderHalfColorAnaglyph() {
-		setAnaglyphRender(MatrixAnaglyphGenerator
+		setAnaglyphRender(MatrixAnaglyphGeneratorLUT
 				.createHalfColorAnaglyphGenerator());
 	}
 
