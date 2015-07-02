@@ -31,7 +31,6 @@ public class Camera3D implements PConstants {
 
 	private boolean debugTools;
 	private boolean saveNextFrame;
-	private boolean saveAllFrames;
 	private int saveFrameNum;
 	private String parentClassName;
 
@@ -88,7 +87,6 @@ public class Camera3D implements PConstants {
 
 		debugTools = false;
 		saveNextFrame = false;
-		saveAllFrames = false;
 
 		camera();
 		perspective();
@@ -179,10 +177,6 @@ public class Camera3D implements PConstants {
 
 	public void enableDebugTools() {
 		debugTools = true;
-	}
-
-	public void saveAllFrames() {
-		saveAllFrames = true;
 	}
 
 	public float getAnaglyphRenderTime() {
@@ -315,7 +309,7 @@ public class Camera3D implements PConstants {
 			parent.loadPixels();
 			System.arraycopy(parent.pixels, 0, pixelsAlt, 0, pixelCount);
 
-			if (saveNextFrame || saveAllFrames)
+			if (saveNextFrame)
 				parent.saveFrame("####-" + parentClassName + "-right.png");
 
 			parent.background(backgroundColor);
@@ -329,20 +323,24 @@ public class Camera3D implements PConstants {
 			parent.draw();
 			parent.loadPixels();
 
-			if (saveNextFrame || saveAllFrames)
+			if (saveNextFrame)
 				parent.saveFrame("####-" + parentClassName + "-left.png");
 
 			long startTime = System.nanoTime();
 
-			parent.pixels = anaglyphGenerator.generateAnaglyph(parent.pixels,
-					pixelsAlt);
+			if (saveNextFrame) {
+				anaglyphGenerator.generateAnaglyphSaveFilteredFrames(
+						parent.pixels, pixelsAlt, parent, parentClassName);
+			} else {
+				anaglyphGenerator.generateAnaglyph(parent.pixels, pixelsAlt);
+			}
 
 			avgAnaglyphRenderTimeMillis = 0.9f * avgAnaglyphRenderTimeMillis
 					+ 0.1f * (System.nanoTime() - startTime) / 1000000f;
 
 			parent.updatePixels();
 
-			if (saveNextFrame || saveAllFrames)
+			if (saveNextFrame)
 				parent.saveFrame("####-" + parentClassName + "-anaglyph.png");
 		}
 
@@ -355,7 +353,7 @@ public class Camera3D implements PConstants {
 			callMethod("postDraw");
 		}
 
-		if (saveNextFrame || saveAllFrames) {
+		if (saveNextFrame) {
 			parent.saveFrame("####-" + parentClassName + "-final.png");
 			saveNextFrame = false;
 		}

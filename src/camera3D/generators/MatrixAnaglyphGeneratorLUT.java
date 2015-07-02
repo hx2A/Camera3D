@@ -72,12 +72,10 @@ public class MatrixAnaglyphGeneratorLUT extends AnaglyphGenerator {
 		return lut;
 	}
 
-	public int[] generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
 		for (int ii = 0; ii < pixels.length; ++ii) {
 			pixels[ii] = 0xFF000000 | leftLUT[pixels[ii] & 0x00FFFFFF]
 					| rightLUT[pixels[ii] & 0x00FFFFFF];
 		}
-
-		return pixels;
 	}
 }

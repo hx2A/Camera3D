@@ -32,7 +32,7 @@ public class MatrixAnaglyphGenerator extends AnaglyphGenerator {
 				AnaglyphConstants.RIGHT_HALF_COLOR_ANAGLYPH);
 	}
 
-	public int[] generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
 		for (int ii = 0; ii < pixels.length; ++ii) {
 			ColorVector leftColor = left.rightMult(new ColorVector(
 					(0x00FF0000 & pixels[ii]) >> 16,
@@ -50,7 +50,5 @@ public class MatrixAnaglyphGenerator extends AnaglyphGenerator {
 					| (((int) clip(anaglyphColor.green, 0, 255)) << 8)
 					| ((int) clip(anaglyphColor.blue, 0, 255));
 		}
-
-		return pixels;
 	}
 }

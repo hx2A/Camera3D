@@ -1,8 +1,34 @@
 package camera3D.generators;
 
+import processing.core.PApplet;
+import processing.core.PConstants;
+import processing.core.PImage;
+
 public abstract class AnaglyphGenerator {
 
-	abstract public int[] generateAnaglyph(int[] pixels, int[] pixelsAlt);
+	abstract public void generateAnaglyph(int[] pixels, int[] pixelsAlt);
+
+	public void generateAnaglyphSaveFilteredFrames(int[] pixels,
+			int[] pixelsAlt, PApplet parent, String parentClassName) {
+		PImage frame1 = parent.createImage(parent.width, parent.height,
+				PConstants.RGB);
+		frame1.loadPixels();
+		generateAnaglyph(frame1.pixels, pixelsAlt);
+		frame1.updatePixels();
+		frame1.save(parent.insertFrame("####-" + parentClassName
+				+ "-right-filtered.png"));
+
+		PImage frame2 = parent.createImage(parent.width, parent.height,
+				PConstants.RGB);
+		frame2.loadPixels();
+		System.arraycopy(pixels, 0, frame2.pixels, 0, pixels.length);
+		generateAnaglyph(frame2.pixels, new int[pixels.length]);
+		frame2.updatePixels();
+		frame2.save(parent.insertFrame("####-" + parentClassName
+				+ "-left-filtered.png"));
+
+		generateAnaglyph(pixels, pixelsAlt);
+	}
 
 	public float removeGammaCorrectionStandardRGB(float s) {
 		if (s <= 0.04045f) {

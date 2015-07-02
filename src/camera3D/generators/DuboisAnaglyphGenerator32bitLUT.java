@@ -66,7 +66,7 @@ public class DuboisAnaglyphGenerator32bitLUT extends AnaglyphGenerator {
 		return lut;
 	}
 
-	public int[] generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
 		long encodedColor;
 
 		for (int ii = 0; ii < pixels.length; ++ii) {
@@ -91,7 +91,5 @@ public class DuboisAnaglyphGenerator32bitLUT extends AnaglyphGenerator {
 				pixels[ii] |= (gammaCorrectionLUT[(int) (encodedColor & 0x1FF)]);
 			}
 		}
-
-		return pixels;
 	}
 }
