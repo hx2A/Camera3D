@@ -10,12 +10,10 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 	private long[] rightLUT;
 	private float[] removeGammaCorrectionLUT;
 	private int[] gammaCorrectionLUT;
-	private int maxEncodedValue;
+	private final int MAX_ENCODED_VALUE = (int) Math.pow(2, 20);
 
 	public DuboisAnaglyphGenerator64bitLUT(AnaglyphMatrix left,
 			AnaglyphMatrix right) {
-		maxEncodedValue = (int) Math.pow(2, 20);
-
 		System.out.println("precomputing lookup tables...");
 
 		removeGammaCorrectionLUT = makeLUTremoveGammaCorrectionStandardRGB();
@@ -23,7 +21,7 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 		leftLUT = preComputeLUT(left);
 		rightLUT = preComputeLUT(right);
 
-		gammaCorrectionLUT = makeLUTapplyGammaCorrectionStandardRGB(maxEncodedValue);
+		gammaCorrectionLUT = makeLUTapplyGammaCorrectionStandardRGB(MAX_ENCODED_VALUE);
 
 		System.out.println("done!");
 	}
@@ -57,9 +55,9 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 			ColorVector val = matrix
 					.rightMult(new ColorVector(red, green, blue));
 
-			long encodedRed = (long) (clip(val.red) * (maxEncodedValue - 1));
-			long encodedGreen = (long) (clip(val.green) * (maxEncodedValue - 1));
-			long encodedBlue = (long) (clip(val.blue) * (maxEncodedValue - 1));
+			long encodedRed = (long) (clip(val.red) * (MAX_ENCODED_VALUE - 1));
+			long encodedGreen = (long) (clip(val.green) * (MAX_ENCODED_VALUE - 1));
+			long encodedBlue = (long) (clip(val.blue) * (MAX_ENCODED_VALUE - 1));
 
 			lut[col] = (encodedRed << 42) | (encodedGreen << 21) | encodedBlue;
 		}
