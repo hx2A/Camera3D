@@ -29,8 +29,9 @@ public class Camera3D implements PConstants {
 	private int[] pixelsAlt;
 	float avgAnaglyphRenderTimeMillis;
 
-	private boolean debugTools;
+	private boolean enableSaveFrame;
 	private boolean saveNextFrame;
+	private char saveFrameKey;
 	private int saveFrameNum;
 	private String parentClassName;
 
@@ -85,7 +86,7 @@ public class Camera3D implements PConstants {
 		pixelsAlt = new int[pixelCount];
 		avgAnaglyphRenderTimeMillis = 1;
 
-		debugTools = false;
+		enableSaveFrame = false;
 		saveNextFrame = false;
 
 		camera();
@@ -175,8 +176,13 @@ public class Camera3D implements PConstants {
 		avgAnaglyphRenderTimeMillis = Float.NaN;
 	}
 
-	public void enableDebugTools() {
-		debugTools = true;
+	public void enableSaveFrame(char key) {
+		saveFrameKey = key;
+		enableSaveFrame = true;
+	}
+
+	public void enableSaveFrame() {
+		enableSaveFrame('s');
 	}
 
 	public float getAnaglyphRenderTime() {
@@ -360,7 +366,7 @@ public class Camera3D implements PConstants {
 	}
 
 	public void keyEvent(KeyEvent e) {
-		if (e.getKey() == 's' && debugTools
+		if (e.getKey() == saveFrameKey && enableSaveFrame
 				&& parent.frameCount > saveFrameNum + 10) {
 			saveNextFrame = true;
 			saveFrameNum = parent.frameCount;
