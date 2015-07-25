@@ -1,7 +1,6 @@
 package camera3D;
 
 import java.lang.reflect.InvocationTargetException;
-
 import java.lang.reflect.Method;
 import java.lang.Math;
 
@@ -35,6 +34,9 @@ public class Camera3D implements PConstants {
 	private int saveFrameNum;
 	private String parentClassName;
 
+	private PMatrix3D modelview_left;
+	private PMatrix3D modelview_right;
+	private PMatrix3D modelview_original;
 	private float cameraX;
 	private float cameraY;
 	private float cameraZ;
@@ -192,6 +194,10 @@ public class Camera3D implements PConstants {
 	/*
 	 * Camera Methods
 	 */
+	public PeasyCamAdapter usePeasyCam() {
+		return new PeasyCamAdapter(parent, this);
+	}
+
 	public void camera() {
 		camera(width / 2f, height / 2f,
 				(height / 2f) / (float) Math.tan(PI * 30.0 / 180.0),
@@ -306,7 +312,6 @@ public class Camera3D implements PConstants {
 			parent.camera(cameraX, cameraY, cameraZ, targetX, targetY, targetZ,
 					upX, upY, upZ);
 		}
-
 	}
 
 	public void draw() {
