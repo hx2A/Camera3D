@@ -194,7 +194,7 @@ public class Camera3D implements PConstants {
 	/*
 	 * Camera Methods
 	 */
-	public PeasyCamAdapter usePeasyCam() {
+	public PeasyCamAdapter createPeasyCamAdapter() {
 		return new PeasyCamAdapter(parent, this);
 	}
 
