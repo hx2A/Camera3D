@@ -260,6 +260,14 @@ public class Camera3D implements PConstants {
 		recalculateDivergence();
 	}
 
+	public void frustum(float left, float right, float bottom, float top,
+			float near, float far) {
+		this.fovy = 2 * (float) Math.atan(top / near);
+		parent.frustum(left, right, bottom, top, near, far);
+
+		recalculateDivergence();
+	}
+
 	public void setCameraDivergence(float divergence) {
 		if (renderer == Renderer.ANAGLYPH) {
 			cameraDivergence = divergence;
