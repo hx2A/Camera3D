@@ -34,9 +34,6 @@ public class Camera3D implements PConstants {
 	private int saveFrameNum;
 	private String parentClassName;
 
-	private PMatrix3D modelview_left;
-	private PMatrix3D modelview_right;
-	private PMatrix3D modelview_original;
 	private float cameraX;
 	private float cameraY;
 	private float cameraZ;
