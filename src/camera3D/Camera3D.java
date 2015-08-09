@@ -11,6 +11,7 @@ import camera3D.generators.BitMaskFilterAnaglyphGenerator;
 import camera3D.generators.DuboisAnaglyphGenerator64bitLUT;
 import camera3D.generators.MatrixAnaglyphGeneratorLUT;
 import camera3D.generators.StereogramGenerator;
+import camera3D.generators.OverUnderGenerator;
 
 public class Camera3D implements PConstants {
 
@@ -164,6 +165,10 @@ public class Camera3D implements PConstants {
 		setAnaglyphRender(new StereogramGenerator(parent.width, parent.height));
 	}
 
+	public void renderOverUnderStereogram() {
+		setAnaglyphRender(new OverUnderGenerator(parent.width, parent.height));
+	}
+	
 	public void setAnaglyphRender(AnaglyphGenerator anaglyphGenerator) {
 		this.anaglyphGenerator = anaglyphGenerator;
 		renderer = Renderer.ANAGLYPH;
