@@ -1,6 +1,7 @@
 package camera3D;
 
 import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 import java.lang.Math;
 
@@ -12,6 +13,7 @@ import camera3D.generators.DuboisAnaglyphGenerator64bitLUT;
 import camera3D.generators.MatrixAnaglyphGeneratorLUT;
 import camera3D.generators.StereogramGenerator;
 import camera3D.generators.OverUnderGenerator;
+import camera3D.generators.SideBySideGenerator;
 
 public class Camera3D implements PConstants {
 
@@ -167,6 +169,10 @@ public class Camera3D implements PConstants {
 
 	public void renderOverUnderStereogram() {
 		setAnaglyphRender(new OverUnderGenerator(parent.width, parent.height));
+	}
+
+	public void renderSideBySideStereogram() {
+		setAnaglyphRender(new SideBySideGenerator(parent.width, parent.height));
 	}
 	
 	public void setAnaglyphRender(AnaglyphGenerator anaglyphGenerator) {
