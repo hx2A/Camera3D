@@ -16,14 +16,16 @@ public class SideBySideGenerator extends AnaglyphGenerator {
 	}
 
 	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
-		// left
-		for (int i = 0; i < pixels.length; i = i + 2) {
-			pixels[i / width * width + i % width / 2] = pixels[i];
-		}
+		for (int y = 0; y < height; y++) {
+			int offset = y * width;
+			for (int x = 0; x < width / 2; x++) {
+				pixels[offset + x] = pixels[offset + x * 2];
+			}
 
-		// right
-		for (int i = 0; i < pixels.length; i = i + 2) {
-			pixels[i / width * width + i % width / 2 + width / 2] = pixelsAlt[i];
+			int offset2 = offset + width / 2;
+			for (int x = 0; x < width / 2; x++) {
+				pixels[offset2 + x] = pixelsAlt[offset + x * 2];
+			}
 		}
 	}
 }
