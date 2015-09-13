@@ -15,7 +15,7 @@ public class StereogramGenerator extends AnaglyphGenerator {
 		return new StereogramGenerator(width, height);
 	}
 
-	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
 		for (int y = 0; y < height; ++y) {
 			System.arraycopy(pixels, y * width + (width / 4), pixels,
 					y * width, width / 2);

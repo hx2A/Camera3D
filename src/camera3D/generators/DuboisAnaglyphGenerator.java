@@ -40,7 +40,7 @@ public class DuboisAnaglyphGenerator extends AnaglyphGenerator {
 				AnaglyphConstants.RIGHT_DUBOIS_AMBERBLUE);
 	}
 
-	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
 		for (int ii = 0; ii < pixels.length; ++ii) {
 			float rightRed = removeGammaCorrectionLUT[(pixels[ii] & 0x00FF0000) >> 16];
 			float rightGreen = removeGammaCorrectionLUT[(pixels[ii] & 0x0000FF00) >> 8];

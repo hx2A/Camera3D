@@ -15,7 +15,7 @@ public class OverUnderGenerator extends AnaglyphGenerator {
 		return new OverUnderGenerator(width, height);
 	}
 
-	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
 		// over
 		for (int y = 0; y < height / 2; ++y) {
 			System.arraycopy(pixels, 2 * y * width, pixels, y * width, width);

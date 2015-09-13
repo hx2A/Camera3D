@@ -1,42 +1,74 @@
 package camera3D.generators;
 
+import camera3D.CameraConfiguration;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
-public abstract class AnaglyphGenerator {
+public abstract class AnaglyphGenerator extends Generator implements PConstants {
 
-	abstract public void generateAnaglyph(int[] pixels, int[] pixelsAlt);
+	private float cameraDivergenceX;
+	private float cameraDivergenceY;
+	private float cameraDivergenceZ;
 
-	public void generateAnaglyphSaveFilteredFrames(int[] pixels,
-			int[] pixelsAlt, PApplet parent, String parentClassName) {
-		PImage frame1 = parent.createImage(parent.width, parent.height,
-				PConstants.RGB);
-		frame1.loadPixels();
-		generateAnaglyph(frame1.pixels, pixelsAlt);
-		frame1.updatePixels();
-		frame1.save(parent.insertFrame("####-" + parentClassName
-				+ "-right-filtered.png"));
-
-		PImage frame2 = parent.createImage(parent.width, parent.height,
-				PConstants.RGB);
-		frame2.loadPixels();
-		System.arraycopy(pixels, 0, frame2.pixels, 0, pixels.length);
-		generateAnaglyph(frame2.pixels, new int[pixels.length]);
-		frame2.updatePixels();
-		frame2.save(parent.insertFrame("####-" + parentClassName
-				+ "-left-filtered.png"));
-
-		generateAnaglyph(pixels, pixelsAlt);
+	public int getComponentCount() {
+		return 2;
 	}
 
-	public float removeGammaCorrectionStandardRGB(float s) {
-		if (s <= 0.04045f) {
-			return s / 12.92f;
+	public String getComponentFrameName(int frameNum) {
+		if (frameNum == 0) {
+			return "right";
+		} else if (frameNum == 1) {
+			return "left";
 		} else {
-			return (float) Math.pow((s + 0.055) / 1.055, 2.4);
+			return "";
 		}
 	}
+
+	public void notifyCameraConfigChange(PApplet parent,
+			CameraConfiguration config) {
+		float dx = config.cameraPositionX - config.cameraTargetX;
+		float dy = config.cameraPositionY - config.cameraTargetY;
+		float dz = config.cameraPositionZ - config.cameraTargetZ;
+		float diverge = -config.cameraInput / (config.fovy * RAD_TO_DEG);
+
+		cameraDivergenceX = (dy * config.cameraUpZ - config.cameraUpY * dz)
+				* diverge;
+		cameraDivergenceY = (dz * config.cameraUpX - config.cameraUpZ * dx)
+				* diverge;
+		cameraDivergenceZ = (dx * config.cameraUpY - config.cameraUpX * dy)
+				* diverge;
+	}
+
+	public void prepareForDraw(int frameNum, PApplet parent,
+			CameraConfiguration config) {
+		if (frameNum == 0) {
+			parent.camera(config.cameraPositionX + cameraDivergenceX,
+					config.cameraPositionY + cameraDivergenceY,
+					config.cameraPositionZ + cameraDivergenceZ,
+					config.cameraTargetX, config.cameraTargetY,
+					config.cameraTargetZ, config.cameraUpX, config.cameraUpY,
+					config.cameraUpZ);
+		} else if (frameNum == 1) {
+			parent.camera(config.cameraPositionX - cameraDivergenceX,
+					config.cameraPositionY - cameraDivergenceY,
+					config.cameraPositionZ - cameraDivergenceZ,
+					config.cameraTargetX, config.cameraTargetY,
+					config.cameraTargetZ, config.cameraUpX, config.cameraUpY,
+					config.cameraUpZ);
+		}
+	}
+
+	public void cleanup(PApplet parent, CameraConfiguration config) {
+		parent.camera(config.cameraPositionX, config.cameraPositionY,
+				config.cameraPositionZ, config.cameraTargetX,
+				config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
+				config.cameraUpY, config.cameraUpZ);
+	}
+
+	/*
+	 * Utility Functions
+	 */
 
 	public float[] makeLUTremoveGammaCorrectionStandardRGB() {
 		float[] removeGammaCorrectionLUT = new float[256];
@@ -48,6 +80,15 @@ public abstract class AnaglyphGenerator {
 		return removeGammaCorrectionLUT;
 	}
 
+	public int[] makeLUTapplyGammaCorrectionStandardRGB(int maxEncodedValue) {
+		int[] gammaCorrectionLUT = new int[maxEncodedValue];
+		for (int s = 0; s < maxEncodedValue; ++s) {
+			gammaCorrectionLUT[s] = (int) (255 * applyGammaCorrectionStandardRGB(s
+					/ (float) maxEncodedValue));
+		}
+		return gammaCorrectionLUT;
+	}
+
 	public float applyGammaCorrectionStandardRGB(float s) {
 		if (s <= 0.0031308) {
 			return 12.92f * s;
@@ -56,13 +97,12 @@ public abstract class AnaglyphGenerator {
 		}
 	}
 
-	public int[] makeLUTapplyGammaCorrectionStandardRGB(int maxEncodedValue) {
-		int[] gammaCorrectionLUT = new int[maxEncodedValue];
-		for (int s = 0; s < maxEncodedValue; ++s) {
-			gammaCorrectionLUT[s] = (int) (255 * applyGammaCorrectionStandardRGB(s
-					/ (float) maxEncodedValue));
+	public float removeGammaCorrectionStandardRGB(float s) {
+		if (s <= 0.04045f) {
+			return s / 12.92f;
+		} else {
+			return (float) Math.pow((s + 0.055) / 1.055, 2.4);
 		}
-		return gammaCorrectionLUT;
 	}
 
 	public float removeGammaCorrection(float s, float gamma) {

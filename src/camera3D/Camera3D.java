@@ -1,27 +1,16 @@
 package camera3D;
 
 import java.lang.reflect.InvocationTargetException;
-
 import java.lang.reflect.Method;
 import java.lang.Math;
 
 import processing.core.*;
 import processing.event.KeyEvent;
-import camera3D.generators.AnaglyphGenerator;
-import camera3D.generators.BitMaskFilterAnaglyphGenerator;
-import camera3D.generators.DuboisAnaglyphGenerator64bitLUT;
-import camera3D.generators.MatrixAnaglyphGeneratorLUT;
-import camera3D.generators.StereogramGenerator;
-import camera3D.generators.OverUnderGenerator;
-import camera3D.generators.SideBySideGenerator;
+import camera3D.generators.*;
 
 public class Camera3D implements PConstants {
 
 	public final static String VERSION = "##library.prettyVersion##";
-
-	private enum Renderer {
-		REGULAR, ANAGLYPH
-	}
 
 	private PApplet parent;
 
@@ -29,7 +18,7 @@ public class Camera3D implements PConstants {
 	private int height;
 	private int pixelCount;
 	private int[] pixelsAlt;
-	float avgAnaglyphRenderTimeMillis;
+	float avgGeneratorTimeMillis;
 
 	private boolean enableSaveFrame;
 	private boolean saveNextFrame;
@@ -37,27 +26,13 @@ public class Camera3D implements PConstants {
 	private int saveFrameNum;
 	private String parentClassName;
 
-	private float cameraX;
-	private float cameraY;
-	private float cameraZ;
-	private float cameraDivergenceX;
-	private float cameraDivergenceY;
-	private float cameraDivergenceZ;
-	private float cameraDivergence;
-	private float targetX;
-	private float targetY;
-	private float targetZ;
-	private float upX;
-	private float upY;
-	private float upZ;
-	private float fovy;
+	private CameraConfiguration config;
 
-	private Renderer renderer;
-	private AnaglyphGenerator anaglyphGenerator;
+	private Generator generator;
 	private float backgroundColor;
 	private boolean callPreDraw;
 	private boolean callPostDraw;
-	private String currentActivity;
+	private int frameNum;
 
 	public Camera3D(PApplet parent) {
 		this.parent = parent;
@@ -86,14 +61,17 @@ public class Camera3D implements PConstants {
 		width = parent.width;
 		pixelCount = parent.width * parent.height;
 		pixelsAlt = new int[pixelCount];
-		avgAnaglyphRenderTimeMillis = 1;
+		avgGeneratorTimeMillis = 1;
 
 		enableSaveFrame = false;
 		saveNextFrame = false;
 
+		config = new CameraConfiguration();
+
+		renderDefaultAnaglyph();
+
 		camera();
 		perspective();
-		renderDefaultAnaglyph();
 		setCameraDivergence(3);
 
 		welcome();
@@ -128,62 +106,64 @@ public class Camera3D implements PConstants {
 	}
 
 	public void renderBitMaskFilterAnaglyph(int leftFilter, int rightFilter) {
-		anaglyphGenerator = new BitMaskFilterAnaglyphGenerator(leftFilter,
-				rightFilter);
-		setAnaglyphRender(anaglyphGenerator);
+		generator = new BitMaskFilterAnaglyphGenerator(leftFilter, rightFilter);
+		setGenerator(generator);
 	}
 
 	public void renderDuboisRedCyanAnaglyph() {
-		setAnaglyphRender(DuboisAnaglyphGenerator64bitLUT
-				.createRedCyanGenerator());
+		setGenerator(DuboisAnaglyphGenerator64bitLUT.createRedCyanGenerator());
 	}
 
 	public void renderDuboisMagentaGreenAnaglyph() {
-		setAnaglyphRender(DuboisAnaglyphGenerator64bitLUT
+		setGenerator(DuboisAnaglyphGenerator64bitLUT
 				.createMagentaGreenGenerator());
 	}
 
 	public void renderDuboisAmberBlueAnaglyph() {
-		setAnaglyphRender(DuboisAnaglyphGenerator64bitLUT
-				.createAmberBlueGenerator());
+		setGenerator(DuboisAnaglyphGenerator64bitLUT.createAmberBlueGenerator());
 	}
 
 	public void renderTrueAnaglyph() {
-		setAnaglyphRender(MatrixAnaglyphGeneratorLUT
-				.createTrueAnaglyphGenerator());
+		setGenerator(MatrixAnaglyphGeneratorLUT.createTrueAnaglyphGenerator());
 	}
 
 	public void renderGrayAnaglyph() {
-		setAnaglyphRender(MatrixAnaglyphGeneratorLUT
-				.createGrayAnaglyphGenerator());
+		setGenerator(MatrixAnaglyphGeneratorLUT.createGrayAnaglyphGenerator());
 	}
 
 	public void renderHalfColorAnaglyph() {
-		setAnaglyphRender(MatrixAnaglyphGeneratorLUT
+		setGenerator(MatrixAnaglyphGeneratorLUT
 				.createHalfColorAnaglyphGenerator());
 	}
 
 	public void renderStereogram() {
-		setAnaglyphRender(new StereogramGenerator(parent.width, parent.height));
+		setGenerator(new StereogramGenerator(parent.width, parent.height));
 	}
 
 	public void renderOverUnderStereogram() {
-		setAnaglyphRender(new OverUnderGenerator(parent.width, parent.height));
+		setGenerator(new OverUnderGenerator(parent.width, parent.height));
 	}
 
 	public void renderSideBySideStereogram() {
-		setAnaglyphRender(new SideBySideGenerator(parent.width, parent.height));
+		setGenerator(new SideBySideGenerator(parent.width, parent.height));
 	}
-	
-	public void setAnaglyphRender(AnaglyphGenerator anaglyphGenerator) {
-		this.anaglyphGenerator = anaglyphGenerator;
-		renderer = Renderer.ANAGLYPH;
-		avgAnaglyphRenderTimeMillis = 1;
+
+	public void renderSplitDepthIllusion() {
+		setGenerator(new SplitDepthGenerator(parent.width, parent.height));
 	}
 
 	public void renderRegular() {
-		renderer = Renderer.REGULAR;
-		avgAnaglyphRenderTimeMillis = Float.NaN;
+		setGenerator(new RegularRenderer());
+	}
+
+	public void setGenerator(Generator generator) {
+		this.generator = generator;
+		avgGeneratorTimeMillis = 1;
+		generator.notifyCameraConfigChange(parent, config);
+	}
+
+	public Generator getGenerator() {
+		return generator;
 	}
 
 	public void enableSaveFrame(char key) {
@@ -195,8 +175,8 @@ public class Camera3D implements PConstants {
 		enableSaveFrame('s');
 	}
 
-	public float getAnaglyphRenderTime() {
-		return avgAnaglyphRenderTimeMillis;
+	public float getGeneratorTime() {
+		return avgGeneratorTimeMillis;
 	}
 
 	/*
@@ -210,160 +190,145 @@ public class Camera3D implements PConstants {
 		camera(width / 2f, height / 2f,
 				(height / 2f) / (float) Math.tan(PI * 30.0 / 180.0),
 				width / 2f, height / 2f, 0, 0, 1, 0);
-
-		recalculateDivergence();
 	}
 
 	public void camera(float cameraX, float cameraY, float cameraZ,
 			float targetX, float targetY, float targetZ, float upX, float upY,
 			float upZ) {
-		this.cameraX = cameraX;
-		this.cameraY = cameraY;
-		this.cameraZ = cameraZ;
-		this.targetX = targetX;
-		this.targetY = targetY;
-		this.targetZ = targetZ;
-		this.upX = upX;
-		this.upY = upY;
-		this.upZ = upZ;
+		config.cameraPositionX = cameraX;
+		config.cameraPositionY = cameraY;
+		config.cameraPositionZ = cameraZ;
+		config.cameraTargetX = targetX;
+		config.cameraTargetY = targetY;
+		config.cameraTargetZ = targetZ;
+		config.cameraUpX = upX;
+		config.cameraUpY = upY;
+		config.cameraUpZ = upZ;
 
-		recalculateDivergence();
+		generator.notifyCameraConfigChange(parent, config);
 	}
 
 	public void setCameraLocation(float cameraX, float cameraY, float cameraZ) {
-		this.cameraX = cameraX;
-		this.cameraY = cameraY;
-		this.cameraZ = cameraZ;
+		config.cameraPositionX = cameraX;
+		config.cameraPositionY = cameraY;
+		config.cameraPositionZ = cameraZ;
 
-		recalculateDivergence();
+		generator.notifyCameraConfigChange(parent, config);
 	}
 
 	public void setCameraTarget(float targetX, float targetY, float targetZ) {
-		this.targetX = targetX;
-		this.targetY = targetY;
-		this.targetZ = targetZ;
+		config.cameraTargetX = targetX;
+		config.cameraTargetY = targetY;
+		config.cameraTargetZ = targetZ;
 
-		recalculateDivergence();
+		generator.notifyCameraConfigChange(parent, config);
 	}
 
 	public void setCameraUpDirection(float upX, float upY, float upZ) {
-		this.upX = upX;
-		this.upY = upY;
-		this.upZ = upZ;
+		config.cameraUpX = upX;
+		config.cameraUpY = upY;
+		config.cameraUpZ = upZ;
 
-		recalculateDivergence();
+		generator.notifyCameraConfigChange(parent, config);
 	}
 
 	public void perspective() {
-		this.fovy = PI / 3;
-		parent.perspective();
+		float cameraZ = (height / 2f) / (float) Math.tan(PI * 60.0 / 360.0);
 
-		recalculateDivergence();
+		perspective(PI / 3f, width / (float) height, cameraZ / 10f,
+				cameraZ * 10f);
 	}
 
 	public void perspective(float fovy, float aspect, float zNear, float zFar) {
-		this.fovy = fovy;
-		parent.perspective(fovy, aspect, zNear, zFar);
+		float ymax = zNear * (float) Math.tan(fovy / 2);
+		float ymin = -ymax;
+		float xmin = ymin * aspect;
+		float xmax = ymax * aspect;
 
-		recalculateDivergence();
+		frustum(xmin, xmax, ymin, ymax, zNear, zFar);
 	}
 
 	public void frustum(float left, float right, float bottom, float top,
 			float near, float far) {
-		this.fovy = 2 * (float) Math.atan(top / near);
+		config.frustumLeft = left;
+		config.frustumRight = right;
+		config.frustumBottom = bottom;
+		config.frustumTop = top;
+		config.frustumNear = near;
+		config.frustumFar = far;
+		config.fovy = 2 * (float) Math.atan(top / near);
+
 		parent.frustum(left, right, bottom, top, near, far);
 
-		recalculateDivergence();
+		generator.notifyCameraConfigChange(parent, config);
 	}
 
 	public void setCameraDivergence(float divergence) {
-		if (renderer == Renderer.ANAGLYPH) {
-			cameraDivergence = divergence;
-		} else {
-			if (divergence != 0) {
-				System.out
-						.println("setting camera divergence when using the regular P3D renderer?");
-				System.out.println("setting divergence = 0");
-			}
-			cameraDivergence = 0;
-		}
-
-		recalculateDivergence();
-	}
-
-	private void recalculateDivergence() {
-		float dx = cameraX - targetX;
-		float dy = cameraY - targetY;
-		float dz = cameraZ - targetZ;
-		float diverge = -cameraDivergence / (fovy * RAD_TO_DEG);
-
-		cameraDivergenceX = (dy * upZ - upY * dz) * diverge;
-		cameraDivergenceY = (dz * upX - upZ * dx) * diverge;
-		cameraDivergenceZ = (dx * upY - upX * dy) * diverge;
+		config.cameraInput = divergence;
+		generator.notifyCameraConfigChange(parent, config);
 	}
 
 	public String currentActivity() {
-		return currentActivity;
+		if (frameNum == -2) {
+			return "predraw";
+		} else if (frameNum == -1) {
+			return "postdraw";
+		} else {
+			return generator.getComponentFrameName(frameNum);
+		}
+	}
+
+	public int getFrameNum() {
+		return frameNum;
 	}
 
 	/*
 	 * Drawing functions, called by Processing framework
 	 */
 	public void pre() {
-		currentActivity = "predraw";
+		frameNum = -2;
 		if (callPreDraw) {
 			callMethod("preDraw");
 		}
 		parent.background(backgroundColor);
 
-		if (renderer == Renderer.ANAGLYPH) {
-			currentActivity = "right";
-
-			parent.camera(cameraX + cameraDivergenceX, cameraY
-					+ cameraDivergenceY, cameraZ + cameraDivergenceZ, targetX,
-					targetY, targetZ, upX, upY, upZ);
-		} else {
-			currentActivity = "regular";
-
-			parent.camera(cameraX, cameraY, cameraZ, targetX, targetY, targetZ,
-					upX, upY, upZ);
-		}
+		frameNum = 0;
+		generator.prepareForDraw(frameNum, parent, config);
 	}
 
 	public void draw() {
-		if (renderer == Renderer.ANAGLYPH) {
+		if (generator.getComponentCount() > 1) {
 			// retrieve what was just drawn and copy to pixelsAlt
 			parent.loadPixels();
 			System.arraycopy(parent.pixels, 0, pixelsAlt, 0, pixelCount);
 
 			if (saveNextFrame)
-				parent.saveFrame("####-" + parentClassName + "-right.png");
+				parent.saveFrame("####-" + parentClassName + "-"
+						+ generator.getComponentFrameName(frameNum) + ".png");
 
 			parent.background(backgroundColor);
 
-			currentActivity = "left";
+			frameNum = 1;
 
-			parent.camera(cameraX - cameraDivergenceX, cameraY
-					- cameraDivergenceY, cameraZ - cameraDivergenceZ, targetX,
-					targetY, targetZ, upX, upY, upZ);
-
+			generator.prepareForDraw(frameNum, parent, config);
 			parent.draw();
 			parent.loadPixels();
 
 			if (saveNextFrame)
-				parent.saveFrame("####-" + parentClassName + "-left.png");
+				parent.saveFrame("####-" + parentClassName + "-"
+						+ generator.getComponentFrameName(frameNum) + ".png");
 
 			long startTime = System.nanoTime();
 
 			if (saveNextFrame) {
-				anaglyphGenerator.generateAnaglyphSaveFilteredFrames(
+				generator.generateCompositeFrameAndSaveComponents(
 						parent.pixels, pixelsAlt, parent, parentClassName);
 			} else {
-				anaglyphGenerator.generateAnaglyph(parent.pixels, pixelsAlt);
+				generator.generateCompositeFrame(parent.pixels, pixelsAlt);
 			}
 
-			avgAnaglyphRenderTimeMillis = 0.9f * avgAnaglyphRenderTimeMillis
-					+ 0.1f * (System.nanoTime() - startTime) / 1000000f;
+			avgGeneratorTimeMillis = 0.9f * avgGeneratorTimeMillis + 0.1f
+					* (System.nanoTime() - startTime) / 1000000f;
 
 			parent.updatePixels();
 
@@ -371,11 +336,11 @@ public class Camera3D implements PConstants {
 				parent.saveFrame("####-" + parentClassName + "-anaglyph.png");
 		}
 
-		currentActivity = "postdraw";
+		frameNum = -1;
 		if (callPostDraw) {
-			// put the camera back. ControlP5 needs this.
-			parent.camera(cameraX, cameraY, cameraZ, targetX, targetY, targetZ,
-					upX, upY, upZ);
+			// call generator's post draw to put camera back the way it was.
+			// Other libraries like ControlP5 needs this.
+			generator.cleanup(parent, config);
 
 			callMethod("postDraw");
 		}

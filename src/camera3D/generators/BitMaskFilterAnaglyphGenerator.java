@@ -12,7 +12,7 @@ public class BitMaskFilterAnaglyphGenerator extends AnaglyphGenerator {
 		this.rightFilter = rightFilter;
 	}
 
-	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
 		for (int ii = 0; ii < pixels.length; ++ii) {
 			pixels[ii] = (pixelsAlt[ii] & rightFilter)
 					| (pixels[ii] & leftFilter);

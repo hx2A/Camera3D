@@ -65,7 +65,7 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 		return lut;
 	}
 
-	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
 		long encodedColor;
 
 		for (int ii = 0; ii < pixels.length; ++ii) {

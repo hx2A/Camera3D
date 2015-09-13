@@ -15,7 +15,7 @@ public class SideBySideGenerator extends AnaglyphGenerator {
 		return new SideBySideGenerator(width, height);
 	}
 
-	public void generateAnaglyph(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
 		for (int y = 0; y < height; y++) {
 			int offset = y * width;
 			for (int x = 0; x < width / 2; x++) {
