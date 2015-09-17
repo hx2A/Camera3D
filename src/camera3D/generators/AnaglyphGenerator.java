@@ -1,76 +1,90 @@
 package camera3D.generators;
 
-import camera3D.CameraConfiguration;
-import processing.core.PApplet;
-import processing.core.PConstants;
-import processing.core.PImage;
+import camera3D.generators.util.AnaglyphMatrix;
+import camera3D.generators.util.ColorVector;
 
-public abstract class AnaglyphGenerator extends Generator implements PConstants {
+public abstract class AnaglyphGenerator extends StereoscopicGenerator {
 
-	private float cameraDivergenceX;
-	private float cameraDivergenceY;
-	private float cameraDivergenceZ;
+	/*
+	 * Define some Matrix constants. These are used for the default anaglyph
+	 * renderers.
+	 */
+	// Dubois Red Cyan
+	public final static AnaglyphMatrix LEFT_DUBOIS_REDCYAN = new AnaglyphMatrix(
+			437, 449, 164, -62, -62, -24, -48, -50, -17);
+	public final static AnaglyphMatrix RIGHT_DUBOIS_REDCYAN = new AnaglyphMatrix(
+			-11, -32, -7, 377, 761, 9, -26, -93, 1234);
 
-	public int getComponentCount() {
-		return 2;
-	}
+	// Dubois Magenta Green
+	public final static AnaglyphMatrix LEFT_DUBOIS_MAGENTAGREEN = new AnaglyphMatrix(
+			-62, -158, -39, 284, 668, 143, -15, -27, 21);
+	public final static AnaglyphMatrix RIGHT_DUBOIS_MAGENTAGREEN = new AnaglyphMatrix(
+			529, 705, 24, -16, -15, -65, 9, 75, 937);
 
-	public String getComponentFrameName(int frameNum) {
-		if (frameNum == 0) {
-			return "right";
-		} else if (frameNum == 1) {
-			return "left";
+	// Dubois Amber Blue
+	public final static AnaglyphMatrix LEFT_DUBOIS_AMBERBLUE = new AnaglyphMatrix(
+			1062, -205, 299, -26, 908, 68, -38, -173, 22);
+	public final static AnaglyphMatrix RIGHT_DUBOIS_AMBERBLUE = new AnaglyphMatrix(
+			-16, -123, -17, 6, 62, -17, 94, 185, 911);
+
+	// True Anaglyph
+	public final static AnaglyphMatrix LEFT_TRUE_ANAGLYPH = new AnaglyphMatrix(
+			299, 587, 114, 0, 0, 0, 0, 0, 0);
+	public final static AnaglyphMatrix RIGHT_TRUE_ANAGLYPH = new AnaglyphMatrix(
+			0, 0, 0, 0, 0, 0, 299, 587, 114);
+
+	// Gray Anaglyph
+	public final static AnaglyphMatrix LEFT_GRAY_ANAGLYPH = new AnaglyphMatrix(
+			299, 587, 114, 0, 0, 0, 0, 0, 0);
+	public final static AnaglyphMatrix RIGHT_GRAY_ANAGLYPH = new AnaglyphMatrix(
+			0, 0, 0, 299, 587, 114, 299, 587, 114);
+
+	// Half Color Anaglyph
+	public final static AnaglyphMatrix LEFT_HALF_COLOR_ANAGLYPH = new AnaglyphMatrix(
+			299, 587, 114, 0, 0, 0, 0, 0, 0);
+	public final static AnaglyphMatrix RIGHT_HALF_COLOR_ANAGLYPH = new AnaglyphMatrix(
+			0, 0, 0, 0, 1000, 0, 0, 0, 1000);
+
+	/*
+	 * Gamma Correction Functions
+	 */
+	protected float applyGammaCorrectionStandardRGB(float s) {
+		if (s <= 0.0031308) {
+			return 12.92f * s;
 		} else {
-			return "";
+			return (float) (1.055 * Math.pow(s, 0.41666) - 0.055);
 		}
 	}
 
-	public void notifyCameraConfigChange(PApplet parent,
-			CameraConfiguration config) {
-		float dx = config.cameraPositionX - config.cameraTargetX;
-		float dy = config.cameraPositionY - config.cameraTargetY;
-		float dz = config.cameraPositionZ - config.cameraTargetZ;
-		float diverge = -config.cameraInput / (config.fovy * RAD_TO_DEG);
-
-		cameraDivergenceX = (dy * config.cameraUpZ - config.cameraUpY * dz)
-				* diverge;
-		cameraDivergenceY = (dz * config.cameraUpX - config.cameraUpZ * dx)
-				* diverge;
-		cameraDivergenceZ = (dx * config.cameraUpY - config.cameraUpX * dy)
-				* diverge;
-	}
-
-	public void prepareForDraw(int frameNum, PApplet parent,
-			CameraConfiguration config) {
-		if (frameNum == 0) {
-			parent.camera(config.cameraPositionX + cameraDivergenceX,
-					config.cameraPositionY + cameraDivergenceY,
-					config.cameraPositionZ + cameraDivergenceZ,
-					config.cameraTargetX, config.cameraTargetY,
-					config.cameraTargetZ, config.cameraUpX, config.cameraUpY,
-					config.cameraUpZ);
-		} else if (frameNum == 1) {
-			parent.camera(config.cameraPositionX - cameraDivergenceX,
-					config.cameraPositionY - cameraDivergenceY,
-					config.cameraPositionZ - cameraDivergenceZ,
-					config.cameraTargetX, config.cameraTargetY,
-					config.cameraTargetZ, config.cameraUpX, config.cameraUpY,
-					config.cameraUpZ);
+	protected float removeGammaCorrectionStandardRGB(float s) {
+		if (s <= 0.04045f) {
+			return s / 12.92f;
+		} else {
+			return (float) Math.pow((s + 0.055) / 1.055, 2.4);
 		}
 	}
 
-	public void cleanup(PApplet parent, CameraConfiguration config) {
-		parent.camera(config.cameraPositionX, config.cameraPositionY,
-				config.cameraPositionZ, config.cameraTargetX,
-				config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
-				config.cameraUpY, config.cameraUpZ);
+	protected float removeGammaCorrection(float s, float gamma) {
+		return (float) Math.pow(s, gamma);
+	}
+
+	protected float applyGammaCorrection(float s, float gamma) {
+		return (float) Math.pow(s, 1 / gamma);
 	}
 
 	/*
-	 * Utility Functions
+	 * Functions for pre-calculating look-up-tables
 	 */
+	protected int[] preComputeApplyGammaCorrectionStandardrgbLUT(int maxEncodedValue) {
+		int[] gammaCorrectionLUT = new int[maxEncodedValue];
+		for (int s = 0; s < maxEncodedValue; ++s) {
+			gammaCorrectionLUT[s] = (int) (255 * applyGammaCorrectionStandardRGB(s
+					/ (float) maxEncodedValue));
+		}
+		return gammaCorrectionLUT;
+	}
 
-	public float[] makeLUTremoveGammaCorrectionStandardRGB() {
+	protected float[] preComputeRemoveGammaCorrectionStandardrgbLUT() {
 		float[] removeGammaCorrectionLUT = new float[256];
 
 		for (int c = 0; c < removeGammaCorrectionLUT.length; ++c) {
@@ -80,44 +94,47 @@ public abstract class AnaglyphGenerator extends Generator implements PConstants 
 		return removeGammaCorrectionLUT;
 	}
 
-	public int[] makeLUTapplyGammaCorrectionStandardRGB(int maxEncodedValue) {
-		int[] gammaCorrectionLUT = new int[maxEncodedValue];
-		for (int s = 0; s < maxEncodedValue; ++s) {
-			gammaCorrectionLUT[s] = (int) (255 * applyGammaCorrectionStandardRGB(s
-					/ (float) maxEncodedValue));
+	protected long[] preComputeDuboisLUT(AnaglyphMatrix matrix,
+			float[] removeGammaCorrectionLUT, int maxEncodedValue, int bitshift) {
+		long[] lut = new long[256 * 256 * 256];
+
+		for (int col = 0; col < lut.length; ++col) {
+			float red = removeGammaCorrectionLUT[(col & 0x00FF0000) >> 16];
+			float green = removeGammaCorrectionLUT[(col & 0x0000FF00) >> 8];
+			float blue = removeGammaCorrectionLUT[col & 0x000000FF];
+
+			ColorVector val = matrix
+					.rightMult(new ColorVector(red, green, blue));
+
+			long encodedRed = (long) (clip(val.red) * (maxEncodedValue - 1));
+			long encodedGreen = (long) (clip(val.green) * (maxEncodedValue - 1));
+			long encodedBlue = (long) (clip(val.blue) * (maxEncodedValue - 1));
+
+			lut[col] = (encodedRed << (bitshift * 2))
+					| (encodedGreen << bitshift) | encodedBlue;
 		}
-		return gammaCorrectionLUT;
+
+		return lut;
 	}
 
-	public float applyGammaCorrectionStandardRGB(float s) {
-		if (s <= 0.0031308) {
-			return 12.92f * s;
-		} else {
-			return (float) (1.055 * Math.pow(s, 0.41666) - 0.055);
+	protected int[] preComputeMatrixLUT(AnaglyphMatrix matrix) {
+		int[] lut = new int[256 * 256 * 256];
+
+		for (int col = 0; col < lut.length; ++col) {
+			int red = (col & 0xFF0000) >> 16;
+			int green = (col & 0x00FF00) >> 8;
+			int blue = col & 0x0000FF;
+
+			ColorVector val = matrix
+					.rightMult(new ColorVector(red, green, blue));
+
+			int encodedRed = (int) clip(val.red, 0, 255);
+			int encodedGreen = (int) clip(val.green, 0, 255);
+			int encodedBlue = (int) clip(val.blue, 0, 255);
+
+			lut[col] = (encodedRed << 16) | (encodedGreen << 8) | encodedBlue;
 		}
-	}
 
-	public float removeGammaCorrectionStandardRGB(float s) {
-		if (s <= 0.04045f) {
-			return s / 12.92f;
-		} else {
-			return (float) Math.pow((s + 0.055) / 1.055, 2.4);
-		}
-	}
-
-	public float removeGammaCorrection(float s, float gamma) {
-		return (float) Math.pow(s, gamma);
-	}
-
-	public float applyGammaCorrection(float s, float gamma) {
-		return (float) Math.pow(s, 1 / gamma);
-	}
-
-	protected float clip(float x) {
-		return Math.min(Math.max(x, 0), 1);
-	}
-
-	protected float clip(float x, float min, float max) {
-		return Math.min(Math.max(x, min), max);
+		return lut;
 	}
 }

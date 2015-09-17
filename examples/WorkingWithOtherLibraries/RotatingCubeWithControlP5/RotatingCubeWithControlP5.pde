@@ -12,22 +12,35 @@ int zTrans;
 
 void setup() {
   size(500, 500, P3D);
-  camera3D = new Camera3D(this);
 
-  /*
-   * Camera3D does not always play nice with other libraries such as
-   * ControlP5. One solution is to call setautoDraw(false) here
-   * and the draw() method in the postDraw method.
-   */
   cp5 = new ControlP5(this);
+
+/*
+Camera3D does not always play nice with other libraries such as
+ControlP5. One solution is to call setAutoDraw(false) in the
+setup method and then call ControlP5's draw() method in the
+sketches' postDraw method.
+
+Try commenting out both lines and see what happens!
+*/
+
   cp5.setAutoDraw(false);
   cp5.addSlider("cubeSize").setRange(50, 300).setValue(100)
       .setPosition(10, 10).setSize(100, 30)
-      .setCaptionLabel("Cube Size").setColorCaptionLabel(0x000000);
+      .setCaptionLabel("Cube Size").setColorCaptionLabel(0);
   cp5.addSlider("zTrans").setRange(-500, 500).setValue(-200)
       .setPosition(10, 60).setSize(100, 30)
       .setCaptionLabel("Z Translation")
-      .setColorCaptionLabel(color(0));
+      .setColorCaptionLabel(0);
+
+/*
+In this simple example it happens you can also get it to work
+by moving the Camera3D code *before* the ControlP5 code.
+
+For more complex examples this may not work.
+*/
+
+  camera3D = new Camera3D(this);
 
   strokeWeight(4);
   stroke(0);
@@ -49,9 +62,11 @@ void draw() {
 }
 
 void postDraw() {
-  /*
-   * If I call cp5.setAutoDraw(false) I must also explicitly call the draw
-   * method here.
-   */
+
+/*
+If I call cp5.setAutoDraw(false) I must also explicitly call the
+draw method here.
+*/
+
   cp5.draw();
 }

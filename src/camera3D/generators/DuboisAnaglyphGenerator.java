@@ -1,15 +1,38 @@
 package camera3D.generators;
 
-import camera3D.generators.AnaglyphGenerator;
+import camera3D.generators.StereoscopicGenerator;
 import camera3D.generators.util.AnaglyphMatrix;
 import camera3D.generators.util.ColorVector;
+
+/**
+ * Optimized implementation of the Dubois Anaglyph algorithm.
+ * 
+ * More information can be found here:
+ * 
+ * http://www.site.uottawa.ca/~edubois/anaglyph/
+ * 
+ * particularly:
+ * 
+ * http://www.site.uottawa.ca/~edubois/anaglyph/LeastSquaresHowToPhotoshop.pdf
+ * http://www.site.uottawa.ca/~edubois/icassp01/anaglyphdubois.pdf
+ * 
+ * This algorithm is actually similar to what's being done in the
+ * MatrixAnaglyphGenerator except the calculations are done in linear RGB space.
+ * 
+ * This precomputes some lookup tables for gamma correction but not for the
+ * Dubois matrix calculations. This will have a small memory footprint but will
+ * be much slower than the DuboisAnaglyphGenerator64bitLUT implementation.
+ * 
+ * @author jim
+ *
+ */
 
 public class DuboisAnaglyphGenerator extends AnaglyphGenerator {
 
 	private AnaglyphMatrix left;
 	private AnaglyphMatrix right;
 	private float[] removeGammaCorrectionLUT;
-	private int[] gammaCorrectionLUT;
+	private int[] applyGammaCorrectionLUT;
 	private int maxEncodedValue;
 
 	public DuboisAnaglyphGenerator(AnaglyphMatrix left, AnaglyphMatrix right) {
@@ -18,26 +41,23 @@ public class DuboisAnaglyphGenerator extends AnaglyphGenerator {
 		this.left = left;
 		this.right = right;
 
-		removeGammaCorrectionLUT = makeLUTremoveGammaCorrectionStandardRGB();
-		gammaCorrectionLUT = makeLUTapplyGammaCorrectionStandardRGB(maxEncodedValue);
+		removeGammaCorrectionLUT = preComputeRemoveGammaCorrectionStandardrgbLUT();
+		applyGammaCorrectionLUT = preComputeApplyGammaCorrectionStandardrgbLUT(maxEncodedValue);
 	}
 
-	public static AnaglyphGenerator createRedCyanGenerator() {
-		return new DuboisAnaglyphGenerator(
-				AnaglyphConstants.LEFT_DUBOIS_REDCYAN,
-				AnaglyphConstants.RIGHT_DUBOIS_REDCYAN);
+	public static StereoscopicGenerator createRedCyanGenerator() {
+		return new DuboisAnaglyphGenerator(LEFT_DUBOIS_REDCYAN,
+				RIGHT_DUBOIS_REDCYAN);
 	}
 
-	public static AnaglyphGenerator createMagentaGreenGenerator() {
-		return new DuboisAnaglyphGenerator(
-				AnaglyphConstants.LEFT_DUBOIS_MAGENTAGREEN,
-				AnaglyphConstants.RIGHT_DUBOIS_MAGENTAGREEN);
+	public static StereoscopicGenerator createMagentaGreenGenerator() {
+		return new DuboisAnaglyphGenerator(LEFT_DUBOIS_MAGENTAGREEN,
+				RIGHT_DUBOIS_MAGENTAGREEN);
 	}
 
-	public static AnaglyphGenerator createAmberBlueGenerator() {
-		return new DuboisAnaglyphGenerator(
-				AnaglyphConstants.LEFT_DUBOIS_AMBERBLUE,
-				AnaglyphConstants.RIGHT_DUBOIS_AMBERBLUE);
+	public static StereoscopicGenerator createAmberBlueGenerator() {
+		return new DuboisAnaglyphGenerator(LEFT_DUBOIS_AMBERBLUE,
+				RIGHT_DUBOIS_AMBERBLUE);
 	}
 
 	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
@@ -54,11 +74,11 @@ public class DuboisAnaglyphGenerator extends AnaglyphGenerator {
 			ColorVector leftAnaglyph = left.rightMult(new ColorVector(leftRed,
 					leftGreen, leftBlue));
 
-			int anaglyphRed = gammaCorrectionLUT[(int) ((maxEncodedValue - 1) * clip(clip(rightAnaglyph.red)
+			int anaglyphRed = applyGammaCorrectionLUT[(int) ((maxEncodedValue - 1) * clip(clip(rightAnaglyph.red)
 					+ clip(leftAnaglyph.red)))];
-			int anaglyphGreen = gammaCorrectionLUT[(int) ((maxEncodedValue - 1) * clip(clip(rightAnaglyph.green)
+			int anaglyphGreen = applyGammaCorrectionLUT[(int) ((maxEncodedValue - 1) * clip(clip(rightAnaglyph.green)
 					+ clip(leftAnaglyph.green)))];
-			int anaglyphBlue = gammaCorrectionLUT[(int) ((maxEncodedValue - 1) * clip(clip(rightAnaglyph.blue)
+			int anaglyphBlue = applyGammaCorrectionLUT[(int) ((maxEncodedValue - 1) * clip(clip(rightAnaglyph.blue)
 					+ clip(leftAnaglyph.blue)))];
 
 			pixels[ii] = 0xFF000000 | (anaglyphRed << 16)

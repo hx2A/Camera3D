@@ -1,6 +1,6 @@
 package camera3D.generators;
 
-import camera3D.generators.AnaglyphGenerator;
+import camera3D.generators.StereoscopicGenerator;
 import camera3D.generators.util.AnaglyphMatrix;
 import camera3D.generators.util.ColorVector;
 
@@ -14,22 +14,19 @@ public class MatrixAnaglyphGenerator extends AnaglyphGenerator {
 		this.right = right;
 	}
 
-	public static AnaglyphGenerator createTrueAnaglyphGenerator() {
-		return new MatrixAnaglyphGenerator(
-				AnaglyphConstants.LEFT_TRUE_ANAGLYPH,
-				AnaglyphConstants.RIGHT_TRUE_ANAGLYPH);
+	public static StereoscopicGenerator createTrueAnaglyphGenerator() {
+		return new MatrixAnaglyphGenerator(LEFT_TRUE_ANAGLYPH,
+				RIGHT_TRUE_ANAGLYPH);
 	}
 
-	public static AnaglyphGenerator createGrayAnaglyphGenerator() {
-		return new MatrixAnaglyphGenerator(
-				AnaglyphConstants.LEFT_GRAY_ANAGLYPH,
-				AnaglyphConstants.RIGHT_GRAY_ANAGLYPH);
+	public static StereoscopicGenerator createGrayAnaglyphGenerator() {
+		return new MatrixAnaglyphGenerator(LEFT_GRAY_ANAGLYPH,
+				RIGHT_GRAY_ANAGLYPH);
 	}
 
-	public static AnaglyphGenerator createHalfColorAnaglyphGenerator() {
-		return new MatrixAnaglyphGenerator(
-				AnaglyphConstants.LEFT_HALF_COLOR_ANAGLYPH,
-				AnaglyphConstants.RIGHT_HALF_COLOR_ANAGLYPH);
+	public static StereoscopicGenerator createHalfColorAnaglyphGenerator() {
+		return new MatrixAnaglyphGenerator(LEFT_HALF_COLOR_ANAGLYPH,
+				RIGHT_HALF_COLOR_ANAGLYPH);
 	}
 
 	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {

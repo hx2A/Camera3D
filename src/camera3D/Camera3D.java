@@ -136,16 +136,19 @@ public class Camera3D implements PConstants {
 				.createHalfColorAnaglyphGenerator());
 	}
 
-	public void renderStereogram() {
-		setGenerator(new StereogramGenerator(parent.width, parent.height));
+	public void renderGoogleCardboard() {
+		setGenerator(new SplitFrameGenerator(parent.width, parent.height,
+				SplitFrameGenerator.GOOGLE_CARDBOARD));
 	}
 
-	public void renderOverUnderStereogram() {
-		setGenerator(new OverUnderGenerator(parent.width, parent.height));
+	public void renderSplitFrameOverUnder() {
+		setGenerator(new SplitFrameGenerator(parent.width, parent.height,
+				SplitFrameGenerator.OVER_UNDER));
 	}
 
-	public void renderSideBySideStereogram() {
-		setGenerator(new SideBySideGenerator(parent.width, parent.height));
+	public void renderSplitFrameSideBySide() {
+		setGenerator(new SplitFrameGenerator(parent.width, parent.height,
+				SplitFrameGenerator.SIDE_BY_SIDE));
 	}
 
 	public void renderSplitDepthIllusion() {
@@ -263,8 +266,8 @@ public class Camera3D implements PConstants {
 		generator.notifyCameraConfigChange(parent, config);
 	}
 
-	public void setCameraDivergence(float divergence) {
-		config.cameraInput = divergence;
+	public void setCameraDivergence(float input) {
+		config.cameraInput = input;
 		generator.notifyCameraConfigChange(parent, config);
 	}
 
@@ -333,7 +336,7 @@ public class Camera3D implements PConstants {
 			parent.updatePixels();
 
 			if (saveNextFrame)
-				parent.saveFrame("####-" + parentClassName + "-anaglyph.png");
+				parent.saveFrame("####-" + parentClassName + "-composite.png");
 		}
 
 		frameNum = -1;

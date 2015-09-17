@@ -7,7 +7,7 @@ class RendererListener implements ControlListener {
 
 		switch ((int) theEvent.getGroup().getValue()) {
 		case 0:
-			camera3D.renderStandard();
+			camera3D.renderRegular();
 			break;
 		case 1:
 			camera3D.renderDefaultAnaglyph();
