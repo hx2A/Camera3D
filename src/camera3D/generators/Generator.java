@@ -61,7 +61,7 @@ public abstract class Generator {
 		generateCompositeFrame(frame1.pixels, pixelsAlt);
 		frame1.updatePixels();
 		frame1.save(parent.insertFrame("####-" + parentClassName + "-"
-				+ getComponentFrameName(0) + "-filtered.png"));
+				+ getComponentFrameName(0) + "-component-modified.png"));
 
 		PImage frame2 = parent.createImage(parent.width, parent.height,
 				PConstants.RGB);
@@ -70,7 +70,7 @@ public abstract class Generator {
 		generateCompositeFrame(frame2.pixels, new int[pixels.length]);
 		frame2.updatePixels();
 		frame2.save(parent.insertFrame("####-" + parentClassName + "-"
-				+ getComponentFrameName(1) + "-filtered.png"));
+				+ getComponentFrameName(1) + "-component-modified.png"));
 
 		generateCompositeFrame(pixels, pixelsAlt);
 	}

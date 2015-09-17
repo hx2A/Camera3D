@@ -307,7 +307,7 @@ public class Camera3D implements PConstants {
 
 			if (saveNextFrame)
 				parent.saveFrame("####-" + parentClassName + "-"
-						+ generator.getComponentFrameName(frameNum) + ".png");
+						+ generator.getComponentFrameName(frameNum) + "-component.png");
 
 			parent.background(backgroundColor);
 
@@ -319,7 +319,7 @@ public class Camera3D implements PConstants {
 
 			if (saveNextFrame)
 				parent.saveFrame("####-" + parentClassName + "-"
-						+ generator.getComponentFrameName(frameNum) + ".png");
+						+ generator.getComponentFrameName(frameNum) + "-component.png");
 
 			long startTime = System.nanoTime();
 
