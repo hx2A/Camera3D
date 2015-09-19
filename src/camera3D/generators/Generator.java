@@ -7,6 +7,8 @@ import camera3D.CameraConfiguration;
 
 public abstract class Generator {
 
+	protected CameraConfiguration config;
+
 	/**
 	 * The number of components in the composite image, ie, the number of times
 	 * to call the draw method.
@@ -25,14 +27,23 @@ public abstract class Generator {
 	abstract public String getComponentFrameName(int frameNum);
 
 	/**
-	 * Notify renderer that something about the camera changed. The stereoscopic
-	 * generators need to do some recalculations when the camera moves.
+	 * Notify renderer that something about the camera changed. For example, the
+	 * stereoscopic generators need to do some recalculations when the camera
+	 * moves.
 	 * 
-	 * @param parent
 	 * @param config
 	 */
-	abstract public void notifyCameraConfigChange(PApplet parent,
-			CameraConfiguration config);
+	public void notifyCameraConfigChange(CameraConfiguration config) {
+		this.config = config;
+
+		if (config != null && config.isReady())
+			recalculateCameraSettings();
+	}
+
+	/**
+	 * Perform renderer recalculations due to camera config change.
+	 */
+	abstract protected void recalculateCameraSettings();
 
 	/**
 	 * This is called once before each call to the user's draw method. Typically
@@ -40,10 +51,8 @@ public abstract class Generator {
 	 * 
 	 * @param frameNum
 	 * @param parent
-	 * @param config
 	 */
-	abstract public void prepareForDraw(int frameNum, PApplet parent,
-			CameraConfiguration config);
+	abstract public void prepareForDraw(int frameNum, PApplet parent);
 
 	/**
 	 * Combine the component frames into one composite frame.
@@ -81,9 +90,8 @@ public abstract class Generator {
 	 * libraries like ControlP5 can function correctly.
 	 * 
 	 * @param parent
-	 * @param config
 	 */
-	abstract public void cleanup(PApplet parent, CameraConfiguration config);
+	abstract public void cleanup(PApplet parent);
 
 	/**
 	 * Simple utility function that is used in a couple of places.

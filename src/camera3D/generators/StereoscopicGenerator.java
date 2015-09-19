@@ -1,14 +1,20 @@
 package camera3D.generators;
 
-import camera3D.CameraConfiguration;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public abstract class StereoscopicGenerator extends Generator implements PConstants {
+public abstract class StereoscopicGenerator extends Generator implements
+		PConstants {
+
+	private float divergence;
 
 	private float cameraDivergenceX;
 	private float cameraDivergenceY;
 	private float cameraDivergenceZ;
+
+	public StereoscopicGenerator() {
+		divergence = 1;
+	}
 
 	public int getComponentCount() {
 		return 2;
@@ -24,12 +30,20 @@ public abstract class StereoscopicGenerator extends Generator implements PConsta
 		}
 	}
 
-	public void notifyCameraConfigChange(PApplet parent,
-			CameraConfiguration config) {
+	public StereoscopicGenerator setDivergence(float divergence) {
+		this.divergence = divergence;
+
+		if (config != null && config.isReady())
+			recalculateCameraSettings();
+
+		return this;
+	}
+
+	protected void recalculateCameraSettings() {
 		float dx = config.cameraPositionX - config.cameraTargetX;
 		float dy = config.cameraPositionY - config.cameraTargetY;
 		float dz = config.cameraPositionZ - config.cameraTargetZ;
-		float diverge = -config.cameraInput / (config.fovy * RAD_TO_DEG);
+		float diverge = -divergence / (config.fovy * RAD_TO_DEG);
 
 		cameraDivergenceX = (dy * config.cameraUpZ - config.cameraUpY * dz)
 				* diverge;
@@ -39,8 +53,7 @@ public abstract class StereoscopicGenerator extends Generator implements PConsta
 				* diverge;
 	}
 
-	public void prepareForDraw(int frameNum, PApplet parent,
-			CameraConfiguration config) {
+	public void prepareForDraw(int frameNum, PApplet parent) {
 		if (frameNum == 0) {
 			parent.camera(config.cameraPositionX + cameraDivergenceX,
 					config.cameraPositionY + cameraDivergenceY,
@@ -58,7 +71,7 @@ public abstract class StereoscopicGenerator extends Generator implements PConsta
 		}
 	}
 
-	public void cleanup(PApplet parent, CameraConfiguration config) {
+	public void cleanup(PApplet parent) {
 		parent.camera(config.cameraPositionX, config.cameraPositionY,
 				config.cameraPositionZ, config.cameraTargetX,
 				config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,

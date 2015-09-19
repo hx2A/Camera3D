@@ -17,24 +17,25 @@ public class RegularRenderer extends Generator {
 		return "regular";
 	}
 
-	public void notifyCameraConfigChange(PApplet parent,
-			CameraConfiguration config) {
+	protected void recalculateCameraSettings() {
+		// do nothing
+	}
+
+	public void prepareForDraw(int frameNum, PApplet parent) {
 		parent.camera(config.cameraPositionX, config.cameraPositionY,
 				config.cameraPositionZ, config.cameraTargetX,
 				config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
 				config.cameraUpY, config.cameraUpZ);
 	}
 
-	public void prepareForDraw(int frameNum, PApplet parent,
-			CameraConfiguration config) {
-		// do nothing
-	}
-
 	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
 		// do nothing
 	}
 
-	public void cleanup(PApplet parent, CameraConfiguration config) {
-		// do nothing
+	public void cleanup(PApplet parent) {
+		parent.camera(config.cameraPositionX, config.cameraPositionY,
+				config.cameraPositionZ, config.cameraTargetX,
+				config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
+				config.cameraUpY, config.cameraUpZ);
 	}
 }

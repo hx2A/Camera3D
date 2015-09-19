@@ -49,7 +49,7 @@ public class Camera3D implements PConstants {
 		String[] tokens = parent.getClass().getName().split("\\.");
 		parentClassName = tokens[tokens.length - 1].toLowerCase();
 
-		this.backgroundColor = 255;
+		this.backgroundColor = 0xFFFFFFFF;
 		this.callPreDraw = checkForMethod("preDraw");
 		this.callPostDraw = checkForMethod("postDraw");
 
@@ -57,8 +57,8 @@ public class Camera3D implements PConstants {
 		parent.registerMethod("draw", this);
 		parent.registerMethod("keyEvent", this);
 
-		height = parent.height;
 		width = parent.width;
+		height = parent.height;
 		pixelCount = parent.width * parent.height;
 		pixelsAlt = new int[pixelCount];
 		avgGeneratorTimeMillis = 1;
@@ -66,13 +66,11 @@ public class Camera3D implements PConstants {
 		enableSaveFrame = false;
 		saveNextFrame = false;
 
+		renderRegular();
+
 		config = new CameraConfiguration();
-
-		renderDefaultAnaglyph();
-
 		camera();
 		perspective();
-		setCameraDivergence(3);
 
 		welcome();
 	}
@@ -93,76 +91,131 @@ public class Camera3D implements PConstants {
 		this.backgroundColor = backgroundColor;
 	}
 
-	public void renderDefaultAnaglyph() {
-		renderBitMaskRedCyanAnaglyph();
+	public StereoscopicGenerator renderDefaultAnaglyph() {
+		return renderBitMaskRedCyanAnaglyph();
 	}
 
-	public void renderBitMaskRedCyanAnaglyph() {
-		renderBitMaskFilterAnaglyph(0xFFFF0000, 0x0000FFFF);
+	public StereoscopicGenerator renderBitMaskRedCyanAnaglyph() {
+		return renderBitMaskFilterAnaglyph(0xFFFF0000, 0x0000FFFF);
 	}
 
-	public void renderBitMaskMagentaGreenAnaglyph() {
-		renderBitMaskFilterAnaglyph(0xFFFF00FF, 0x0000FF00);
+	public StereoscopicGenerator renderBitMaskMagentaGreenAnaglyph() {
+		return renderBitMaskFilterAnaglyph(0xFFFF00FF, 0x0000FF00);
 	}
 
-	public void renderBitMaskFilterAnaglyph(int leftFilter, int rightFilter) {
-		generator = new BitMaskFilterAnaglyphGenerator(leftFilter, rightFilter);
+	public StereoscopicGenerator renderBitMaskFilterAnaglyph(int leftFilter,
+			int rightFilter) {
+		StereoscopicGenerator generator = new BitMaskFilterAnaglyphGenerator(
+				leftFilter, rightFilter);
+
 		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderDuboisRedCyanAnaglyph() {
-		setGenerator(DuboisAnaglyphGenerator64bitLUT.createRedCyanGenerator());
+	public StereoscopicGenerator renderDuboisRedCyanAnaglyph() {
+		StereoscopicGenerator generator = DuboisAnaglyphGenerator64bitLUT
+				.createRedCyanGenerator();
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderDuboisMagentaGreenAnaglyph() {
-		setGenerator(DuboisAnaglyphGenerator64bitLUT
-				.createMagentaGreenGenerator());
+	public StereoscopicGenerator renderDuboisMagentaGreenAnaglyph() {
+		StereoscopicGenerator generator = DuboisAnaglyphGenerator64bitLUT
+				.createMagentaGreenGenerator();
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderDuboisAmberBlueAnaglyph() {
-		setGenerator(DuboisAnaglyphGenerator64bitLUT.createAmberBlueGenerator());
+	public StereoscopicGenerator renderDuboisAmberBlueAnaglyph() {
+		StereoscopicGenerator generator = DuboisAnaglyphGenerator64bitLUT
+				.createAmberBlueGenerator();
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderTrueAnaglyph() {
-		setGenerator(MatrixAnaglyphGeneratorLUT.createTrueAnaglyphGenerator());
+	public StereoscopicGenerator renderTrueAnaglyph() {
+		StereoscopicGenerator generator = MatrixAnaglyphGeneratorLUT
+				.createTrueAnaglyphGenerator();
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderGrayAnaglyph() {
-		setGenerator(MatrixAnaglyphGeneratorLUT.createGrayAnaglyphGenerator());
+	public StereoscopicGenerator renderGrayAnaglyph() {
+		StereoscopicGenerator generator = MatrixAnaglyphGeneratorLUT
+				.createGrayAnaglyphGenerator();
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderHalfColorAnaglyph() {
-		setGenerator(MatrixAnaglyphGeneratorLUT
-				.createHalfColorAnaglyphGenerator());
+	public StereoscopicGenerator renderHalfColorAnaglyph() {
+		StereoscopicGenerator generator = MatrixAnaglyphGeneratorLUT
+				.createHalfColorAnaglyphGenerator();
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderGoogleCardboard() {
-		setGenerator(new SplitFrameGenerator(parent.width, parent.height,
-				SplitFrameGenerator.GOOGLE_CARDBOARD));
+	public StereoscopicGenerator renderGoogleCardboard() {
+		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
+				parent.height, SplitFrameGenerator.GOOGLE_CARDBOARD);
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderSplitFrameOverUnder() {
-		setGenerator(new SplitFrameGenerator(parent.width, parent.height,
-				SplitFrameGenerator.OVER_UNDER));
+	public StereoscopicGenerator renderSplitFrameOverUnder() {
+		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
+				parent.height, SplitFrameGenerator.OVER_UNDER);
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderSplitFrameSideBySide() {
-		setGenerator(new SplitFrameGenerator(parent.width, parent.height,
-				SplitFrameGenerator.SIDE_BY_SIDE));
+	public StereoscopicGenerator renderSplitFrameSideBySide() {
+		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
+				parent.height, SplitFrameGenerator.SIDE_BY_SIDE);
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderSplitDepthIllusion() {
-		setGenerator(new SplitDepthGenerator(parent.width, parent.height));
+	public SplitDepthGenerator renderSplitDepthIllusion() {
+		SplitDepthGenerator generator = new SplitDepthGenerator(parent.width,
+				parent.height);
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
-	public void renderRegular() {
-		setGenerator(new RegularRenderer());
+	public RegularRenderer renderRegular() {
+		RegularRenderer generator = new RegularRenderer();
+
+		setGenerator(generator);
+
+		return generator;
 	}
 
 	public void setGenerator(Generator generator) {
 		this.generator = generator;
 		avgGeneratorTimeMillis = 1;
-		generator.notifyCameraConfigChange(parent, config);
+
+		generator.notifyCameraConfigChange(config);
 	}
 
 	public Generator getGenerator() {
@@ -208,7 +261,7 @@ public class Camera3D implements PConstants {
 		config.cameraUpY = upY;
 		config.cameraUpZ = upZ;
 
-		generator.notifyCameraConfigChange(parent, config);
+		generator.notifyCameraConfigChange(config);
 	}
 
 	public void setCameraLocation(float cameraX, float cameraY, float cameraZ) {
@@ -216,7 +269,7 @@ public class Camera3D implements PConstants {
 		config.cameraPositionY = cameraY;
 		config.cameraPositionZ = cameraZ;
 
-		generator.notifyCameraConfigChange(parent, config);
+		generator.notifyCameraConfigChange(config);
 	}
 
 	public void setCameraTarget(float targetX, float targetY, float targetZ) {
@@ -224,7 +277,7 @@ public class Camera3D implements PConstants {
 		config.cameraTargetY = targetY;
 		config.cameraTargetZ = targetZ;
 
-		generator.notifyCameraConfigChange(parent, config);
+		generator.notifyCameraConfigChange(config);
 	}
 
 	public void setCameraUpDirection(float upX, float upY, float upZ) {
@@ -232,7 +285,7 @@ public class Camera3D implements PConstants {
 		config.cameraUpY = upY;
 		config.cameraUpZ = upZ;
 
-		generator.notifyCameraConfigChange(parent, config);
+		generator.notifyCameraConfigChange(config);
 	}
 
 	public void perspective() {
@@ -263,12 +316,7 @@ public class Camera3D implements PConstants {
 
 		parent.frustum(left, right, bottom, top, near, far);
 
-		generator.notifyCameraConfigChange(parent, config);
-	}
-
-	public void setCameraDivergence(float input) {
-		config.cameraInput = input;
-		generator.notifyCameraConfigChange(parent, config);
+		generator.notifyCameraConfigChange(config);
 	}
 
 	public String currentActivity() {
@@ -296,7 +344,7 @@ public class Camera3D implements PConstants {
 		parent.background(backgroundColor);
 
 		frameNum = 0;
-		generator.prepareForDraw(frameNum, parent, config);
+		generator.prepareForDraw(frameNum, parent);
 	}
 
 	public void draw() {
@@ -307,19 +355,21 @@ public class Camera3D implements PConstants {
 
 			if (saveNextFrame)
 				parent.saveFrame("####-" + parentClassName + "-"
-						+ generator.getComponentFrameName(frameNum) + "-component.png");
+						+ generator.getComponentFrameName(frameNum)
+						+ "-component.png");
 
 			parent.background(backgroundColor);
 
 			frameNum = 1;
 
-			generator.prepareForDraw(frameNum, parent, config);
+			generator.prepareForDraw(frameNum, parent);
 			parent.draw();
 			parent.loadPixels();
 
 			if (saveNextFrame)
 				parent.saveFrame("####-" + parentClassName + "-"
-						+ generator.getComponentFrameName(frameNum) + "-component.png");
+						+ generator.getComponentFrameName(frameNum)
+						+ "-component.png");
 
 			long startTime = System.nanoTime();
 
@@ -343,7 +393,7 @@ public class Camera3D implements PConstants {
 		if (callPostDraw) {
 			// call generator's post draw to put camera back the way it was.
 			// Other libraries like ControlP5 needs this.
-			generator.cleanup(parent, config);
+			generator.cleanup(parent);
 
 			callMethod("postDraw");
 		}
