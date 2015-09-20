@@ -28,7 +28,7 @@ public class RegularRenderer extends Generator {
 				config.cameraUpY, config.cameraUpZ);
 	}
 
-	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
 		// do nothing
 	}
 

@@ -31,40 +31,40 @@ public class SplitFrameGenerator extends StereoscopicGenerator {
 		return new SplitFrameGenerator(width, height, GOOGLE_CARDBOARD);
 	}
 
-	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
 		if (technique == SIDE_BY_SIDE) {
 			for (int y = 0; y < height; y++) {
 				// left
 				int offset = y * width;
 				for (int x = 0; x < width / 2; x++) {
-					pixels[offset + x] = pixels[offset + x * 2];
+					pixelDest[offset + x] = pixelDest[offset + x * 2];
 				}
 
 				// right
 				int offset2 = offset + width / 2;
 				for (int x = 0; x < width / 2; x++) {
-					pixels[offset2 + x] = pixelsAlt[offset + x * 2];
+					pixelDest[offset2 + x] = pixelStorage[0][offset + x * 2];
 				}
 			}
 		} else if (technique == OVER_UNDER) {
 			// over
 			for (int y = 0; y < height / 2; ++y) {
-				System.arraycopy(pixels, 2 * y * width, pixels, y * width,
-						width);
+				System.arraycopy(pixelDest, 2 * y * width, pixelDest,
+						y * width, width);
 			}
 
 			// under
 			for (int y = 0; y < height / 2; ++y) {
-				System.arraycopy(pixelsAlt, 2 * y * width, pixels, y * width
-						+ width * (height / 2), width);
+				System.arraycopy(pixelStorage[0], 2 * y * width, pixelDest, y
+						* width + width * (height / 2), width);
 			}
 		} else if (technique == GOOGLE_CARDBOARD) {
 			for (int y = 0; y < height; ++y) {
-				System.arraycopy(pixels, y * width + (width / 4), pixels, y
-						* width, width / 2);
-				System.arraycopy(pixelsAlt, y * width + (width / 4), pixels, y
-						* width + width / 2, width / 2);
-				pixels[y * width + width / 2] = 0xFF000000;
+				System.arraycopy(pixelDest, y * width + (width / 4), pixelDest,
+						y * width, width / 2);
+				System.arraycopy(pixelStorage[0], y * width + (width / 4),
+						pixelDest, y * width + width / 2, width / 2);
+				pixelDest[y * width + width / 2] = 0xFF000000;
 			}
 		}
 	}

@@ -60,28 +60,58 @@ public abstract class Generator {
 	 * @param pixels
 	 * @param pixelsAlt
 	 */
-	abstract public void generateCompositeFrame(int[] pixels, int[] pixelsAlt);
+	abstract public void generateCompositeFrame(int[] pixelDest,
+			int[][] pixelStorage);
 
-	public void generateCompositeFrameAndSaveComponents(int[] pixels,
-			int[] pixelsAlt, PApplet parent, String parentClassName) {
-		PImage frame1 = parent.createImage(parent.width, parent.height,
-				PConstants.RGB);
-		frame1.loadPixels();
-		generateCompositeFrame(frame1.pixels, pixelsAlt);
-		frame1.updatePixels();
-		frame1.save(parent.insertFrame("####-" + parentClassName + "-"
-				+ getComponentFrameName(0) + "-component-modified.png"));
+	/**
+	 * Call generateCompositeFrame several times with pixelStorage setup as
+	 * empty (black) images for all but one of the pixel arrays. This lets us
+	 * see how the generator is modifying each of the components. This is super
+	 * helpful for debugging a new generator.
+	 * 
+	 * @param pixelDest
+	 * @param pixelStorage
+	 * @param parent
+	 * @param parentClassName
+	 * @param saveFrameLocation
+	 */
+	public void generateCompositeFrameAndSaveComponents(int[] pixelDest,
+			int[][] pixelStorage, PApplet parent, String parentClassName,
+			String saveFrameLocation) {
 
-		PImage frame2 = parent.createImage(parent.width, parent.height,
-				PConstants.RGB);
-		frame2.loadPixels();
-		System.arraycopy(pixels, 0, frame2.pixels, 0, pixels.length);
-		generateCompositeFrame(frame2.pixels, new int[pixels.length]);
-		frame2.updatePixels();
-		frame2.save(parent.insertFrame("####-" + parentClassName + "-"
-				+ getComponentFrameName(1) + "-component-modified.png"));
+		int[][] pixelStorageCopy = new int[pixelStorage.length][pixelStorage[0].length];
 
-		generateCompositeFrame(pixels, pixelsAlt);
+		for (int i = 0; i < getComponentCount(); ++i) {
+			PImage frame = parent.createImage(parent.width, parent.height,
+					PConstants.RGB);
+			frame.loadPixels();
+
+			// first, prepare pixelStorageCopy and frame pixels
+			for (int j = 0; j < getComponentCount(); ++j) {
+				if (i == j)
+					System.arraycopy(pixelStorage[j], 0, pixelStorageCopy[j],
+							0, pixelDest.length);
+				else
+					System.arraycopy(frame.pixels, 0, pixelStorageCopy[j], 0,
+							pixelDest.length);
+			}
+			System.arraycopy(pixelStorageCopy[getComponentCount() - 1], 0,
+					frame.pixels, 0, pixelDest.length);
+
+			// now generate the composite frame
+			generateCompositeFrame(frame.pixels, pixelStorageCopy);
+			frame.updatePixels();
+
+			frame.save(parent.insertFrame(saveFrameLocation + "####-"
+					+ parentClassName + "-" + getComponentFrameName(i)
+					+ "-component-modified.png"));
+		}
+
+		// We have to call generateCompositeFrame one more time so that the rest of the
+		// Camera3D draw method functions correctly.
+		System.arraycopy(pixelStorage[getComponentCount() - 1], 0, pixelDest,
+				0, pixelDest.length);
+		generateCompositeFrame(pixelDest, pixelStorage);
 	}
 
 	/**

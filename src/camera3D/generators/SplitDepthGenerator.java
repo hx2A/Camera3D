@@ -121,10 +121,10 @@ public class SplitDepthGenerator extends Generator {
 				config.cameraUpY, config.cameraUpZ);
 	}
 
-	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
 		for (int i = 0; i < occlusionPlaneMask.length; ++i) {
 			if (occlusionPlaneMask[i])
-				pixels[i] = pixelsAlt[i];
+				pixelDest[i] = pixelStorage[0][i];
 		}
 	}
 }

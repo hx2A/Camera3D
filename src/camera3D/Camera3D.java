@@ -1,5 +1,6 @@
 package camera3D;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.Math;
@@ -17,9 +18,10 @@ public class Camera3D implements PConstants {
 	private int width;
 	private int height;
 	private int pixelCount;
-	private int[] pixelsAlt;
+	private int[][] pixelStorage;
 	float avgGeneratorTimeMillis;
 
+	private String saveFrameLocation;
 	private boolean enableSaveFrame;
 	private boolean saveNextFrame;
 	private char saveFrameKey;
@@ -60,7 +62,7 @@ public class Camera3D implements PConstants {
 		width = parent.width;
 		height = parent.height;
 		pixelCount = parent.width * parent.height;
-		pixelsAlt = new int[pixelCount];
+		pixelStorage = new int[1][pixelCount];
 		avgGeneratorTimeMillis = 1;
 
 		enableSaveFrame = false;
@@ -213,6 +215,9 @@ public class Camera3D implements PConstants {
 
 	public void setGenerator(Generator generator) {
 		this.generator = generator;
+
+		pixelStorage = new int[generator.getComponentCount()][pixelCount];
+
 		avgGeneratorTimeMillis = 1;
 
 		generator.notifyCameraConfigChange(config);
@@ -222,9 +227,26 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
-	public void enableSaveFrame(char key) {
+	public void enableSaveFrame(char key, String saveFrameLocation) {
 		saveFrameKey = key;
+
+		if (saveFrameLocation != null && saveFrameLocation != "") {
+			File saveDir = new File(saveFrameLocation);
+			if (!saveDir.exists())
+				saveDir.mkdirs();
+			this.saveFrameLocation = saveDir.getAbsolutePath() + File.separator;
+		} else {
+			this.saveFrameLocation = "";
+		}
 		enableSaveFrame = true;
+	}
+
+	public void enableSaveFrame(String saveFrameLocation) {
+		enableSaveFrame('s', saveFrameLocation);
+	}
+
+	public void enableSaveFrame(char key) {
+		enableSaveFrame(key, "");
 	}
 
 	public void enableSaveFrame() {
@@ -348,58 +370,63 @@ public class Camera3D implements PConstants {
 	}
 
 	public void draw() {
-		if (generator.getComponentCount() > 1) {
-			// retrieve what was just drawn and copy to pixelsAlt
-			parent.loadPixels();
-			System.arraycopy(parent.pixels, 0, pixelsAlt, 0, pixelCount);
+		// retrieve what was just drawn and copy to pixelStorage
+		parent.loadPixels();
+		System.arraycopy(parent.pixels, 0, pixelStorage[0], 0, pixelCount);
 
-			if (saveNextFrame)
-				parent.saveFrame("####-" + parentClassName + "-"
-						+ generator.getComponentFrameName(frameNum)
-						+ "-component.png");
+		if (saveNextFrame)
+			parent.saveFrame(saveFrameLocation + "####-" + parentClassName
+					+ "-" + generator.getComponentFrameName(frameNum)
+					+ "-component.png");
 
+		// now loop through the draw cycle repeatedly, filling pixel storage.
+		for (frameNum = 1; frameNum < generator.getComponentCount(); ++frameNum) {
 			parent.background(backgroundColor);
-
-			frameNum = 1;
-
 			generator.prepareForDraw(frameNum, parent);
+
 			parent.draw();
+
 			parent.loadPixels();
+			System.arraycopy(parent.pixels, 0, pixelStorage[frameNum], 0,
+					pixelCount);
 
 			if (saveNextFrame)
-				parent.saveFrame("####-" + parentClassName + "-"
-						+ generator.getComponentFrameName(frameNum)
+				parent.saveFrame(saveFrameLocation + "####-" + parentClassName
+						+ "-" + generator.getComponentFrameName(frameNum)
 						+ "-component.png");
-
-			long startTime = System.nanoTime();
-
-			if (saveNextFrame) {
-				generator.generateCompositeFrameAndSaveComponents(
-						parent.pixels, pixelsAlt, parent, parentClassName);
-			} else {
-				generator.generateCompositeFrame(parent.pixels, pixelsAlt);
-			}
-
-			avgGeneratorTimeMillis = 0.9f * avgGeneratorTimeMillis + 0.1f
-					* (System.nanoTime() - startTime) / 1000000f;
-
-			parent.updatePixels();
-
-			if (saveNextFrame)
-				parent.saveFrame("####-" + parentClassName + "-composite.png");
 		}
 
-		frameNum = -1;
-		if (callPostDraw) {
-			// call generator's post draw to put camera back the way it was.
-			// Other libraries like ControlP5 needs this.
-			generator.cleanup(parent);
+		// create composite frame
+		long startTime = System.nanoTime();
 
+		if (saveNextFrame) {
+			generator.generateCompositeFrameAndSaveComponents(parent.pixels,
+					pixelStorage, parent, parentClassName, saveFrameLocation);
+		} else {
+			generator.generateCompositeFrame(parent.pixels, pixelStorage);
+		}
+
+		avgGeneratorTimeMillis = 0.9f * avgGeneratorTimeMillis + 0.1f
+				* (System.nanoTime() - startTime) / 1000000f;
+
+		parent.updatePixels();
+
+		if (saveNextFrame)
+			parent.saveFrame(saveFrameLocation + "####-" + parentClassName
+					+ "-composite.png");
+
+		// call generator's cleanup method to put camera back the way it was.
+		// Other libraries like ControlP5 needs this.
+		generator.cleanup(parent);
+
+		if (callPostDraw) {
+			frameNum = -1;
 			callMethod("postDraw");
 		}
 
 		if (saveNextFrame) {
-			parent.saveFrame("####-" + parentClassName + "-final.png");
+			parent.saveFrame(saveFrameLocation + "####-" + parentClassName
+					+ "-final.png");
 			saveNextFrame = false;
 		}
 	}

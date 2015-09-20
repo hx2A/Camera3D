@@ -60,14 +60,14 @@ public class DuboisAnaglyphGenerator extends AnaglyphGenerator {
 				RIGHT_DUBOIS_AMBERBLUE);
 	}
 
-	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
-		for (int ii = 0; ii < pixels.length; ++ii) {
-			float rightRed = removeGammaCorrectionLUT[(pixels[ii] & 0x00FF0000) >> 16];
-			float rightGreen = removeGammaCorrectionLUT[(pixels[ii] & 0x0000FF00) >> 8];
-			float rightBlue = removeGammaCorrectionLUT[pixels[ii] & 0x000000FF];
-			float leftRed = removeGammaCorrectionLUT[(pixelsAlt[ii] & 0x00FF0000) >> 16];
-			float leftGreen = removeGammaCorrectionLUT[(pixelsAlt[ii] & 0x0000FF00) >> 8];
-			float leftBlue = removeGammaCorrectionLUT[pixelsAlt[ii] & 0x000000FF];
+	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
+		for (int ii = 0; ii < pixelDest.length; ++ii) {
+			float rightRed = removeGammaCorrectionLUT[(pixelDest[ii] & 0x00FF0000) >> 16];
+			float rightGreen = removeGammaCorrectionLUT[(pixelDest[ii] & 0x0000FF00) >> 8];
+			float rightBlue = removeGammaCorrectionLUT[pixelDest[ii] & 0x000000FF];
+			float leftRed = removeGammaCorrectionLUT[(pixelStorage[0][ii] & 0x00FF0000) >> 16];
+			float leftGreen = removeGammaCorrectionLUT[(pixelStorage[0][ii] & 0x0000FF00) >> 8];
+			float leftBlue = removeGammaCorrectionLUT[pixelStorage[0][ii] & 0x000000FF];
 
 			ColorVector rightAnaglyph = right.rightMult(new ColorVector(
 					rightRed, rightGreen, rightBlue));
@@ -81,7 +81,7 @@ public class DuboisAnaglyphGenerator extends AnaglyphGenerator {
 			int anaglyphBlue = applyGammaCorrectionLUT[(int) ((maxEncodedValue - 1) * clip(clip(rightAnaglyph.blue)
 					+ clip(leftAnaglyph.blue)))];
 
-			pixels[ii] = 0xFF000000 | (anaglyphRed << 16)
+			pixelDest[ii] = 0xFF000000 | (anaglyphRed << 16)
 					| (anaglyphGreen << 8) | anaglyphBlue;
 		}
 	}

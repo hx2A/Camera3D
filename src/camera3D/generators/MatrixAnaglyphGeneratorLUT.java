@@ -48,10 +48,10 @@ public class MatrixAnaglyphGeneratorLUT extends AnaglyphGenerator {
 				RIGHT_HALF_COLOR_ANAGLYPH);
 	}
 
-	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
-		for (int ii = 0; ii < pixels.length; ++ii) {
-			pixels[ii] = 0xFF000000 | leftLUT[pixels[ii] & 0x00FFFFFF]
-					| rightLUT[pixelsAlt[ii] & 0x00FFFFFF];
+	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
+		for (int ii = 0; ii < pixelDest.length; ++ii) {
+			pixelDest[ii] = 0xFF000000 | leftLUT[pixelDest[ii] & 0x00FFFFFF]
+					| rightLUT[pixelStorage[0][ii] & 0x00FFFFFF];
 		}
 	}
 }

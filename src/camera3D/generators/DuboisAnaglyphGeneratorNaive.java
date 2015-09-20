@@ -29,15 +29,15 @@ public class DuboisAnaglyphGeneratorNaive extends AnaglyphGenerator {
 				RIGHT_DUBOIS_AMBERBLUE);
 	}
 
-	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
 
-		for (int ii = 0; ii < pixels.length; ++ii) {
-			float Rr = removeGammaCorrectionStandardRGB(((pixels[ii] & 0x00FF0000) >> 16) / 255f);
-			float Rg = removeGammaCorrectionStandardRGB(((pixels[ii] & 0x0000FF00) >> 8) / 255f);
-			float Rb = removeGammaCorrectionStandardRGB((pixels[ii] & 0x000000FF) / 255f);
-			float Lr = removeGammaCorrectionStandardRGB(((pixelsAlt[ii] & 0x00FF0000) >> 16) / 255f);
-			float Lg = removeGammaCorrectionStandardRGB(((pixelsAlt[ii] & 0x0000FF00) >> 8) / 255f);
-			float Lb = removeGammaCorrectionStandardRGB((pixelsAlt[ii] & 0x000000FF) / 255f);
+		for (int ii = 0; ii < pixelDest.length; ++ii) {
+			float Rr = removeGammaCorrectionStandardRGB(((pixelDest[ii] & 0x00FF0000) >> 16) / 255f);
+			float Rg = removeGammaCorrectionStandardRGB(((pixelDest[ii] & 0x0000FF00) >> 8) / 255f);
+			float Rb = removeGammaCorrectionStandardRGB((pixelDest[ii] & 0x000000FF) / 255f);
+			float Lr = removeGammaCorrectionStandardRGB(((pixelStorage[0][ii] & 0x00FF0000) >> 16) / 255f);
+			float Lg = removeGammaCorrectionStandardRGB(((pixelStorage[0][ii] & 0x0000FF00) >> 8) / 255f);
+			float Lb = removeGammaCorrectionStandardRGB((pixelStorage[0][ii] & 0x000000FF) / 255f);
 
 			ColorVector AR = right.rightMult(new ColorVector(Rr, Rg, Rb));
 			ColorVector AL = left.rightMult(new ColorVector(Lr, Lg, Lb));
@@ -49,7 +49,7 @@ public class DuboisAnaglyphGeneratorNaive extends AnaglyphGenerator {
 			float Ab = applyGammaCorrectionStandardRGB(clip(clip(AR.blue)
 					+ clip(AL.blue)));
 
-			pixels[ii] = 0xFF000000 | (((int) (Ar * 255)) << 16)
+			pixelDest[ii] = 0xFF000000 | (((int) (Ar * 255)) << 16)
 					| (((int) (Ag * 255)) << 8) | ((int) (Ab * 255));
 		}
 	}

@@ -70,16 +70,16 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 				RIGHT_DUBOIS_AMBERBLUE);
 	}
 
-	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
+	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
 		long encodedColor;
 
-		for (int ii = 0; ii < pixels.length; ++ii) {
+		for (int ii = 0; ii < pixelDest.length; ++ii) {
 			/*
 			 * This addition is a SIMD operation, adding the R, G, and B color
 			 * values that are embedded in the longs in leftLUT and rightLUT.
 			 */
-			encodedColor = leftLUT[pixels[ii] & 0x00FFFFFF]
-					+ rightLUT[pixelsAlt[ii] & 0x00FFFFFF];
+			encodedColor = leftLUT[pixelDest[ii] & 0x00FFFFFF]
+					+ rightLUT[pixelStorage[0][ii] & 0x00FFFFFF];
 
 			/*
 			 * For each color, first check if the rollover bit is set. If so,
@@ -87,21 +87,21 @@ public class DuboisAnaglyphGenerator64bitLUT extends AnaglyphGenerator {
 			 * encodedColor, apply gamma correction, and build the pixel color.
 			 */
 			if (0 < (encodedColor & 0x4000000000000000L)) {
-				pixels[ii] = 0xFFFF0000;
+				pixelDest[ii] = 0xFFFF0000;
 			} else {
-				pixels[ii] = 0xFF000000 | (applyGammaCorrectionLUT[(int) ((encodedColor & 0x3FFFFC0000000000L) >> 42)] << 16);
+				pixelDest[ii] = 0xFF000000 | (applyGammaCorrectionLUT[(int) ((encodedColor & 0x3FFFFC0000000000L) >> 42)] << 16);
 			}
 
 			if (0 < (encodedColor & 0x20000000000L)) {
-				pixels[ii] |= 0x0000FF00;
+				pixelDest[ii] |= 0x0000FF00;
 			} else {
-				pixels[ii] |= (applyGammaCorrectionLUT[(int) ((encodedColor & 0x1FFFFE00000L) >> 21)] << 8);
+				pixelDest[ii] |= (applyGammaCorrectionLUT[(int) ((encodedColor & 0x1FFFFE00000L) >> 21)] << 8);
 			}
 
 			if (0 < (encodedColor & 0x100000L)) {
-				pixels[ii] |= 0x000000FF;
+				pixelDest[ii] |= 0x000000FF;
 			} else {
-				pixels[ii] |= (applyGammaCorrectionLUT[(int) (encodedColor & 0xFFFFFL)]);
+				pixelDest[ii] |= (applyGammaCorrectionLUT[(int) (encodedColor & 0xFFFFFL)]);
 			}
 		}
 	}

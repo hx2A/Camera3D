@@ -29,20 +29,21 @@ public class MatrixAnaglyphGenerator extends AnaglyphGenerator {
 				RIGHT_HALF_COLOR_ANAGLYPH);
 	}
 
-	public void generateCompositeFrame(int[] pixels, int[] pixelsAlt) {
-		for (int ii = 0; ii < pixels.length; ++ii) {
+	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
+		for (int ii = 0; ii < pixelDest.length; ++ii) {
 			ColorVector leftColor = left.rightMult(new ColorVector(
-					(0x00FF0000 & pixels[ii]) >> 16,
-					(0x0000FF00 & pixels[ii]) >> 8, 0x000000FF & pixels[ii]));
+					(0x00FF0000 & pixelDest[ii]) >> 16,
+					(0x0000FF00 & pixelDest[ii]) >> 8,
+					0x000000FF & pixelDest[ii]));
 
 			ColorVector rightColor = right.rightMult(new ColorVector(
-					(0x00FF0000 & pixelsAlt[ii]) >> 16,
-					(0x0000FF00 & pixelsAlt[ii]) >> 8,
-					0x000000FF & pixelsAlt[ii]));
+					(0x00FF0000 & pixelStorage[0][ii]) >> 16,
+					(0x0000FF00 & pixelStorage[0][ii]) >> 8,
+					0x000000FF & pixelStorage[0][ii]));
 
 			ColorVector anaglyphColor = leftColor.add(rightColor);
 
-			pixels[ii] = 0xFF000000
+			pixelDest[ii] = 0xFF000000
 					| (((int) clip(anaglyphColor.red, 0, 255)) << 16)
 					| (((int) clip(anaglyphColor.green, 0, 255)) << 8)
 					| ((int) clip(anaglyphColor.blue, 0, 255));
