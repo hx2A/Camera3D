@@ -4,6 +4,18 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import camera3D.CameraConfiguration;
 
+/**
+ * 
+ * Split depth generator, similar to split depth GIFs.
+ * 
+ * Examples: https://www.reddit.com/r/SplitDepthGIFS/
+ * 
+ * The occlusion plane tricks your brain into thinking objects can be in front of
+ * or behind it.
+ * 
+ * @author James Schmitz
+ *
+ */
 public class SplitDepthGenerator extends Generator {
 
 	private int width;

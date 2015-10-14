@@ -357,6 +357,9 @@ public class Camera3D implements PConstants {
 
 	/*
 	 * Drawing functions, called by Processing framework
+	 * 
+	 * The pre() and draw() methods are where all the action is in this class.
+	 * The rest is mainly configuration code.
 	 */
 	public void pre() {
 		frameNum = -2;
@@ -432,6 +435,9 @@ public class Camera3D implements PConstants {
 	}
 
 	public void keyEvent(KeyEvent e) {
+		// the saveFrameNum thing below is to keep the program from saving many
+		// frames in a row
+		// if the user is too slow to lift their finger off the keyboard.
 		if (e.getKey() == saveFrameKey && enableSaveFrame
 				&& parent.frameCount > saveFrameNum + 10) {
 			saveNextFrame = true;
@@ -440,7 +446,7 @@ public class Camera3D implements PConstants {
 	}
 
 	/*
-	 * Internal methods
+	 * Internal reflective methods for examining sketch.
 	 */
 	private boolean checkForMethod(String method) {
 		try {

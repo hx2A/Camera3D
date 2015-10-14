@@ -4,6 +4,19 @@ import camera3D.generators.StereoscopicGenerator;
 import camera3D.generators.util.AnaglyphMatrix;
 import camera3D.generators.util.ColorVector;
 
+/**
+ * 
+ * Optimized version of a general matrix anaglyph algorithm.
+ * 
+ * This works by precomputing a set of lookup tables for every possible color.
+ * There is a small up-front cost but after that the performance speedup of the
+ * generateCompositeFrame method is about 8-10x.
+ * 
+ * The lookup tables will use 128 MB of RAM.
+ * 
+ * @author James Schmitz
+ *
+ */
 public class MatrixAnaglyphGeneratorLUT extends AnaglyphGenerator {
 
 	private int[] leftLUT;

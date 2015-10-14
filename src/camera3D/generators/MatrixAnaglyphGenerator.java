@@ -4,6 +4,16 @@ import camera3D.generators.StereoscopicGenerator;
 import camera3D.generators.util.AnaglyphMatrix;
 import camera3D.generators.util.ColorVector;
 
+/**
+ * 
+ * General matrix anaglyph algorithm.
+ * 
+ * Consider using MatrixAnaglyphGeneratorLUT instead for better performance.
+ * 
+ * @author James Schmitz
+ *
+ */
+
 public class MatrixAnaglyphGenerator extends AnaglyphGenerator {
 
 	private AnaglyphMatrix left;

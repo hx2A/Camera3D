@@ -22,6 +22,8 @@ public class PeasyCamAdapter {
 	}
 
 	public void pre() {
+		// It is important to check if the camera is active. There might be
+		// more than one PeasyCam!
 		if (cam != null && cam.isActive()) {
 			float pos[] = cam.getPosition();
 			float lookat[] = cam.getLookAt();

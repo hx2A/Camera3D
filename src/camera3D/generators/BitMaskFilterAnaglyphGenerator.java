@@ -2,6 +2,17 @@ package camera3D.generators;
 
 import camera3D.generators.AnaglyphGenerator;
 
+/**
+ * 
+ * Simple bitmask filter anaglyph algorithm.
+ * 
+ * This is what you would get if you combined the red channel of one image
+ * with the green+blue channel of another image. This is the algorithm the
+ * previous RedBlue library used.
+ * 
+ * @author James Schmitz
+ *
+ */
 public class BitMaskFilterAnaglyphGenerator extends AnaglyphGenerator {
 
 	private int leftFilter;

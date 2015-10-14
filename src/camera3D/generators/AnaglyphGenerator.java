@@ -3,6 +3,17 @@ package camera3D.generators;
 import camera3D.generators.util.AnaglyphMatrix;
 import camera3D.generators.util.ColorVector;
 
+/**
+ * 
+ * Base class for all of the anaglyph generators.
+ * 
+ * This class provides some default matrix values and implementations
+ * of some useful functions for making anaglyphs. If you make your own
+ * anaglyph generator you may find it helpful to derive from this class.
+ * 
+ * @author James Schmitz
+ *
+ */
 public abstract class AnaglyphGenerator extends StereoscopicGenerator {
 
 	/*

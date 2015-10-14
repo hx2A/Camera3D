@@ -5,6 +5,13 @@ import processing.core.PConstants;
 import processing.core.PImage;
 import camera3D.CameraConfiguration;
 
+/**
+ * 
+ * @author James Schmitz
+ * 
+ * Base class for all generators.
+ *
+ */
 public abstract class Generator {
 
 	protected CameraConfiguration config;
@@ -69,6 +76,10 @@ public abstract class Generator {
 	 * see how the generator is modifying each of the components. This is super
 	 * helpful for debugging a new generator.
 	 * 
+	 * For most generators this will work as intended. If for some reason it
+	 * does not work for your custom generator, override this method and write
+	 * something that works correctly.
+	 * 
 	 * @param pixelDest
 	 * @param pixelStorage
 	 * @param parent
@@ -107,8 +118,8 @@ public abstract class Generator {
 					+ "-component-modified.png"));
 		}
 
-		// We have to call generateCompositeFrame one more time so that the rest of the
-		// Camera3D draw method functions correctly.
+		// We have to call generateCompositeFrame one more time so that the rest
+		// of the Camera3D draw method functions correctly.
 		System.arraycopy(pixelStorage[getComponentCount() - 1], 0, pixelDest,
 				0, pixelDest.length);
 		generateCompositeFrame(pixelDest, pixelStorage);

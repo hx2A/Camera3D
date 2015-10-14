@@ -1,5 +1,14 @@
 package camera3D.generators;
 
+/**
+ * 
+ * Split frame generator. This will pack the right and left component
+ * images into one composite image. The two components will be positioned
+ * vertically or horizontally.
+ * 
+ * @author James Schmitz
+ *
+ */
 public class SplitFrameGenerator extends StereoscopicGenerator {
 
 	public static final int SIDE_BY_SIDE = 0;

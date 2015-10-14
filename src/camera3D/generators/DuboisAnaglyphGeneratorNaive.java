@@ -3,6 +3,25 @@ package camera3D.generators;
 import camera3D.generators.util.AnaglyphMatrix;
 import camera3D.generators.util.ColorVector;
 
+/**
+ * Unoptimized implementation of the Dubois Anaglyph algorithm.
+ * 
+ * More information can be found here:
+ * 
+ * http://www.site.uottawa.ca/~edubois/anaglyph/
+ * 
+ * particularly:
+ * 
+ * http://www.site.uottawa.ca/~edubois/anaglyph/LeastSquaresHowToPhotoshop.pdf
+ * http://www.site.uottawa.ca/~edubois/icassp01/anaglyphdubois.pdf
+ * 
+ * This generator is slow. Please don't use it. This is here mainly for
+ * comparison purposes with the optimized versions.
+ * 
+ * @author James Schmitz
+ *
+ */
+
 public class DuboisAnaglyphGeneratorNaive extends AnaglyphGenerator {
 
 	private AnaglyphMatrix left;

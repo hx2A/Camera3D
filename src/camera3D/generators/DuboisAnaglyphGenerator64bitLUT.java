@@ -16,18 +16,18 @@ import camera3D.generators.util.AnaglyphMatrix;
  * http://www.site.uottawa.ca/~edubois/icassp01/anaglyphdubois.pdf
  * 
  * This algorithm is actually similar to what's being done in the
- * MatrixAnaglyphGenerator except the calculations are done in linear RGB space.
+ * MatrixAnaglyphGeneratorLUT except the calculations are done in linear RGB space.
  * 
  * This works by precomputing a set of lookup tables for every possible color.
  * There is a small up-front cost but after that the performance speedup of the
  * generateCompositeFrame method is about 300x.
  * 
- * The lookup tables will use about 260 MB of RAM.
+ * The lookup tables will use 260 MB of RAM.
  * 
  * Without these optimizations it would not be possible to use this algorithm in
  * real time.
  * 
- * @author jim
+ * @author James Schmitz
  *
  */
 

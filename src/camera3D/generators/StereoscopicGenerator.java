@@ -3,6 +3,13 @@ package camera3D.generators;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+/**
+ * 
+ * @author James Schmitz
+ * 
+ * Base for all Steroscopic generators, including Anaglyph generators.
+ * 
+ */
 public abstract class StereoscopicGenerator extends Generator implements
 		PConstants {
 
