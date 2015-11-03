@@ -26,6 +26,7 @@ public class Camera3D implements PConstants {
 	private boolean saveNextFrame;
 	private char saveFrameKey;
 	private int saveFrameNum;
+	private boolean reportStats;
 	private String parentClassName;
 
 	private CameraConfiguration config;
@@ -67,6 +68,7 @@ public class Camera3D implements PConstants {
 
 		enableSaveFrame = false;
 		saveNextFrame = false;
+		reportStats = false;
 
 		renderRegular();
 
@@ -257,6 +259,10 @@ public class Camera3D implements PConstants {
 		return avgGeneratorTimeMillis;
 	}
 
+	public void reportStats() {
+		reportStats = true;
+	}
+
 	/*
 	 * Camera Methods
 	 */
@@ -431,6 +437,12 @@ public class Camera3D implements PConstants {
 			parent.saveFrame(saveFrameLocation + "####-" + parentClassName
 					+ "-final.png");
 			saveNextFrame = false;
+		}
+
+		if (reportStats) {
+			System.out.println("Frame Rate: " + parent.frameRate
+					+ " frames/sec | Generator Render Time: "
+					+ avgGeneratorTimeMillis + " ms");
 		}
 	}
 
