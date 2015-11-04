@@ -32,7 +32,7 @@ public class Camera3D implements PConstants {
 	private CameraConfiguration config;
 
 	private Generator generator;
-	private float backgroundColor;
+	private int backgroundColor;
 	private boolean callPreDraw;
 	private boolean callPostDraw;
 	private int frameNum;
@@ -91,7 +91,7 @@ public class Camera3D implements PConstants {
 	/*
 	 * User Settings
 	 */
-	public void setBackgroundColor(float backgroundColor) {
+	public void setBackgroundColor(int backgroundColor) {
 		this.backgroundColor = backgroundColor;
 	}
 
