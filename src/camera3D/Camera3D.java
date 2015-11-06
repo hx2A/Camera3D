@@ -20,6 +20,7 @@ public class Camera3D implements PConstants {
 	private int pixelCount;
 	private int[][] pixelStorage;
 	float avgGeneratorTimeMillis;
+	float avgDrawTimeMillis;
 
 	private String saveFrameLocation;
 	private boolean enableSaveFrame;
@@ -259,6 +260,10 @@ public class Camera3D implements PConstants {
 		return avgGeneratorTimeMillis;
 	}
 
+	public float getDrawTime() {
+		return avgDrawTimeMillis;
+	}
+
 	public void reportStats() {
 		reportStats = true;
 	}
@@ -393,7 +398,12 @@ public class Camera3D implements PConstants {
 			parent.background(backgroundColor);
 			generator.prepareForDraw(frameNum, parent);
 
+			long drawStartTime = System.nanoTime();
+
 			parent.draw();
+
+			avgDrawTimeMillis = 0.9f * avgGeneratorTimeMillis + 0.1f
+					* (System.nanoTime() - drawStartTime) / 1000000f;
 
 			parent.loadPixels();
 			System.arraycopy(parent.pixels, 0, pixelStorage[frameNum], 0,
@@ -406,7 +416,7 @@ public class Camera3D implements PConstants {
 		}
 
 		// create composite frame
-		long startTime = System.nanoTime();
+		long generateStartTime = System.nanoTime();
 
 		if (saveNextFrame) {
 			generator.generateCompositeFrameAndSaveComponents(parent.pixels,
@@ -416,7 +426,7 @@ public class Camera3D implements PConstants {
 		}
 
 		avgGeneratorTimeMillis = 0.9f * avgGeneratorTimeMillis + 0.1f
-				* (System.nanoTime() - startTime) / 1000000f;
+				* (System.nanoTime() - generateStartTime) / 1000000f;
 
 		parent.updatePixels();
 
@@ -440,9 +450,16 @@ public class Camera3D implements PConstants {
 		}
 
 		if (reportStats) {
-			System.out.println("Frame Rate: " + parent.frameRate
-					+ " frames/sec | Generator Render Time: "
-					+ avgGeneratorTimeMillis + " ms");
+			if (generator.getComponentCount() == 1) {
+				System.out
+						.printf("Frame Rate: %.2f frames/sec | Generator Render Time: %.3f ms\n",
+								parent.frameRate, avgGeneratorTimeMillis);
+			} else {
+				System.out
+						.printf("Frame Rate: %.2f frames/sec | draw() time: %.3f ms | Generator Render Time: %.3f ms\n",
+								parent.frameRate, avgDrawTimeMillis,
+								avgGeneratorTimeMillis);
+			}
 		}
 	}
 
