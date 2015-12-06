@@ -181,6 +181,15 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
+	public StereoscopicGenerator renderOculusRift() {
+		StereoscopicGenerator generator = new OculusRiftGenerator(parent.width,
+				parent.height);
+
+		setGenerator(generator);
+
+		return generator;
+	}
+
 	public StereoscopicGenerator renderSplitFrameOverUnder() {
 		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
 				parent.height, SplitFrameGenerator.OVER_UNDER);
