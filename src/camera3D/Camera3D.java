@@ -208,6 +208,15 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
+	public StereoscopicGenerator renderInterlaced() {
+		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
+				parent.height, SplitFrameGenerator.INTERLACED);
+
+		setGenerator(generator);
+
+		return generator;
+	}
+
 	public SplitDepthGenerator renderSplitDepthIllusion() {
 		SplitDepthGenerator generator = new SplitDepthGenerator(parent.width,
 				parent.height);
@@ -217,7 +226,8 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
-	public StereoscopicGenerator stereoscopicSequentialFrameSaver(String filename) {
+	public StereoscopicGenerator stereoscopicSequentialFrameSaver(
+			String filename) {
 		StereoscopicFrameSaver generator = new StereoscopicFrameSaver(filename);
 
 		setGenerator(generator);
@@ -225,8 +235,8 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
-	public StereoscopicGenerator stereoscopicLeftRightFrameSaver(String leftFilename,
-			String rightFilename) {
+	public StereoscopicGenerator stereoscopicLeftRightFrameSaver(
+			String leftFilename, String rightFilename) {
 		StereoscopicFrameSaver generator = new StereoscopicFrameSaver(
 				leftFilename, rightFilename);
 

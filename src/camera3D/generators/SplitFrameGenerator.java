@@ -2,9 +2,9 @@ package camera3D.generators;
 
 /**
  * 
- * Split frame generator. This will pack the right and left component
- * images into one composite image. The two components will be positioned
- * vertically or horizontally.
+ * Split frame generator. This will pack the right and left component images
+ * into one composite image. The two components will be positioned vertically or
+ * horizontally. Also, Interlaced component images.
  * 
  * @author James Schmitz
  *
@@ -14,6 +14,7 @@ public class SplitFrameGenerator extends StereoscopicGenerator {
 	public static final int SIDE_BY_SIDE_HALF_WIDTH = 0;
 	public static final int OVER_UNDER_HALF_HEIGHT = 1;
 	public static final int SIDE_BY_SIDE = 2;
+	public static final int INTERLACED = 3;
 
 	private int width;
 	private int height;
@@ -25,13 +26,13 @@ public class SplitFrameGenerator extends StereoscopicGenerator {
 		this.technique = technique;
 	}
 
-	public static SplitFrameGenerator createSideBySideHalfWidthGenerator(int width,
-			int height) {
+	public static SplitFrameGenerator createSideBySideHalfWidthGenerator(
+			int width, int height) {
 		return new SplitFrameGenerator(width, height, SIDE_BY_SIDE_HALF_WIDTH);
 	}
 
-	public static SplitFrameGenerator createOverUnderHalfHeightGenerator(int width,
-			int height) {
+	public static SplitFrameGenerator createOverUnderHalfHeightGenerator(
+			int width, int height) {
 		return new SplitFrameGenerator(width, height, OVER_UNDER_HALF_HEIGHT);
 	}
 
@@ -40,6 +41,11 @@ public class SplitFrameGenerator extends StereoscopicGenerator {
 		return new SplitFrameGenerator(width, height, SIDE_BY_SIDE);
 	}
 
+	public static SplitFrameGenerator createInterlacedGenerator(int width,
+			int height) {
+		return new SplitFrameGenerator(width, height, INTERLACED);
+	}
+	
 	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
 		if (technique == SIDE_BY_SIDE_HALF_WIDTH) {
 			for (int y = 0; y < height; y++) {
@@ -71,6 +77,11 @@ public class SplitFrameGenerator extends StereoscopicGenerator {
 						y * width, width / 2);
 				System.arraycopy(pixelStorage[0], y * width + (width / 4),
 						pixelDest, y * width + width / 2, width / 2);
+			}
+		} else if (technique == INTERLACED) {
+			for (int y = 1; y < height; y += 2) {
+				System.arraycopy(pixelStorage[0], y * width, pixelDest, y
+						* width, width);
 			}
 		}
 	}
