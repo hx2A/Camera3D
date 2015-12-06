@@ -42,6 +42,10 @@ public class RegularRenderer extends Generator {
 		// do nothing
 	}
 
+	public void completedDraw(int frameNum, PApplet parent) {
+		// do nothing
+	}
+
 	public void cleanup(PApplet parent) {
 		parent.camera(config.cameraPositionX, config.cameraPositionY,
 				config.cameraPositionZ, config.cameraTargetX,

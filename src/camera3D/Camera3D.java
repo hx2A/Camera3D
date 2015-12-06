@@ -172,27 +172,9 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
-	public StereoscopicGenerator renderGoogleCardboard() {
-		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
-				parent.height, SplitFrameGenerator.GOOGLE_CARDBOARD);
-
-		setGenerator(generator);
-
-		return generator;
-	}
-
-	public StereoscopicGenerator renderOculusRift() {
-		StereoscopicGenerator generator = new OculusRiftGenerator(parent.width,
-				parent.height);
-
-		setGenerator(generator);
-
-		return generator;
-	}
-
-	public StereoscopicGenerator renderSplitFrameOverUnder() {
-		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
-				parent.height, SplitFrameGenerator.OVER_UNDER);
+	public StereoscopicGenerator renderBarrelDistortion() {
+		StereoscopicGenerator generator = new BarrelDistortionGenerator(
+				parent.width, parent.height);
 
 		setGenerator(generator);
 
@@ -208,9 +190,45 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
+	public StereoscopicGenerator renderSplitFrameOverUnderHalfHeight() {
+		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
+				parent.height, SplitFrameGenerator.OVER_UNDER_HALF_HEIGHT);
+
+		setGenerator(generator);
+
+		return generator;
+	}
+
+	public StereoscopicGenerator renderSplitFrameSideBySideHalfWidth() {
+		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
+				parent.height, SplitFrameGenerator.SIDE_BY_SIDE_HALF_WIDTH);
+
+		setGenerator(generator);
+
+		return generator;
+	}
+
 	public SplitDepthGenerator renderSplitDepthIllusion() {
 		SplitDepthGenerator generator = new SplitDepthGenerator(parent.width,
 				parent.height);
+
+		setGenerator(generator);
+
+		return generator;
+	}
+
+	public StereoscopicGenerator stereoscopicFrameSaver(String filename) {
+		StereoscopicFrameSaver generator = new StereoscopicFrameSaver(filename);
+
+		setGenerator(generator);
+
+		return generator;
+	}
+
+	public StereoscopicGenerator stereoscopicFrameSaver(String leftFilename,
+			String rightFilename) {
+		StereoscopicFrameSaver generator = new StereoscopicFrameSaver(
+				leftFilename, rightFilename);
 
 		setGenerator(generator);
 
@@ -393,6 +411,8 @@ public class Camera3D implements PConstants {
 	}
 
 	public void draw() {
+		generator.completedDraw(frameNum, parent);
+
 		// retrieve what was just drawn and copy to pixelStorage
 		parent.loadPixels();
 		System.arraycopy(parent.pixels, 0, pixelStorage[0], 0, pixelCount);
@@ -413,6 +433,8 @@ public class Camera3D implements PConstants {
 
 			avgDrawTimeMillis = 0.9f * avgGeneratorTimeMillis + 0.1f
 					* (System.nanoTime() - drawStartTime) / 1000000f;
+
+			generator.completedDraw(frameNum, parent);
 
 			parent.loadPixels();
 			System.arraycopy(parent.pixels, 0, pixelStorage[frameNum], 0,

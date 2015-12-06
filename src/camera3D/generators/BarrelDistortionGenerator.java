@@ -3,10 +3,12 @@ package camera3D.generators;
 import camera3D.generators.StereoscopicGenerator;
 
 /**
- * Optimized implementation of the Oculus Rift's barrel distortion algorithm.
+ * Optimized implementation of the barrel distortion algorithm.
  * 
  * Builds a lookup table to map pixels in sketch to the distorted view that will
- * be countered by the Oculus Rift's lenses.
+ * be countered by the lenses.
+ * 
+ * Defaults to settings for an Oculus Rift's lenses.
  * 
  * Much thanks to this guy for explaining barrel distortion:
  * 
@@ -14,25 +16,38 @@ import camera3D.generators.StereoscopicGenerator;
  * 
  * And to this guy for pointing out that the radius (r) must be normalized:
  * 
- * http://stackoverflow.com/questions/28130618/what-ist-the-correct-oculus-rift-
- * barrel-distortion-radius-function
+ * http://stackoverflow.com/questions/28130618/what-ist-the-correct-oculus-rift-barrel-distortion-radius-function
  * 
  * @author James Schmitz
  *
  */
 
-public class OculusRiftGenerator extends StereoscopicGenerator {
+public class BarrelDistortionGenerator extends StereoscopicGenerator {
+
+	private int width;
+	private int height;
 
 	private int[] arrayIndex;
 	private int[] pixelMapping;
 
-	public OculusRiftGenerator(int width, int height) {
+	public BarrelDistortionGenerator(int width, int height) {
+		this.width = width;
+		this.height = height;
+
+		setBarrelDistortionCoefficients(0.22f, 0.24f);
+	}
+
+	public void setBarrelDistortionCoefficients(float pow2, float pow4) {
+		calculatePixelMaps(pow2, pow4);
+	}
+
+	private void calculatePixelMaps(float pow2, float pow4) {
 		arrayIndex = new int[width * height];
 		pixelMapping = new int[width * height];
 
 		int xCenter = width / 2;
 		int yCenter = height / 2;
-		double rMax = Math.sqrt(Math.pow(xCenter, 2) + Math.pow(yCenter, 2));
+		double rMax = Math.sqrt(Math.pow(xCenter / 2, 2) + Math.pow(yCenter, 2));
 
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
@@ -41,8 +56,8 @@ public class OculusRiftGenerator extends StereoscopicGenerator {
 				double theta = Math.atan2((y - yCenter), (x - xCenter));
 				double rNorm = r / rMax;
 				double rPrime = r
-						* (1 + 0.22 * Math.pow(rNorm, 2) + 0.24 * Math.pow(
-								rNorm, 4));
+						* (1 + pow2 * Math.pow(rNorm, 2) + pow4
+								* Math.pow(rNorm, 4));
 				double xPrime = rPrime * Math.cos(theta) + xCenter;
 				double yPrime = rPrime * Math.sin(theta) + yCenter;
 

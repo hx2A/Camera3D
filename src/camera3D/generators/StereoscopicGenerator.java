@@ -7,7 +7,7 @@ import processing.core.PConstants;
  * 
  * @author James Schmitz
  * 
- * Base for all Steroscopic generators, including Anaglyph generators.
+ *         Base for all Steroscopic generators, including Anaglyph generators.
  * 
  */
 public abstract class StereoscopicGenerator extends Generator implements
@@ -76,6 +76,10 @@ public abstract class StereoscopicGenerator extends Generator implements
 					config.cameraTargetZ, config.cameraUpX, config.cameraUpY,
 					config.cameraUpZ);
 		}
+	}
+
+	public void completedDraw(int frameNum, PApplet parent) {
+		// do nothing
 	}
 
 	public void cleanup(PApplet parent) {

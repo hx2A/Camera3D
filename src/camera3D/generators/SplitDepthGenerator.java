@@ -10,8 +10,8 @@ import camera3D.CameraConfiguration;
  * 
  * Examples: https://www.reddit.com/r/SplitDepthGIFS/
  * 
- * The occlusion plane tricks your brain into thinking objects can be in front of
- * or behind it.
+ * The occlusion plane tricks your brain into thinking objects can be in front
+ * of or behind it.
  * 
  * @author James Schmitz
  *
@@ -124,6 +124,10 @@ public class SplitDepthGenerator extends Generator {
 					config.frustumBottom, config.frustumTop,
 					config.frustumNear, config.frustumFar);
 		}
+	}
+
+	public void completedDraw(int frameNum, PApplet parent) {
+		// do nothing
 	}
 
 	public void cleanup(PApplet parent) {

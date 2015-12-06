@@ -9,7 +9,7 @@ import camera3D.CameraConfiguration;
  * 
  * @author James Schmitz
  * 
- * Base class for all generators.
+ *         Base class for all generators.
  *
  */
 public abstract class Generator {
@@ -124,6 +124,15 @@ public abstract class Generator {
 				0, pixelDest.length);
 		generateCompositeFrame(pixelDest, pixelStorage);
 	}
+
+	/**
+	 * This is called once after each call to the user's draw method. Typically
+	 * this is not needed.
+	 * 
+	 * @param frameNum
+	 * @param parent
+	 */
+	abstract public void completedDraw(int frameNum, PApplet parent);
 
 	/**
 	 * This is called after the last call to the user's draw method and before
