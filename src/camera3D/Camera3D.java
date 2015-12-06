@@ -217,7 +217,7 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
-	public StereoscopicGenerator stereoscopicFrameSaver(String filename) {
+	public StereoscopicGenerator stereoscopicSequentialFrameSaver(String filename) {
 		StereoscopicFrameSaver generator = new StereoscopicFrameSaver(filename);
 
 		setGenerator(generator);
@@ -225,7 +225,7 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
-	public StereoscopicGenerator stereoscopicFrameSaver(String leftFilename,
+	public StereoscopicGenerator stereoscopicLeftRightFrameSaver(String leftFilename,
 			String rightFilename) {
 		StereoscopicFrameSaver generator = new StereoscopicFrameSaver(
 				leftFilename, rightFilename);
