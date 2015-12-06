@@ -172,8 +172,8 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
-	public StereoscopicGenerator renderBarrelDistortion() {
-		StereoscopicGenerator generator = new BarrelDistortionGenerator(
+	public BarrelDistortionGenerator renderBarrelDistortion() {
+		BarrelDistortionGenerator generator = new BarrelDistortionGenerator(
 				parent.width, parent.height);
 
 		setGenerator(generator);

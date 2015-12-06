@@ -16,7 +16,8 @@ import camera3D.generators.StereoscopicGenerator;
  * 
  * And to this guy for pointing out that the radius (r) must be normalized:
  * 
- * http://stackoverflow.com/questions/28130618/what-ist-the-correct-oculus-rift-barrel-distortion-radius-function
+ * http://stackoverflow.com/questions/28130618/what-ist-the-correct-oculus-rift-
+ * barrel-distortion-radius-function
  * 
  * @author James Schmitz
  *
@@ -27,6 +28,10 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 	private int width;
 	private int height;
 
+	private float pow2;
+	private float pow4;
+	private float zoom;
+
 	private int[] arrayIndex;
 	private int[] pixelMapping;
 
@@ -34,20 +39,45 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 		this.width = width;
 		this.height = height;
 
-		setBarrelDistortionCoefficients(0.22f, 0.24f);
+		this.pow2 = 0.22f;
+		this.pow4 = 0.24f;
+		this.zoom = 1;
+
+		calculatePixelMaps(pow2, pow4, zoom);
 	}
 
-	public void setBarrelDistortionCoefficients(float pow2, float pow4) {
-		calculatePixelMaps(pow2, pow4);
+	public BarrelDistortionGenerator setZoom(float zoom) {
+		this.zoom = zoom;
+
+		calculatePixelMaps(pow2, pow4, zoom);
+
+		return this;
 	}
 
-	private void calculatePixelMaps(float pow2, float pow4) {
+	public BarrelDistortionGenerator setBarrelDistortionCoefficients(
+			float pow2, float pow4) {
+		this.pow2 = pow2;
+		this.pow4 = pow4;
+
+		calculatePixelMaps(pow2, pow4, zoom);
+
+		return this;
+	}
+
+	public BarrelDistortionGenerator setDivergence(float divergence) {
+		super.setDivergence(divergence);
+
+		return this;
+	}
+
+	private void calculatePixelMaps(float pow2, float pow4, float zoom) {
 		arrayIndex = new int[width * height];
 		pixelMapping = new int[width * height];
 
 		int xCenter = width / 2;
 		int yCenter = height / 2;
-		double rMax = Math.sqrt(Math.pow(xCenter / 2, 2) + Math.pow(yCenter, 2));
+		double rMax = Math
+				.sqrt(Math.pow(xCenter / 2, 2) + Math.pow(yCenter, 2));
 
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
@@ -55,7 +85,8 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 						+ Math.pow(y - yCenter, 2));
 				double theta = Math.atan2((y - yCenter), (x - xCenter));
 				double rNorm = r / rMax;
-				double rPrime = r
+				double rPrime = (1 / zoom)
+						* r
 						* (1 + pow2 * Math.pow(rNorm, 2) + pow4
 								* Math.pow(rNorm, 4));
 				double xPrime = rPrime * Math.cos(theta) + xCenter;
@@ -70,16 +101,18 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 					if (x + width / 4 < width)
 						arrayIndex[y * width + x + width / 4] = -1;
 				} else {
-					// left
-					arrayIndex[y * width + x - width / 4] = 0;
-					pixelMapping[y * width + x - width / 4] = ((int) Math
-							.floor(yPrime) * width)
-							+ ((int) Math.floor(xPrime));
 					// right
-					arrayIndex[y * width + x + width / 4] = 1;
+					arrayIndex[y * width + x + width / 4] = 0;
 					pixelMapping[y * width + x + width / 4] = ((int) Math
 							.floor(yPrime) * width)
 							+ ((int) Math.floor(xPrime));
+					// left
+					if (x < xCenter + width / 4) {
+						arrayIndex[y * width + x - width / 4] = 1;
+						pixelMapping[y * width + x - width / 4] = ((int) Math
+								.floor(yPrime) * width)
+								+ ((int) Math.floor(xPrime));
+					}
 				}
 			}
 		}
