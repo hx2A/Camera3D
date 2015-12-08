@@ -75,41 +75,38 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 		pixelMapping = new int[width * height];
 
 		int xCenter = width / 2;
+		int quarterWidth = width / 4;
 		int yCenter = height / 2;
-		double rMax = Math
-				.sqrt(Math.pow(xCenter / 2, 2) + Math.pow(yCenter, 2));
+		double rMax2inv = 1 / (Math.pow(xCenter / 2, 2) + Math.pow(yCenter, 2));
 
 		for (int x = 0; x < width; ++x) {
+			double xOffset = x - xCenter;
 			for (int y = 0; y < height; ++y) {
-				double r = Math.sqrt(Math.pow(x - xCenter, 2)
-						+ Math.pow(y - yCenter, 2));
-				double theta = Math.atan2((y - yCenter), (x - xCenter));
-				double rNorm = r / rMax;
-				double rPrime = (1 / zoom)
-						* r
-						* (1 + pow2 * Math.pow(rNorm, 2) + pow4
-								* Math.pow(rNorm, 4));
-				double xPrime = rPrime * Math.cos(theta) + xCenter;
-				double yPrime = rPrime * Math.sin(theta) + yCenter;
+				double yOffset = y - yCenter;
+				double r2 = xOffset * xOffset + yOffset * yOffset;
+				double sr2 = r2 * rMax2inv;
+				double distortion = (1 + pow2 * sr2 + pow4 * sr2 * sr2) / zoom;
+				double xPrime = distortion * xOffset + xCenter;
+				double yPrime = distortion * yOffset + yCenter;
 
-				if (xPrime < xCenter - width / 4
-						|| xPrime >= xCenter + width / 4 || yPrime < 0
+				if (xPrime < xCenter - quarterWidth
+						|| xPrime >= xCenter + quarterWidth || yPrime < 0
 						|| yPrime >= height) {
 					// black void
-					if (x >= width / 4 && x < xCenter)
-						arrayIndex[y * width + x - width / 4] = -1;
-					if (x + width / 4 < width)
-						arrayIndex[y * width + x + width / 4] = -1;
+					if (x >= quarterWidth && x < xCenter)
+						arrayIndex[y * width + x - quarterWidth] = -1;
+					if (x + quarterWidth < width)
+						arrayIndex[y * width + x + quarterWidth] = -1;
 				} else {
 					// right
-					arrayIndex[y * width + x + width / 4] = 0;
-					pixelMapping[y * width + x + width / 4] = ((int) Math
+					arrayIndex[y * width + x + quarterWidth] = 0;
+					pixelMapping[y * width + x + quarterWidth] = ((int) Math
 							.floor(yPrime) * width)
 							+ ((int) Math.floor(xPrime));
 					// left
-					if (x < xCenter + width / 4) {
-						arrayIndex[y * width + x - width / 4] = 1;
-						pixelMapping[y * width + x - width / 4] = ((int) Math
+					if (x < xCenter + quarterWidth) {
+						arrayIndex[y * width + x - quarterWidth] = 1;
+						pixelMapping[y * width + x - quarterWidth] = ((int) Math
 								.floor(yPrime) * width)
 								+ ((int) Math.floor(xPrime));
 					}
