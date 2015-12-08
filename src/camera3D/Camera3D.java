@@ -190,6 +190,15 @@ public class Camera3D implements PConstants {
 		return generator;
 	}
 
+	public StereoscopicGenerator renderSplitFrameOverUnder() {
+		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
+				parent.height, SplitFrameGenerator.OVER_UNDER);
+
+		setGenerator(generator);
+
+		return generator;
+	}
+
 	public StereoscopicGenerator renderSplitFrameOverUnderHalfHeight() {
 		StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
 				parent.height, SplitFrameGenerator.OVER_UNDER_HALF_HEIGHT);
