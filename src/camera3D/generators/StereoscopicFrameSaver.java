@@ -47,6 +47,12 @@ public class StereoscopicFrameSaver extends StereoscopicGenerator {
 			else
 				parent.saveFrame(leftFilename);
 		} else if (leftAndRightFilename != null) {
+			/*
+			 * frameNum == 0 // right frameNum == 1 // left
+			 * 
+			 * the '(1 - frameNum)' clause is so the frames are saved left frame
+			 * first.
+			 */
 			parent.save(insertFrame(leftAndRightFilename, parent.frameCount * 2
 					+ (1 - frameNum)));
 		} else {
