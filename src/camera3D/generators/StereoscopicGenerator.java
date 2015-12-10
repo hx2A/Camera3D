@@ -14,6 +14,7 @@ public abstract class StereoscopicGenerator extends Generator implements
 		PConstants {
 
 	private float divergence;
+	private int swapLeftRight;
 
 	private float cameraDivergenceX;
 	private float cameraDivergenceY;
@@ -21,6 +22,7 @@ public abstract class StereoscopicGenerator extends Generator implements
 
 	public StereoscopicGenerator() {
 		divergence = 1;
+		swapLeftRight = 1;
 	}
 
 	public int getComponentCount() {
@@ -46,11 +48,24 @@ public abstract class StereoscopicGenerator extends Generator implements
 		return this;
 	}
 
+	public StereoscopicGenerator swapLeftRight(boolean swap) {
+		if (swap)
+			swapLeftRight = -1;
+		else
+			swapLeftRight = 1;
+
+		if (config != null && config.isReady())
+			recalculateCameraSettings();
+
+		return this;
+	}
+
 	protected void recalculateCameraSettings() {
 		float dx = config.cameraPositionX - config.cameraTargetX;
 		float dy = config.cameraPositionY - config.cameraTargetY;
 		float dz = config.cameraPositionZ - config.cameraTargetZ;
-		float diverge = -divergence / (config.fovy * RAD_TO_DEG);
+		float diverge = -(swapLeftRight * divergence)
+				/ (config.fovy * RAD_TO_DEG);
 
 		cameraDivergenceX = (dy * config.cameraUpZ - config.cameraUpY * dz)
 				* diverge;

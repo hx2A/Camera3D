@@ -64,8 +64,16 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 		return this;
 	}
 
+	@Override
 	public BarrelDistortionGenerator setDivergence(float divergence) {
 		super.setDivergence(divergence);
+
+		return this;
+	}
+
+	@Override
+	public BarrelDistortionGenerator swapLeftRight(boolean swap) {
+		super.swapLeftRight(swap);
 
 		return this;
 	}
