@@ -91,9 +91,10 @@ public abstract class StereoscopicGenerator extends Generator implements
 				* diverge;
 
 		float distanceToTarget = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-		float cameraDivergenceDistance = (float) Math.sqrt(cameraDivergenceX
-				* cameraDivergenceX + cameraDivergenceY * cameraDivergenceY
-				+ cameraDivergenceZ * cameraDivergenceZ);
+		float cameraDivergenceDistance = (float) (Math.signum(swapLeftRight
+				* divergence) * Math.sqrt(cameraDivergenceX * cameraDivergenceX
+				+ cameraDivergenceY * cameraDivergenceY + cameraDivergenceZ
+				* cameraDivergenceZ));
 		frustrumSkew = cameraDivergenceDistance * config.frustumNear
 				/ distanceToTarget;
 	}
@@ -143,6 +144,10 @@ public abstract class StereoscopicGenerator extends Generator implements
 						config.cameraTargetZ, config.cameraUpX,
 						config.cameraUpY, config.cameraUpZ);
 			}
+
+			parent.frustum(config.frustumLeft, config.frustumRight,
+					config.frustumBottom, config.frustumTop,
+					config.frustumNear, config.frustumFar);
 		}
 	}
 
@@ -155,5 +160,9 @@ public abstract class StereoscopicGenerator extends Generator implements
 				config.cameraPositionZ, config.cameraTargetX,
 				config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
 				config.cameraUpY, config.cameraUpZ);
+
+		parent.frustum(config.frustumLeft, config.frustumRight,
+				config.frustumBottom, config.frustumTop, config.frustumNear,
+				config.frustumFar);
 	}
 }

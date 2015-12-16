@@ -36,6 +36,10 @@ public class RegularRenderer extends Generator {
 				config.cameraPositionZ, config.cameraTargetX,
 				config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
 				config.cameraUpY, config.cameraUpZ);
+
+		parent.frustum(config.frustumLeft, config.frustumRight,
+				config.frustumBottom, config.frustumTop, config.frustumNear,
+				config.frustumFar);
 	}
 
 	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
@@ -51,5 +55,9 @@ public class RegularRenderer extends Generator {
 				config.cameraPositionZ, config.cameraTargetX,
 				config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
 				config.cameraUpY, config.cameraUpZ);
+
+		parent.frustum(config.frustumLeft, config.frustumRight,
+				config.frustumBottom, config.frustumTop, config.frustumNear,
+				config.frustumFar);
 	}
 }
