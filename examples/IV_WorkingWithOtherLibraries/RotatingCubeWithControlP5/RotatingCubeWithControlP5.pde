@@ -41,6 +41,7 @@ For more complex examples this may not work.
 */
 
   camera3D = new Camera3D(this);
+  camera3D.renderDefaultAnaglyph();
 
   strokeWeight(4);
   stroke(0);

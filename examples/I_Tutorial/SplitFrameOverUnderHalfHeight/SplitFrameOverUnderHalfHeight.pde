@@ -1,6 +1,5 @@
 import camera3D.Camera3D;
 
-PGraphics label;
 Camera3D camera3D;
 
 float rot = 75f;
@@ -11,20 +10,8 @@ float rotZ = rot * 0.3f;
 void setup() {
   size(300, 300, P3D);
   camera3D = new Camera3D(this);
-  // the bitmask red cyan anaglyph generator is the same as the
-  // default anaglyph generator.
-  camera3D.renderBitMaskRedCyanAnaglyph().setDivergence(1);
-  // or use the magenta green anaglyph generator:
-//  camera3D.renderBitMaskMagentaGreenAnaglyph().setDivergence(1);
+  camera3D.renderSplitFrameOverUnderHalfHeight().setDivergence(1);
   camera3D.setBackgroundColor(255);
-
-  label = createGraphics(120, 20);
-  label.beginDraw();
-  label.textAlign(LEFT, TOP);
-  label.fill(0);
-  label.textSize(12);
-  label.text("Camera3D Example", 0, 0);
-  label.endDraw();
 }
 
 void preDraw() {
@@ -76,9 +63,4 @@ void draw() {
   rotateZ(radians(rotZ));
   box(boxSize);
   popMatrix();
-}
-
-void postDraw() {
-  copy(label, 0, 0, label.width, label.height, width - label.width,
-       height - label.height - 10, label.width, label.height);
 }

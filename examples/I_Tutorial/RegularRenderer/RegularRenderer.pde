@@ -1,3 +1,11 @@
+/*
+Camera3D's "Regular" renderer is just the regular P3D renderer.
+
+This feature is included so that you can easily toggle Camera3D
+on and off without commenting out lines of code. This is also
+useful for debugging purposes.
+*/
+
 import camera3D.Camera3D;
 
 PGraphics label;

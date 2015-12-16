@@ -1,6 +1,14 @@
+/*
+Split Depth Illusion animations are inspired by the split depth
+GIFs popular on the internet. I figured out how to get Processing
+to implement the same effect.
+
+This is different from adding two rectangles to a regular P3D sketch.
+The occulusion bars are pure white and will not cast or receive a
+shadow, just like a split depth GIF.
+*/
 import camera3D.Camera3D;
 
-PGraphics label;
 Camera3D camera3D;
 
 float rot = 75f;
@@ -11,20 +19,21 @@ float rotZ = rot * 0.3f;
 void setup() {
   size(300, 300, P3D);
   camera3D = new Camera3D(this);
-  // the bitmask red cyan anaglyph generator is the same as the
-  // default anaglyph generator.
-  camera3D.renderBitMaskRedCyanAnaglyph().setDivergence(1);
-  // or use the magenta green anaglyph generator:
-//  camera3D.renderBitMaskMagentaGreenAnaglyph().setDivergence(1);
-  camera3D.setBackgroundColor(255);
+/*
+There are two ways to select the location of the occlusion plane:
 
-  label = createGraphics(120, 20);
-  label.beginDraw();
-  label.textAlign(LEFT, TOP);
-  label.fill(0);
-  label.textSize(12);
-  label.text("Camera3D Example", 0, 0);
-  label.endDraw();
+* absolute distance from the camera
+* multiple of the distance from the camera location to the camera
+target.
+
+Either is fine, but one may be more convenient than the other.
+
+Try fiddling with the numbers to see what happens.
+*/  
+  camera3D.renderSplitDepthIllusion().setOcclusionZdistance(350);
+  // or:
+//  camera3D.renderSplitDepthIllusion().setOcclusionZfactor(1.4);
+  camera3D.setBackgroundColor(128);
 }
 
 void preDraw() {
@@ -76,9 +85,4 @@ void draw() {
   rotateZ(radians(rotZ));
   box(boxSize);
   popMatrix();
-}
-
-void postDraw() {
-  copy(label, 0, 0, label.width, label.height, width - label.width,
-       height - label.height - 10, label.width, label.height);
 }

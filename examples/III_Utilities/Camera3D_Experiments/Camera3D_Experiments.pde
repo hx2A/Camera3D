@@ -1,11 +1,15 @@
 /*
-This sketch is a utility to help you explore the Camera3D options. Not all renderers
-will work with all object and background color combinations. Experimenting with the
-possibilities can be tedious, and this sketch is designed to help make that easier.
+This sketch is a utility to help you explore the Camera3D options.
 
-Don't look at the actual code if you are a beginner. Just run it and play with the sliders.
+Not all renderers will work with all object and background color
+combinations. Experimenting with the possibilities can be tedious,
+and this sketch is designed to help make that easier.
 
-On the other hand, if you want to see some awesome ControlP5 coding, read on...
+Don't look at the actual code if you are a beginner. Just run it
+and play with the sliders.
+
+On the other hand, if you want to see some awesome ControlP5
+coding, read on...
 */
 
 import java.util.HashMap;
@@ -13,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import camera3D.*;
+import camera3D.generators.*;
 import controlP5.*;
 import shapes3d.*;
 
@@ -53,10 +58,13 @@ DropdownList objectList;
 Ellipsoid earth;
 
 Map<Integer, String> rendererMenuItems;
-String rendererChoices = "Standard Renderer, Default Anaglyph,"
+String rendererChoices = "Regular P3D Renderer, Default Anaglyph,"
 		+ "BitMask Filter Red-Cyan, BitMask Filter Magenta-Green,"
 		+ "True Anaglyph, Gray Anaglyph, Half Color Anaglyph,"
-		+ "Dubois Red-Cyan, Dubois Magenta-Green, Dubois Amber-Blue";
+		+ "Dubois Red-Cyan, Dubois Magenta-Green, Dubois Amber-Blue,"
+		+ "Barrel Distortion, Split Depth Illusion, Interlaced,"
+		+ "Side by Side, Side by Side Half Width,"
+		+ "Over Under, Over Under Half Height";
 Map<Integer, String> objectMenuItems;
 String objectChoices = "Box, Sphere, Ring of Spheres, Earth";
 
@@ -76,6 +84,7 @@ void setup() {
 	createControls();
 	camera3D = new Camera3D(this);
 	camera3D.renderDefaultAnaglyph();
+	camera3D.reportStats();
 
 	earth = new Ellipsoid(this, 40, 40);
 	earth.setRadius(150);
@@ -200,6 +209,9 @@ Slider addSlider(String variable, String caption, float y, int min,
 }
 
 void preDraw() {
+	camera3D.setBackgroundColor(color(background_v1, background_v2,
+			background_v3));
+
 	xRot = (xRot + xRotSpeed + 360) % 360;
 	yRot = (yRot + yRotSpeed + 360) % 360;
 	zRot = (zRot + zRotSpeed + 360) % 360;
@@ -233,8 +245,6 @@ void draw() {
 	} else {
 		fill(color(fill_v1, fill_v2, fill_v3, fill_v4));
 	}
-
-	background(background_v1, background_v2, background_v3);
 
 	pushMatrix();
 	translate(xTrans, yTrans, zTrans);

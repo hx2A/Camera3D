@@ -36,13 +36,30 @@ class RendererListener implements ControlListener {
 		case 9:
 			camera3D.renderDuboisAmberBlueAnaglyph();
 			break;
+		case 10:
+			camera3D.renderBarrelDistortion();
+			break;
+		case 11:
+			camera3D.renderSplitDepthIllusion();
+			break;
+		case 12:
+			camera3D.renderInterlaced();
+			break;
+		case 13:
+			camera3D.renderSplitFrameSideBySide();
+			break;
+		case 14:
+			camera3D.renderSplitFrameSideBySideHalfWidth();
+			break;
+		case 15:
+			camera3D.renderSplitFrameOverUnder();
+			break;
+		case 16:
+			camera3D.renderSplitFrameOverUnderHalfHeight();
+			break;
 		default:
 			println("Unknown Renderer " + rendererChoice
 					+ ". Please report bug.");
-		}
-
-		if (!rendererChoice.equals("Standard Renderer")) {
-			camera3D.setCameraDivergence(divergence);
 		}
 	}
 }

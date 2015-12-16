@@ -1,3 +1,13 @@
+/*
+Dubois Anaglyphs are a mathematically optimal way to create
+anaglyphs.
+
+Go here:
+
+http://www.site.uottawa.ca/~edubois/anaglyph/
+
+to learn more.
+*/
 import camera3D.Camera3D;
 
 PGraphics label;
@@ -12,6 +22,9 @@ void setup() {
   size(300, 300, P3D);
   camera3D = new Camera3D(this);
   camera3D.renderDuboisRedCyanAnaglyph().setDivergence(1);
+  // or use the magenta green or amber blue generators.
+//  camera3D.renderDuboisMagentaGreenAnaglyph().setDivergence(1);
+//  camera3D.renderDuboisAmberBlueAnaglyph().setDivergence(1);
   camera3D.setBackgroundColor(255);
 
   label = createGraphics(120, 20);

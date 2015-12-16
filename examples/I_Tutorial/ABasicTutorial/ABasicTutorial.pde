@@ -22,12 +22,24 @@ void setup() {
   label.endDraw();
 }
 
+/*
+Camera3D adds an optional preDraw method to your sketch.
+
+This method is called ONCE per frame, before any calls to the
+draw method.
+*/
 void preDraw() {
   rotX += 0.5;
   rotY += 0.1;
   rotZ += 0.3;
 }
 
+/*
+With Camera3D, the draw method is called multiple times per frame.
+
+In this sketch, it is called TWICE. Once for the left, once for
+the right.
+*/
 void draw() {
   strokeWeight(8);
   stroke(0);
@@ -39,6 +51,12 @@ void draw() {
   box(250);
 }
 
+/*
+Camera3D adds an optional postDraw method to your sketch.
+
+This method is called ONCE per frame, after all calls to the
+draw method.
+*/
 void postDraw() {
   copy(label, 0, 0, label.width, label.height, width - label.width,
        height - label.height, label.width, label.height);

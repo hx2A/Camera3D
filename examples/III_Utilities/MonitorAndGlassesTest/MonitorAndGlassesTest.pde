@@ -2,16 +2,16 @@
 This sketch is a simple utility for evaluating the quality of your
 monitor and glasses.
 
-Run the sketch with your Red Cyan glasses on and cover one eye. You
-should see either the horizontal or vertical lines disappear or
-diminish.
+Run the sketch with your Red Cyan glasses on and cover one eye.
+You should see either the horizontal or vertical lines disappear
+or diminish.
 
-Ideally one set of lines will disappear. If it doesn't, try making small
-adjustments to the brightness/contrast settings on your monitor to see
-if it improves.
+Ideally one set of lines will disappear. If it doesn't, try
+making small adjustments to the brightness/contrast settings on
+your monitor to see if it improves.
 
-Bottom line, the better this works, the better the 3D effect of the other
-examples.
+Bottom line, the better this works, the better the 3D effect of
+the other examples.
 */
 
 import camera3D.*;
@@ -23,7 +23,7 @@ void setup() {
 
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(0);
-  camera3D.setCameraDivergence(0);
+  camera3D.renderBitMaskRedCyanAnaglyph().setDivergence(0);
 }
 
 void draw() {

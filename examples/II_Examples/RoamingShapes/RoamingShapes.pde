@@ -1,4 +1,19 @@
+/*
+ * By default, Camera3D's stereoscopic generators use asymmetric
+ * frustums. As I understand it, this is the 'correct' way to
+ * render stereoscopy. If for some reason you want to turn it
+ * off, you can use the useSymmetricFrustum() method.
+ * 
+ * To learn more about what this is, read this:
+ *
+ * http://paulbourke.net/stereographics/stereorender/
+ * 
+ * or uncomment the useSymmetricFrustum() line below and see what
+ * changes.
+ */
+
 import camera3D.*;
+import camera3D.generators.*;
 
 Camera3D camera3D;
 Shape[] shapeArray;
@@ -17,9 +32,12 @@ void setup() {
 
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(128);
-  camera3D.renderDuboisRedCyanAnaglyph();
-  camera3D.setCameraDivergence(3);
+  StereoscopicGenerator generator = camera3D.renderDuboisRedCyanAnaglyph().setDivergence(1.5);
 
+  // uncomment this line of code:
+//  generator.useSymmetricFrustum();
+
+  // initialize variables.
   int offset = 0;
   xMin = -width / 2 + offset;
   xMax = width / 2 - offset;
@@ -27,11 +45,12 @@ void setup() {
   yMax = height / 2 - offset;
   zMin = -400;
   zMaxShape = -50;
-  zMax = 50;
+  zMax = -25;
 
   float maxVelocity = 0.5f;
   float maxRotation = 0.8f;
 
+  // create shapes and initialize motion.
   shapeArray = new Shape[4];
   for (int ii = 0; ii < shapeArray.length; ++ii) {
     PVector start = new PVector(random(xMin, xMax), random(yMin, yMax),

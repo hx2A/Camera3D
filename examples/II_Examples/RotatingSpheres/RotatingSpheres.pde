@@ -22,15 +22,12 @@ void setup() {
   /*
   Camera3D supports a variety of rendering algorithms to make
   anaglyphs. Here, I am setting it to a simple bitmask filter.
-  */
-  camera3D.renderBitMaskRedCyanAnaglyph();
 
-  /*
   Divergence is the distance between the two camera locations used
   to make the two images. Suitable values are small positive numbers
   less than 5.
   */
-  camera3D.setCameraDivergence(3);
+  camera3D.renderBitMaskRedCyanAnaglyph().setDivergence(2);
 
   label = createGraphics(140, 60);
   label.beginDraw();

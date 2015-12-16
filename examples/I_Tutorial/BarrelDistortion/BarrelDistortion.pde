@@ -1,6 +1,13 @@
-import camera3D.Camera3D;
+/*
+This is the Barrel Distortion algorithm, suitable for Oculus Rift
+or (maybe) Google Cardboard.
 
-PGraphics label;
+The default distortion coefficients are set for the Oculus Rift.
+You can change them with the setBarrelDistortionCoefficients
+method.
+*/
+import camera3D.Camera3D;
+import camera3D.generators.*;
 Camera3D camera3D;
 
 float rot = 75f;
@@ -11,20 +18,11 @@ float rotZ = rot * 0.3f;
 void setup() {
   size(300, 300, P3D);
   camera3D = new Camera3D(this);
-  // the bitmask red cyan anaglyph generator is the same as the
-  // default anaglyph generator.
-  camera3D.renderBitMaskRedCyanAnaglyph().setDivergence(1);
-  // or use the magenta green anaglyph generator:
-//  camera3D.renderBitMaskMagentaGreenAnaglyph().setDivergence(1);
-  camera3D.setBackgroundColor(255);
+  BarrelDistortionGenerator generator = camera3D.renderBarrelDistortion().setDivergence(1);
+  // Change these numbers to learn how this works. Set them to 0, 0 for no distortion.
+  generator.setBarrelDistortionCoefficients(0.22, 0.24);
 
-  label = createGraphics(120, 20);
-  label.beginDraw();
-  label.textAlign(LEFT, TOP);
-  label.fill(0);
-  label.textSize(12);
-  label.text("Camera3D Example", 0, 0);
-  label.endDraw();
+  camera3D.setBackgroundColor(255);
 }
 
 void preDraw() {
@@ -76,9 +74,4 @@ void draw() {
   rotateZ(radians(rotZ));
   box(boxSize);
   popMatrix();
-}
-
-void postDraw() {
-  copy(label, 0, 0, label.width, label.height, width - label.width,
-       height - label.height - 10, label.width, label.height);
 }
