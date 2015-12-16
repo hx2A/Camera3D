@@ -22,6 +22,7 @@ public abstract class StereoscopicGenerator extends Generator implements
 
 	private float divergence;
 	private int swapLeftRight;
+	private boolean useAsymmetricFrustrum;
 
 	private float cameraDivergenceX;
 	private float cameraDivergenceY;
@@ -31,6 +32,7 @@ public abstract class StereoscopicGenerator extends Generator implements
 	public StereoscopicGenerator() {
 		divergence = 1;
 		swapLeftRight = 1;
+		useAsymmetricFrustrum = true;
 	}
 
 	public int getComponentCount() {
@@ -68,6 +70,12 @@ public abstract class StereoscopicGenerator extends Generator implements
 		return this;
 	}
 
+	public StereoscopicGenerator useSymmetricFrustum() {
+		useAsymmetricFrustrum = false;
+
+		return this;
+	}
+
 	protected void recalculateCameraSettings() {
 		float dx = config.cameraPositionX - config.cameraTargetX;
 		float dy = config.cameraPositionY - config.cameraTargetY;
@@ -91,30 +99,50 @@ public abstract class StereoscopicGenerator extends Generator implements
 	}
 
 	public void prepareForDraw(int frameNum, PApplet parent) {
-		if (frameNum == 0) {
-			parent.camera(config.cameraPositionX + cameraDivergenceX,
-					config.cameraPositionY + cameraDivergenceY,
-					config.cameraPositionZ + cameraDivergenceZ,
-					config.cameraTargetX + cameraDivergenceX,
-					config.cameraTargetY + cameraDivergenceY,
-					config.cameraTargetZ + cameraDivergenceZ, config.cameraUpX,
-					config.cameraUpY, config.cameraUpZ);
+		if (useAsymmetricFrustrum) {
+			if (frameNum == 0) {
+				parent.camera(config.cameraPositionX + cameraDivergenceX,
+						config.cameraPositionY + cameraDivergenceY,
+						config.cameraPositionZ + cameraDivergenceZ,
+						config.cameraTargetX + cameraDivergenceX,
+						config.cameraTargetY + cameraDivergenceY,
+						config.cameraTargetZ + cameraDivergenceZ,
+						config.cameraUpX, config.cameraUpY, config.cameraUpZ);
 
-			parent.frustum(config.frustumLeft - frustrumSkew,
-					config.frustumRight - frustrumSkew, config.frustumBottom,
-					config.frustumTop, config.frustumNear, config.frustumFar);
-		} else if (frameNum == 1) {
-			parent.camera(config.cameraPositionX - cameraDivergenceX,
-					config.cameraPositionY - cameraDivergenceY,
-					config.cameraPositionZ - cameraDivergenceZ,
-					config.cameraTargetX - cameraDivergenceX,
-					config.cameraTargetY - cameraDivergenceY,
-					config.cameraTargetZ - cameraDivergenceZ, config.cameraUpX,
-					config.cameraUpY, config.cameraUpZ);
+				parent.frustum(config.frustumLeft - frustrumSkew,
+						config.frustumRight - frustrumSkew,
+						config.frustumBottom, config.frustumTop,
+						config.frustumNear, config.frustumFar);
+			} else if (frameNum == 1) {
+				parent.camera(config.cameraPositionX - cameraDivergenceX,
+						config.cameraPositionY - cameraDivergenceY,
+						config.cameraPositionZ - cameraDivergenceZ,
+						config.cameraTargetX - cameraDivergenceX,
+						config.cameraTargetY - cameraDivergenceY,
+						config.cameraTargetZ - cameraDivergenceZ,
+						config.cameraUpX, config.cameraUpY, config.cameraUpZ);
 
-			parent.frustum(config.frustumLeft + frustrumSkew,
-					config.frustumRight + frustrumSkew, config.frustumBottom,
-					config.frustumTop, config.frustumNear, config.frustumFar);
+				parent.frustum(config.frustumLeft + frustrumSkew,
+						config.frustumRight + frustrumSkew,
+						config.frustumBottom, config.frustumTop,
+						config.frustumNear, config.frustumFar);
+			}
+		} else {
+			if (frameNum == 0) {
+				parent.camera(config.cameraPositionX + cameraDivergenceX,
+						config.cameraPositionY + cameraDivergenceY,
+						config.cameraPositionZ + cameraDivergenceZ,
+						config.cameraTargetX, config.cameraTargetY,
+						config.cameraTargetZ, config.cameraUpX,
+						config.cameraUpY, config.cameraUpZ);
+			} else if (frameNum == 1) {
+				parent.camera(config.cameraPositionX - cameraDivergenceX,
+						config.cameraPositionY - cameraDivergenceY,
+						config.cameraPositionZ - cameraDivergenceZ,
+						config.cameraTargetX, config.cameraTargetY,
+						config.cameraTargetZ, config.cameraUpX,
+						config.cameraUpY, config.cameraUpZ);
+			}
 		}
 	}
 

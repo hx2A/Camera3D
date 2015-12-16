@@ -66,16 +66,17 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 
 	@Override
 	public BarrelDistortionGenerator setDivergence(float divergence) {
-		super.setDivergence(divergence);
-
-		return this;
+		return (BarrelDistortionGenerator) super.setDivergence(divergence);
 	}
 
 	@Override
 	public BarrelDistortionGenerator swapLeftRight(boolean swap) {
-		super.swapLeftRight(swap);
+		return (BarrelDistortionGenerator) super.swapLeftRight(swap);
+	}
 
-		return this;
+	@Override
+	public BarrelDistortionGenerator useSymmetricFrustum() {
+		return (BarrelDistortionGenerator) super.useSymmetricFrustum();
 	}
 
 	private void calculatePixelMaps(float pow2, float pow4, float zoom) {
