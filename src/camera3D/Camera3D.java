@@ -279,14 +279,11 @@ public class Camera3D implements PConstants {
 	public void enableSaveFrame(char key, String saveFrameLocation) {
 		saveFrameKey = key;
 
-		if (saveFrameLocation != null && saveFrameLocation != "") {
-			File saveDir = new File(saveFrameLocation);
-			if (!saveDir.exists())
-				saveDir.mkdirs();
-			this.saveFrameLocation = saveDir.getAbsolutePath() + File.separator;
-		} else {
-			this.saveFrameLocation = "";
+		if (!saveFrameLocation.endsWith(File.separator)) {
+			saveFrameLocation += File.separator;
 		}
+		this.saveFrameLocation = saveFrameLocation;
+
 		enableSaveFrame = true;
 	}
 
