@@ -18,6 +18,18 @@ void setup() {
 //  camera3D.renderBitMaskMagentaGreenAnaglyph().setDivergence(1);
   camera3D.setBackgroundColor(255);
 
+/*
+Enable debug feature. if you hit the 's' key, Camera3D will save
+the intermediate steps to a 'debug' directory inside the sketch's
+folder.
+
+Note if you are running this sketch through Processing's Example 
+Sketch feature, you will find this here:
+
+<Processing Sketchbook location>/libraries/Camera3D/examples/I_Tutorial/BitmaskFilterAnaglyph/debug/
+*/
+  camera3D.enableSaveFrame('s', "debug");
+
   label = createGraphics(120, 20);
   label.beginDraw();
   label.textAlign(LEFT, TOP);

@@ -17,6 +17,7 @@ void setup() {
   WiggleStereoscopyGenerator generator = new WiggleStereoscopyGenerator(10);
   generator.setDivergence(5f);
   camera3D.setGenerator(generator);
+  camera3D.enableSaveFrame('s', "debug");
 }
 
 void draw() {

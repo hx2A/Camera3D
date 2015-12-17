@@ -1,11 +1,11 @@
 /*
 Split Depth Illusion animations are inspired by the split depth
-GIFs popular on the internet. I figured out how to get Processing
+GIFs popular on the Internet. I figured out how to get Processing
 to implement the same effect.
 
-This is different from adding two rectangles to a regular P3D sketch.
-The occulusion bars are pure white and will not cast or receive a
-shadow, just like a split depth GIF.
+This is different from adding two rectangles to a regular P3D
+sketch. The occlusion bars are pure white and will not cast or
+receive a shadow, just like a split depth GIF.
 */
 import camera3D.Camera3D;
 
@@ -19,6 +19,7 @@ float rotZ = rot * 0.3f;
 void setup() {
   size(300, 300, P3D);
   camera3D = new Camera3D(this);
+
 /*
 There are two ways to select the location of the occlusion plane:
 
@@ -34,6 +35,7 @@ Try fiddling with the numbers to see what happens.
   // or:
 //  camera3D.renderSplitDepthIllusion().setOcclusionZfactor(1.4);
   camera3D.setBackgroundColor(128);
+  camera3D.enableSaveFrame('s', "debug");
 }
 
 void preDraw() {

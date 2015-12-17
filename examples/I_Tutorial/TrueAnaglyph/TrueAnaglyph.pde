@@ -13,6 +13,7 @@ void setup() {
   camera3D = new Camera3D(this);
   camera3D.renderTrueAnaglyph().setDivergence(1);
   camera3D.setBackgroundColor(255);
+  camera3D.enableSaveFrame('s', "debug");
 
   label = createGraphics(120, 20);
   label.beginDraw();

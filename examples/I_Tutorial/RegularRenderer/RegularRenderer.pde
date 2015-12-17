@@ -21,6 +21,7 @@ void setup() {
   camera3D = new Camera3D(this);
   camera3D.renderRegular();
   camera3D.setBackgroundColor(255);
+  camera3D.enableSaveFrame('s', "debug");
 
   label = createGraphics(120, 20);
   label.beginDraw();

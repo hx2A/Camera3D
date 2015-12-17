@@ -12,6 +12,7 @@ void setup() {
   camera3D = new Camera3D(this);
   camera3D.renderSplitFrameOverUnderHalfHeight().setDivergence(1);
   camera3D.setBackgroundColor(255);
+  camera3D.enableSaveFrame('s', "debug");
 }
 
 void preDraw() {

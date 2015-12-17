@@ -20,9 +20,10 @@ void setup() {
   camera3D = new Camera3D(this);
   BarrelDistortionGenerator generator = camera3D.renderBarrelDistortion().setDivergence(1);
   // Change these numbers to learn how this works. Set them to 0, 0 for no distortion.
-  generator.setBarrelDistortionCoefficients(0.22, 0.24);
+  // generator.setBarrelDistortionCoefficients(0.22, 0.24);
 
   camera3D.setBackgroundColor(255);
+  camera3D.enableSaveFrame('s', "debug");
 }
 
 void preDraw() {
