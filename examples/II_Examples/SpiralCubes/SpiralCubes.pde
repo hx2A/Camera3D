@@ -27,7 +27,7 @@ void setup() {
   camera3D.enableSaveFrame("/tmp/camera3D/split_depth_illusion");
 
   // this creates a PGraphics object with a white background and
-  // two black rectangles. The occlusion plane is interpretted by
+  // two black rectangles. The occlusion plane is interpreted by
   // looking for white pixels in this mask.  
   PGraphics mask = createGraphics(width, height);
   mask.beginDraw();
