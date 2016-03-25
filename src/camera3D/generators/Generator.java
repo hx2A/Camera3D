@@ -9,7 +9,7 @@ import camera3D.CameraConfiguration;
  * 
  * @author James Schmitz
  * 
- *         Base class for all generators.  
+ *         Base class for all generators.
  *
  */
 public abstract class Generator {
