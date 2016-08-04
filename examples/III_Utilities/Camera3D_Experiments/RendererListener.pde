@@ -1,11 +1,10 @@
 class RendererListener implements ControlListener {
 	public void controlEvent(ControlEvent theEvent) {
-		String rendererChoice = rendererMenuItems.get((int) theEvent
-				.getGroup().getValue());
+		String rendererChoice = rendererMenuItems.get((int) theEvent.getValue());
 
 		println("setting renderer to: " + rendererChoice + " renderer");
 
-		switch ((int) theEvent.getGroup().getValue()) {
+		switch ((int) theEvent.getValue()) {
 		case 0:
 			camera3D.renderRegular();
 			break;

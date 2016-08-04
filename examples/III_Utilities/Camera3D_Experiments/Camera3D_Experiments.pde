@@ -105,16 +105,14 @@ void createControls() {
 	cp5.setAutoDraw(false);
 	cp5.getFont().setSize(12);
 
-	float yOffset = 1f;
+	float yOffset = 0.1;
 	int controlSpace = 23;
 
 	DropdownList rendererList = addDropdown("Renderer Choices",
 			(controlSpace * yOffset++), rendererMenuItems).addListener(
 			new RendererListener());
-	objectList = addDropdown("Object Choices", (controlSpace * yOffset),
+	objectList = addDropdown("Object Choices", (controlSpace * yOffset++),
 			objectMenuItems); // .addListener(new ObjectListener());
-
-	yOffset += 0.2;
 
 	addSlider("divergence", "divergence", (controlSpace * yOffset++), -10,
 			10).addListener(new DivergenceListener());
@@ -171,8 +169,8 @@ void createControls() {
 	addSlider("stroke_v4", "stroke alpha", (controlSpace * yOffset++), 0,
 			255);
 
-	objectList.bringToFront();
-	rendererList.bringToFront();
+	objectList.bringToFront().close();
+	rendererList.bringToFront().close();
 
 	b3.listen(true); // trigger listener
 }
