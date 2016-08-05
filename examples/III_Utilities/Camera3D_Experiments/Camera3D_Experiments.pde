@@ -30,7 +30,7 @@ float yRot = 0;
 float zRot = 0;
 
 // user settings
-float scale = 0;
+float logscale = 0;
 int strokeWeight = 5;
 float divergence = 3;
 float xRotSpeed = 0f;
@@ -134,7 +134,7 @@ void createControls() {
 	addSlider("zRotSpeed", "z rotation speed", (controlSpace * yOffset++),
 			-5, 5);
 
-	addSlider("scale", "object log-scale", (controlSpace * yOffset++), -2,
+	addSlider("logscale", "object log-scale", (controlSpace * yOffset++), -2,
 			2);
 
 	RadioButton rb = cp5.addRadioButton("colorModel")
@@ -253,7 +253,7 @@ void draw() {
 	}
 
 	shapeMode(CENTER);
-	scale(pow(10, scale));
+	scale(pow(10, logscale));
 
 	switch ((int) objectList.getValue()) {
 	case 0:
@@ -292,6 +292,6 @@ void postDraw() {
  * Mouse Events
  */
 void mouseWheel(MouseEvent event) {
-	scale += -event.getCount() / 10.;
-	cp5.getController("scale").setValue(scale);
+	logscale += -event.getCount() / 10.;
+	cp5.getController("logscale").setValue(logscale);
 }
