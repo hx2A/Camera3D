@@ -31,7 +31,7 @@ float zRot = 0;
 
 // user settings
 float logscale = 0;
-int strokeWeight = 5;
+int shapeStrokeWeight = 5;
 float divergence = 3;
 float xRotSpeed = 0f;
 float yRotSpeed = 0;
@@ -158,7 +158,7 @@ void createControls() {
 	addSlider("fill_v3", "fill blue", (controlSpace * yOffset++), 0, 255);
 	addSlider("fill_v4", "fill alpha", (controlSpace * yOffset++), 0, 255);
 
-	addSlider("strokeWeight", "stroke weight", (controlSpace * yOffset++),
+	addSlider("shapeStrokeWeight", "stroke weight", (controlSpace * yOffset++),
 			0, 10);
 
 	addSlider("stroke_v1", "stroke red", (controlSpace * yOffset++), 0, 255);
@@ -230,7 +230,7 @@ void draw() {
 
 	String objectChoice = objectMenuItems.get((int) objectList.getValue());
 
-	strokeWeight(strokeWeight);
+	strokeWeight(shapeStrokeWeight);
 
 	if (stroke_v4 == 0) {
 		noStroke();
