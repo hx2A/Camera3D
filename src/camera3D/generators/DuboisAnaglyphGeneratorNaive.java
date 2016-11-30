@@ -24,53 +24,53 @@ import camera3D.generators.util.ColorVector;
 
 public class DuboisAnaglyphGeneratorNaive extends AnaglyphGenerator {
 
-	private AnaglyphMatrix left;
-	private AnaglyphMatrix right;
+    private AnaglyphMatrix left;
+    private AnaglyphMatrix right;
 
-	public DuboisAnaglyphGeneratorNaive(AnaglyphMatrix left,
-			AnaglyphMatrix right) {
-		this.left = left;
-		this.right = right;
-	}
+    public DuboisAnaglyphGeneratorNaive(AnaglyphMatrix left,
+            AnaglyphMatrix right) {
+        this.left = left;
+        this.right = right;
+    }
 
-	public static StereoscopicGenerator createRedCyanGenerator() {
-		return new DuboisAnaglyphGeneratorNaive(LEFT_DUBOIS_REDCYAN,
-				RIGHT_DUBOIS_REDCYAN);
-	}
+    public static StereoscopicGenerator createRedCyanGenerator() {
+        return new DuboisAnaglyphGeneratorNaive(LEFT_DUBOIS_REDCYAN,
+                RIGHT_DUBOIS_REDCYAN);
+    }
 
-	public static StereoscopicGenerator createMagentaGreenGenerator() {
-		return new DuboisAnaglyphGeneratorNaive(LEFT_DUBOIS_MAGENTAGREEN,
-				RIGHT_DUBOIS_MAGENTAGREEN);
-	}
+    public static StereoscopicGenerator createMagentaGreenGenerator() {
+        return new DuboisAnaglyphGeneratorNaive(LEFT_DUBOIS_MAGENTAGREEN,
+                RIGHT_DUBOIS_MAGENTAGREEN);
+    }
 
-	public static StereoscopicGenerator createAmberBlueGenerator() {
-		return new DuboisAnaglyphGeneratorNaive(LEFT_DUBOIS_AMBERBLUE,
-				RIGHT_DUBOIS_AMBERBLUE);
-	}
+    public static StereoscopicGenerator createAmberBlueGenerator() {
+        return new DuboisAnaglyphGeneratorNaive(LEFT_DUBOIS_AMBERBLUE,
+                RIGHT_DUBOIS_AMBERBLUE);
+    }
 
-	public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
+    public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
 
-		for (int ii = 0; ii < pixelDest.length; ++ii) {
-			float Rr = removeGammaCorrectionStandardRGB(((pixelDest[ii] & 0x00FF0000) >> 16) / 255f);
-			float Rg = removeGammaCorrectionStandardRGB(((pixelDest[ii] & 0x0000FF00) >> 8) / 255f);
-			float Rb = removeGammaCorrectionStandardRGB((pixelDest[ii] & 0x000000FF) / 255f);
-			float Lr = removeGammaCorrectionStandardRGB(((pixelStorage[0][ii] & 0x00FF0000) >> 16) / 255f);
-			float Lg = removeGammaCorrectionStandardRGB(((pixelStorage[0][ii] & 0x0000FF00) >> 8) / 255f);
-			float Lb = removeGammaCorrectionStandardRGB((pixelStorage[0][ii] & 0x000000FF) / 255f);
+        for (int ii = 0; ii < pixelDest.length; ++ii) {
+            float Rr = removeGammaCorrectionStandardRGB(((pixelDest[ii] & 0x00FF0000) >> 16) / 255f);
+            float Rg = removeGammaCorrectionStandardRGB(((pixelDest[ii] & 0x0000FF00) >> 8) / 255f);
+            float Rb = removeGammaCorrectionStandardRGB((pixelDest[ii] & 0x000000FF) / 255f);
+            float Lr = removeGammaCorrectionStandardRGB(((pixelStorage[0][ii] & 0x00FF0000) >> 16) / 255f);
+            float Lg = removeGammaCorrectionStandardRGB(((pixelStorage[0][ii] & 0x0000FF00) >> 8) / 255f);
+            float Lb = removeGammaCorrectionStandardRGB((pixelStorage[0][ii] & 0x000000FF) / 255f);
 
-			ColorVector AR = right.rightMult(new ColorVector(Rr, Rg, Rb));
-			ColorVector AL = left.rightMult(new ColorVector(Lr, Lg, Lb));
+            ColorVector AR = right.rightMult(new ColorVector(Rr, Rg, Rb));
+            ColorVector AL = left.rightMult(new ColorVector(Lr, Lg, Lb));
 
-			float Ar = applyGammaCorrectionStandardRGB(clip(clip(AR.red)
-					+ clip(AL.red)));
-			float Ag = applyGammaCorrectionStandardRGB(clip(clip(AR.green)
-					+ clip(AL.green)));
-			float Ab = applyGammaCorrectionStandardRGB(clip(clip(AR.blue)
-					+ clip(AL.blue)));
+            float Ar = applyGammaCorrectionStandardRGB(clip(clip(AR.red)
+                    + clip(AL.red)));
+            float Ag = applyGammaCorrectionStandardRGB(clip(clip(AR.green)
+                    + clip(AL.green)));
+            float Ab = applyGammaCorrectionStandardRGB(clip(clip(AR.blue)
+                    + clip(AL.blue)));
 
-			pixelDest[ii] = 0xFF000000 | (((int) (Ar * 255)) << 16)
-					| (((int) (Ag * 255)) << 8) | ((int) (Ab * 255));
-		}
-	}
+            pixelDest[ii] = 0xFF000000 | (((int) (Ar * 255)) << 16)
+                    | (((int) (Ag * 255)) << 8) | ((int) (Ab * 255));
+        }
+    }
 
 }
