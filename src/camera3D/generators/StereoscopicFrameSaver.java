@@ -59,20 +59,4 @@ public class StereoscopicFrameSaver extends StereoscopicGenerator {
             // no filename to save to?
         }
     }
-
-    /*
-     * Copied from PApplet...
-     */
-    public String insertFrame(String what, int frameCount) {
-        int first = what.indexOf('#');
-        int last = what.lastIndexOf('#');
-
-        if ((first != -1) && (last - first > 0)) {
-            String prefix = what.substring(0, first);
-            int count = last - first + 1;
-            String suffix = what.substring(last + 1);
-            return prefix + PApplet.nf(frameCount, count) + suffix;
-        }
-        return what; // no change
-    }
 }

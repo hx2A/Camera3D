@@ -181,6 +181,15 @@ public class Camera3D implements PConstants {
         return generator;
     }
 
+    public Monoscopic360Generator renderMonoscopic360() {
+        Monoscopic360Generator generator = new Monoscopic360Generator(
+                parent.width, parent.height);
+
+        setGenerator(generator);
+
+        return generator;
+    }
+
     public StereoscopicGenerator renderSplitFrameSideBySide() {
         StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
                 parent.height, SplitFrameGenerator.SIDE_BY_SIDE);
@@ -499,12 +508,12 @@ public class Camera3D implements PConstants {
         if (reportStats) {
             if (generator.getComponentCount() == 1) {
                 System.out
-                        .printf("Frame Rate: %.2f frames/sec | Generator Render Time: %.3f ms\n",
-                                parent.frameRate, avgGeneratorTimeMillis);
+                        .printf("%05d | Frame Rate: %.2f frames/sec | Generator Render Time: %.3f ms\n",
+                                parent.frameCount, parent.frameRate, avgGeneratorTimeMillis);
             } else {
                 System.out
-                        .printf("Frame Rate: %.2f frames/sec | draw() time: %.3f ms | Generator Render Time: %.3f ms\n",
-                                parent.frameRate, avgDrawTimeMillis,
+                        .printf("%05d | Frame Rate: %.2f frames/sec | draw() time: %.3f ms | Generator Render Time: %.3f ms\n",
+                                parent.frameCount, parent.frameRate, avgDrawTimeMillis,
                                 avgGeneratorTimeMillis);
             }
         }
