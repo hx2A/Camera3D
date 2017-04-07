@@ -27,6 +27,9 @@ public class Monoscopic360Generator extends Generator {
     private PImage compositeFrame;
     private int frameCount;
 
+    private Vector cameraDirection;
+    private Vector cameraUp;
+
     private Panel[] panels;
     private int[] arrayIndex;
     private int[] pixelMapping;
@@ -148,7 +151,12 @@ public class Monoscopic360Generator extends Generator {
     }
 
     protected void recalculateCameraSettings() {
-        // do nothing
+        cameraDirection = new Vector(
+                (float) (config.cameraTargetX - config.cameraPositionX),
+                (float) (config.cameraTargetY - config.cameraPositionY),
+                (float) (config.cameraTargetZ - config.cameraPositionZ));
+        cameraUp = new Vector((float) config.cameraUpX,
+                (float) config.cameraUpY, (float) config.cameraUpZ);
     }
 
     public void prepareForDraw(int frameNum, PApplet parent) {
@@ -281,38 +289,78 @@ public class Monoscopic360Generator extends Generator {
         }
 
         public void setCamera(PApplet parent) {
-            parent.beginCamera();
-            parent.camera(config.cameraPositionX, config.cameraPositionY,
-                    config.cameraPositionZ, config.cameraTargetX,
-                    config.cameraTargetY, config.cameraTargetZ,
-                    config.cameraUpX, config.cameraUpY, config.cameraUpZ);
+            Vector direction;
+            Vector up;
 
             switch (orientation) {
             case ABOVE:
-                parent.rotateX((float) (PI / 2));
+                direction = cameraUp.mult(cameraDirection.magnitude()).mult(-1);
+                up = cameraDirection.normalized();
                 break;
             case LEFT:
-                parent.rotateY((float) (-PI / 2));
+                direction = cameraUp.cross(cameraDirection);
+                up = cameraUp;
                 break;
             case RIGHT:
-                parent.rotateY((float) (PI / 2));
+                direction = cameraDirection.cross(cameraUp);
+                up = cameraUp;
                 break;
             case REAR:
-                parent.rotateY((float) PI);
+                direction = cameraDirection.mult(-1);
+                up = cameraUp;
                 break;
             case BELOW:
-                parent.rotateX((float) (-PI / 2));
+                direction = cameraUp.mult(cameraDirection.magnitude());
+                up = cameraDirection.normalized().mult(-1);
                 break;
             case FRONT:
+                direction = cameraDirection;
+                up = cameraUp;
                 break;
             default:
                 throw new RuntimeException("Unknown Orientation");
             }
-            parent.endCamera();
+
+            parent.camera(config.cameraPositionX, config.cameraPositionY,
+                    config.cameraPositionZ, config.cameraPositionX
+                            + direction.v1, config.cameraPositionY
+                            + direction.v2, config.cameraPositionZ
+                            + direction.v3, up.v1, up.v2, up.v3);
 
             parent.frustum(-config.frustumNear, config.frustumNear,
                     -config.frustumNear, config.frustumNear,
                     config.frustumNear, config.frustumFar);
+
+        }
+    }
+
+    private class Vector {
+
+        public float v1;
+        public float v2;
+        public float v3;
+
+        public Vector(float v1, float v2, float v3) {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+        }
+
+        public Vector mult(float c) {
+            return new Vector(c * v1, c * v2, c * v3);
+        }
+
+        public float magnitude() {
+            return (float) Math.sqrt(v1 * v1 + v2 * v2 + v3 * v3);
+        }
+
+        public Vector normalized() {
+            return mult(1 / magnitude());
+        }
+
+        public Vector cross(Vector other) {
+            return new Vector(v2 * other.v3 - v3 * other.v2, v3 * other.v1 - v1
+                    * other.v3, v1 * other.v2 - v2 * other.v1);
         }
     }
 }
