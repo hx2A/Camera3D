@@ -14,18 +14,15 @@ import processing.core.PImage;
 
 public class Monoscopic360Generator extends Generator {
 
-    public final static int SIZE_4K = 4 * 1024;
-    public final static int SIZE_8K = 8 * 1024;
     private final static double PI = 3.14159265359;
 
-    // dimensions of sketch
     private int frameWidth;
     private double halfFrameWidth;
-    private int compositeSize; // width of composite frame in pixels
-    private String saveLocation;
 
-    private PImage compositeFrame;
-    private int frameCount;
+    private PImage projectionFrame;
+    private int projectionWidth; // width of composite frame in pixels
+    private String saveLocation;
+    private String panelExplainPlanLocation;
 
     private Vector cameraDirection;
     private Vector cameraUp;
@@ -33,6 +30,7 @@ public class Monoscopic360Generator extends Generator {
     private Panel[] panels;
     private int[] arrayIndex;
     private int[] pixelMapping;
+    private int frameCount;
 
     public Monoscopic360Generator(int width, int height) {
         if (width != height) {
@@ -41,39 +39,37 @@ public class Monoscopic360Generator extends Generator {
 
         this.frameWidth = width;
         this.halfFrameWidth = frameWidth / 2d;
-        this.compositeSize = 4 * width;
+        this.projectionWidth = 3 * width;
         this.saveLocation = null;
-
+        this.panelExplainPlanLocation = null;
         this.frameCount = 0;
 
-        calculatePixelMaps(); // TODO: create panels but don't calculate maps
+        initPanels();
     }
 
-    public Monoscopic360Generator setCompositeSize(int size) {
+    public Monoscopic360Generator setOutputSizeAndLocation(int size,
+            String saveLocation) {
         if (size / 2 != size / 2.0) {
             throw new RuntimeException("Size must be an even number");
         }
-        this.compositeSize = size;
-
-        // invalidate lookup tables so they are recalculated
-        arrayIndex = null;
-        pixelMapping = null;
-
-        return this;
-    }
-
-    public Monoscopic360Generator setSaveLocation(String saveLocation) {
+        this.projectionWidth = size;
         this.saveLocation = saveLocation;
 
+        initPanels();
+
         return this;
     }
 
-    private void calculatePixelMaps() {
-        panels = new Panel[getComponentCount()];
-        arrayIndex = new int[compositeSize * compositeSize / 2];
-        pixelMapping = new int[compositeSize * compositeSize / 2];
+    public Monoscopic360Generator setPanelExplainPlanLocation(
+            String panelExplainPlanLocation) {
+        this.panelExplainPlanLocation = panelExplainPlanLocation;
 
+        return this;
+    }
+
+    private void initPanels() {
         // initialize the 6 panels with the correct settings
+        panels = new Panel[6];
         panels[0] = new Panel(0, CameraOrientation.ABOVE);
         panels[1] = new Panel(0, CameraOrientation.FRONT);
         panels[2] = new Panel(0, CameraOrientation.REAR);
@@ -81,18 +77,27 @@ public class Monoscopic360Generator extends Generator {
         panels[4] = new Panel(0, CameraOrientation.RIGHT);
         panels[5] = new Panel(0, CameraOrientation.BELOW);
 
+        // invalidate lookup tables so they are recalculated
+        arrayIndex = null;
+        pixelMapping = null;
+    }
+
+    private void calculatePixelMaps(PApplet parent) {
+        arrayIndex = new int[projectionWidth * projectionWidth / 2];
+        pixelMapping = new int[projectionWidth * projectionWidth / 2];
+
         // precompute the sin and cos LUTs
-        double[] sinThetaLUT = new double[compositeSize];
-        double[] cosThetaLUT = new double[compositeSize];
-        for (int x = 0; x < compositeSize; ++x) {
-            double theta = -((2 * PI) * (x + 0.5) / compositeSize - PI);
+        double[] sinThetaLUT = new double[projectionWidth];
+        double[] cosThetaLUT = new double[projectionWidth];
+        for (int x = 0; x < projectionWidth; ++x) {
+            double theta = -((2 * PI) * (x + 0.5) / projectionWidth - PI);
             sinThetaLUT[x] = Math.sin(theta);
             cosThetaLUT[x] = Math.cos(theta);
         }
-        double[] sinPhiLUT = new double[compositeSize / 2];
-        double[] cosPhiLUT = new double[compositeSize / 2];
-        for (int y = 0; y < compositeSize / 2; ++y) {
-            double phi = (PI * (y + 0.5) / (compositeSize / 2));
+        double[] sinPhiLUT = new double[projectionWidth / 2];
+        double[] cosPhiLUT = new double[projectionWidth / 2];
+        for (int y = 0; y < projectionWidth / 2; ++y) {
+            double phi = (PI * (y + 0.5) / (projectionWidth / 2));
             sinPhiLUT[y] = Math.sin(phi);
             cosPhiLUT[y] = Math.cos(phi);
         }
@@ -101,14 +106,14 @@ public class Monoscopic360Generator extends Generator {
         // projection to get the spherical coordinates. Then find which
         // panel to use and the best pixel.
         int prevPanel = 0;
-        for (int x = 0; x < compositeSize; ++x) {
-            for (int y = 0; y < compositeSize / 2; ++y) {
+        for (int x = 0; x < projectionWidth; ++x) {
+            for (int y = 0; y < projectionWidth / 2; ++y) {
                 // guess the correct panel is the same as the previous pixel
                 Integer index = panels[prevPanel].locate(sinThetaLUT[x],
                         cosThetaLUT[x], sinPhiLUT[y], cosPhiLUT[y]);
                 if (index != null) {
-                    arrayIndex[y * compositeSize + x] = prevPanel;
-                    pixelMapping[y * compositeSize + x] = index;
+                    arrayIndex[y * projectionWidth + x] = prevPanel;
+                    pixelMapping[y * projectionWidth + x] = index;
                     continue;
                 }
 
@@ -122,8 +127,8 @@ public class Monoscopic360Generator extends Generator {
                     index = panels[p].locate(sinThetaLUT[x], cosThetaLUT[x],
                             sinPhiLUT[y], cosPhiLUT[y]);
                     if (index != null) {
-                        arrayIndex[y * compositeSize + x] = p;
-                        pixelMapping[y * compositeSize + x] = index;
+                        arrayIndex[y * projectionWidth + x] = p;
+                        pixelMapping[y * projectionWidth + x] = index;
                         prevPanel = p;
                         break;
                     }
@@ -131,15 +136,28 @@ public class Monoscopic360Generator extends Generator {
                 if (p == panels.length) {
                     System.out.println(String.format("panel miss: (%d, %d)", x,
                             y));
-                    arrayIndex[y * compositeSize + x] = -1;
-                    pixelMapping[y * compositeSize + x] = 0;
+                    arrayIndex[y * projectionWidth + x] = -1;
+                    pixelMapping[y * projectionWidth + x] = 0;
                 }
             }
+        }
+
+        if (panelExplainPlanLocation != null) {
+            PImage arrayIndexFrame = parent.createImage(projectionWidth,
+                    projectionWidth / 2, PConstants.RGB);
+            arrayIndexFrame.loadPixels();
+            for (int i = 0; i < arrayIndex.length; ++i) {
+                int gray = 255 * arrayIndex[i] / (panels.length - 1);
+                arrayIndexFrame.pixels[i] = 0xFF000000 | (gray << 16)
+                        | (gray << 8) | gray;
+            }
+            arrayIndexFrame.updatePixels();
+            arrayIndexFrame.save(panelExplainPlanLocation);
         }
     }
 
     public int getComponentCount() {
-        return 6;
+        return panels.length;
     }
 
     public String getComponentFrameName(int frameNum) {
@@ -163,29 +181,36 @@ public class Monoscopic360Generator extends Generator {
         frameCount = parent.frameCount;
 
         if (frameNum == 0) {
-            compositeFrame = parent.createImage(compositeSize,
-                    compositeSize / 2, PConstants.RGB);
+            projectionFrame = parent.createImage(projectionWidth,
+                    projectionWidth / 2, PConstants.RGB);
         }
 
         panels[frameNum].setCamera(parent);
+
+        if (arrayIndex == null || pixelMapping == null) {
+            calculatePixelMaps(parent);
+        }
     }
 
     public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
-        if (arrayIndex == null || pixelMapping == null) {
-            calculatePixelMaps();
+        projectionFrame.loadPixels();
+        for (int i = 0; i < pixelMapping.length; ++i) {
+            if (arrayIndex[i] >= 0) {
+                projectionFrame.pixels[i] = pixelStorage[arrayIndex[i]][pixelMapping[i]];
+            }
         }
-
-        compositeFrame.loadPixels();
-        for (int i = 0; i < compositeFrame.pixels.length; ++i) {
-            if (arrayIndex[i] >= 0)
-                compositeFrame.pixels[i] = pixelStorage[arrayIndex[i]][pixelMapping[i]];
-        }
-        compositeFrame.updatePixels();
+        projectionFrame.updatePixels();
 
         // save compositeFrame to file
         if (saveLocation != null) {
-            compositeFrame.save(insertFrame(saveLocation, frameCount));
+            projectionFrame.save(insertFrame(saveLocation, frameCount));
         }
+
+        projectionFrame.resize(frameWidth, 0); // slow - find faster way?
+        System.arraycopy(new int[pixelDest.length], 0, pixelDest, 0,
+                pixelDest.length);
+        System.arraycopy(projectionFrame.pixels, 0, pixelDest, frameWidth
+                * frameWidth / 4, projectionFrame.pixels.length);
     }
 
     public void completedDraw(int frameNum, PApplet parent) {
@@ -197,12 +222,6 @@ public class Monoscopic360Generator extends Generator {
                 config.cameraPositionZ, config.cameraTargetX,
                 config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
                 config.cameraUpY, config.cameraUpZ);
-
-        // clear canvas and add output for displayed frame
-        parent.background(0);
-        parent.copy(compositeFrame, 0, 0, compositeFrame.width,
-                compositeFrame.height, 0, parent.height / 4, parent.width,
-                parent.height / 2);
     }
 
     private enum CameraOrientation {
@@ -231,47 +250,46 @@ public class Monoscopic360Generator extends Generator {
 
             int frameX = -1;
             int frameY = -1;
-            double shrinkage = 1 - 0e-3;
 
             switch (orientation) {
             case FRONT:
                 if (polarZ < 0) {
-                    double scale = -shrinkage * halfFrameWidth / polarZ;
+                    double scale = -halfFrameWidth / polarZ;
                     frameX = (int) Math.floor(halfFrameWidth + scale * polarX);
                     frameY = (int) Math.floor(halfFrameWidth + scale * polarY);
                 }
                 break;
             case REAR:
                 if (polarZ > 0) {
-                    double scale = shrinkage * halfFrameWidth / polarZ;
+                    double scale = halfFrameWidth / polarZ;
                     frameX = (int) Math.floor(halfFrameWidth - scale * polarX);
                     frameY = (int) Math.floor(halfFrameWidth + scale * polarY);
                 }
                 break;
             case ABOVE:
                 if (polarY < 0) {
-                    double scale = -shrinkage * halfFrameWidth / polarY;
+                    double scale = -halfFrameWidth / polarY;
                     frameX = (int) Math.floor(halfFrameWidth + scale * polarX);
                     frameY = (int) Math.floor(halfFrameWidth - scale * polarZ);
                 }
                 break;
             case BELOW:
                 if (polarY > 0) {
-                    double scale = shrinkage * halfFrameWidth / polarY;
+                    double scale = halfFrameWidth / polarY;
                     frameX = (int) Math.floor(halfFrameWidth + scale * polarX);
                     frameY = (int) Math.floor(halfFrameWidth + scale * polarZ);
                 }
                 break;
             case LEFT:
                 if (polarX < 0) {
-                    double scale = -shrinkage * halfFrameWidth / polarX;
+                    double scale = -halfFrameWidth / polarX;
                     frameX = (int) Math.floor(halfFrameWidth - scale * polarZ);
                     frameY = (int) Math.floor(halfFrameWidth + scale * polarY);
                 }
                 break;
             case RIGHT:
                 if (polarX > 0) {
-                    double scale = shrinkage * halfFrameWidth / polarX;
+                    double scale = halfFrameWidth / polarX;
                     frameX = (int) Math.floor(halfFrameWidth + scale * polarZ);
                     frameY = (int) Math.floor(halfFrameWidth + scale * polarY);
                 }
@@ -330,7 +348,6 @@ public class Monoscopic360Generator extends Generator {
             parent.frustum(-config.frustumNear, config.frustumNear,
                     -config.frustumNear, config.frustumNear,
                     config.frustumNear, config.frustumFar);
-
         }
     }
 

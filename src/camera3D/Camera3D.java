@@ -509,12 +509,13 @@ public class Camera3D implements PConstants {
             if (generator.getComponentCount() == 1) {
                 System.out
                         .printf("%05d | Frame Rate: %.2f frames/sec | Generator Render Time: %.3f ms\n",
-                                parent.frameCount, parent.frameRate, avgGeneratorTimeMillis);
+                                parent.frameCount, parent.frameRate,
+                                avgGeneratorTimeMillis);
             } else {
                 System.out
                         .printf("%05d | Frame Rate: %.2f frames/sec | draw() time: %.3f ms | Generator Render Time: %.3f ms\n",
-                                parent.frameCount, parent.frameRate, avgDrawTimeMillis,
-                                avgGeneratorTimeMillis);
+                                parent.frameCount, parent.frameRate,
+                                avgDrawTimeMillis, avgGeneratorTimeMillis);
             }
         }
     }
