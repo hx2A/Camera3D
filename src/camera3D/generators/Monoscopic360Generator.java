@@ -1,5 +1,8 @@
 package camera3D.generators;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
@@ -27,7 +30,7 @@ public class Monoscopic360Generator extends Generator {
     private Vector cameraDirection;
     private Vector cameraUp;
 
-    private Panel[] panels;
+    private ArrayList<Panel> panels;
     private int[] arrayIndex;
     private int[] pixelMapping;
     private int frameCount;
@@ -69,13 +72,13 @@ public class Monoscopic360Generator extends Generator {
 
     private void initPanels() {
         // initialize the 6 panels with the correct settings
-        panels = new Panel[6];
-        panels[0] = new Panel(0, CameraOrientation.ABOVE);
-        panels[1] = new Panel(0, CameraOrientation.FRONT);
-        panels[2] = new Panel(0, CameraOrientation.REAR);
-        panels[3] = new Panel(0, CameraOrientation.LEFT);
-        panels[4] = new Panel(0, CameraOrientation.RIGHT);
-        panels[5] = new Panel(0, CameraOrientation.BELOW);
+        panels = new ArrayList<Panel>();
+        panels.add(new Panel(0, CameraOrientation.ABOVE));
+        panels.add(new Panel(0, CameraOrientation.FRONT));
+        panels.add(new Panel(0, CameraOrientation.REAR));
+        panels.add(new Panel(0, CameraOrientation.LEFT));
+        panels.add(new Panel(0, CameraOrientation.RIGHT));
+        panels.add(new Panel(0, CameraOrientation.BELOW));
 
         // invalidate lookup tables so they are recalculated
         arrayIndex = null;
@@ -109,7 +112,7 @@ public class Monoscopic360Generator extends Generator {
         for (int x = 0; x < projectionWidth; ++x) {
             for (int y = 0; y < projectionWidth / 2; ++y) {
                 // guess the correct panel is the same as the previous pixel
-                Integer index = panels[prevPanel].locate(sinThetaLUT[x],
+                Integer index = panels.get(prevPanel).locate(sinThetaLUT[x],
                         cosThetaLUT[x], sinPhiLUT[y], cosPhiLUT[y]);
                 if (index != null) {
                     arrayIndex[y * projectionWidth + x] = prevPanel;
@@ -119,13 +122,13 @@ public class Monoscopic360Generator extends Generator {
 
                 // guess was incorrect...try the others
                 int p;
-                for (p = 0; p < panels.length; ++p) {
+                for (p = 0; p < panels.size(); ++p) {
                     if (p == prevPanel) {
                         // already tried this one
                         continue;
                     }
-                    index = panels[p].locate(sinThetaLUT[x], cosThetaLUT[x],
-                            sinPhiLUT[y], cosPhiLUT[y]);
+                    index = panels.get(p).locate(sinThetaLUT[x],
+                            cosThetaLUT[x], sinPhiLUT[y], cosPhiLUT[y]);
                     if (index != null) {
                         arrayIndex[y * projectionWidth + x] = p;
                         pixelMapping[y * projectionWidth + x] = index;
@@ -133,7 +136,7 @@ public class Monoscopic360Generator extends Generator {
                         break;
                     }
                 }
-                if (p == panels.length) {
+                if (p == panels.size()) {
                     System.out.println(String.format("panel miss: (%d, %d)", x,
                             y));
                     arrayIndex[y * projectionWidth + x] = -1;
@@ -142,12 +145,14 @@ public class Monoscopic360Generator extends Generator {
             }
         }
 
+        panels.removeIf(p -> !p.isUsed());
+
         if (panelExplainPlanLocation != null) {
             PImage arrayIndexFrame = parent.createImage(projectionWidth,
                     projectionWidth / 2, PConstants.RGB);
             arrayIndexFrame.loadPixels();
             for (int i = 0; i < arrayIndex.length; ++i) {
-                int gray = 255 * arrayIndex[i] / (panels.length - 1);
+                int gray = 255 * arrayIndex[i] / (panels.size() - 1);
                 arrayIndexFrame.pixels[i] = 0xFF000000 | (gray << 16)
                         | (gray << 8) | gray;
             }
@@ -157,12 +162,12 @@ public class Monoscopic360Generator extends Generator {
     }
 
     public int getComponentCount() {
-        return panels.length;
+        return panels.size();
     }
 
     public String getComponentFrameName(int frameNum) {
-        if (0 <= frameNum && frameNum < panels.length) {
-            return panels[frameNum].getName();
+        if (0 <= frameNum && frameNum < panels.size()) {
+            return panels.get(frameNum).getName();
         } else {
             return "";
         }
@@ -185,7 +190,7 @@ public class Monoscopic360Generator extends Generator {
                     projectionWidth / 2, PConstants.RGB);
         }
 
-        panels[frameNum].setCamera(parent);
+        panels.get(frameNum).setCamera(parent);
 
         if (arrayIndex == null || pixelMapping == null) {
             calculatePixelMaps(parent);
@@ -232,14 +237,20 @@ public class Monoscopic360Generator extends Generator {
 
         private int id;
         private CameraOrientation orientation;
+        private boolean used;
 
         public Panel(int id, CameraOrientation orientation) {
             this.id = id;
             this.orientation = orientation;
+            this.used = false;
         }
 
         public String getName() {
             return orientation + "-" + id;
+        }
+
+        public boolean isUsed() {
+            return used;
         }
 
         public Integer locate(double sinTheta, double cosTheta, double sinPhi,
@@ -302,6 +313,7 @@ public class Monoscopic360Generator extends Generator {
                     || frameY >= frameWidth) {
                 return null;
             } else {
+                used = true;
                 return frameY * frameWidth + frameX;
             }
         }
