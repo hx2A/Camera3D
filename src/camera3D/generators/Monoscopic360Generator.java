@@ -1,7 +1,6 @@
 package camera3D.generators;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -66,6 +65,12 @@ public class Monoscopic360Generator extends Generator {
     public Monoscopic360Generator setPanelExplainPlanLocation(
             String panelExplainPlanLocation) {
         this.panelExplainPlanLocation = panelExplainPlanLocation;
+
+        return this;
+    }
+
+    public Monoscopic360Generator setThreadCount(int threadCount) {
+        initExecutor(threadCount);
 
         return this;
     }
@@ -199,11 +204,15 @@ public class Monoscopic360Generator extends Generator {
 
     public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
         projectionFrame.loadPixels();
-        for (int i = 0; i < pixelMapping.length; ++i) {
-            if (arrayIndex[i] >= 0) {
-                projectionFrame.pixels[i] = pixelStorage[arrayIndex[i]][pixelMapping[i]];
-            }
-        }
+        executeTask(
+                pixelMapping.length,
+                (int start, int end) -> {
+                    for (int i = start; i < end; ++i) {
+                        if (arrayIndex[i] >= 0) {
+                            projectionFrame.pixels[i] = pixelStorage[arrayIndex[i]][pixelMapping[i]];
+                        }
+                    }
+                });
         projectionFrame.updatePixels();
 
         // save compositeFrame to file
@@ -211,7 +220,7 @@ public class Monoscopic360Generator extends Generator {
             projectionFrame.save(insertFrame(saveLocation, frameCount));
         }
 
-        projectionFrame.resize(frameWidth, 0); // slow - find faster way?
+        projectionFrame.resize(frameWidth, 0); // slow - find faster way
         System.arraycopy(new int[pixelDest.length], 0, pixelDest, 0,
                 pixelDest.length);
         System.arraycopy(projectionFrame.pixels, 0, pixelDest, frameWidth

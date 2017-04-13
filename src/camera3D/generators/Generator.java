@@ -1,5 +1,13 @@
 package camera3D.generators;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Function;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
@@ -13,6 +21,14 @@ import camera3D.CameraConfiguration;
  *
  */
 public abstract class Generator {
+
+    private int threadCount;
+    private ExecutorService executor;
+    private Collection<Future<?>> futures;
+
+    Generator() {
+        initExecutor(Runtime.getRuntime().availableProcessors() / 2);
+    }
 
     protected CameraConfiguration config;
 
@@ -142,6 +158,55 @@ public abstract class Generator {
      * @param parent
      */
     abstract public void cleanup(PApplet parent);
+
+    /**
+     * Initialize Parallel Executor for pixel copying.
+     * 
+     * @param threadCount
+     */
+    protected void initExecutor(int threadCount) {
+        this.threadCount = Math.max(1, threadCount);
+        this.executor = Executors.newFixedThreadPool(this.threadCount);
+        this.futures = new ArrayList<Future<?>>();
+    }
+
+    /**
+     * Functional Interface for Passing Pixel Copy Instructions.
+     *
+     */
+    @FunctionalInterface
+    protected interface PixelCopyTask {
+        void run(int start, int end);
+    }
+
+    /**
+     * Divide up pixels and execute groups in parallel
+     * 
+     * @param length
+     * @param task
+     */
+    protected void executeTask(int length, PixelCopyTask task) {
+        // submit runnables for subsets of pixels
+        for (int j = 0; j < threadCount; ++j) {
+            final int start = (int) (length * (j / (float) threadCount));
+            final int end = (int) (length * ((j + 1) / (float) threadCount));
+            futures.add(executor.submit(() -> {
+                task.run(start, end);
+            }));
+        }
+
+        // wait for all to complete
+        futures.stream().forEach(f -> {
+            try {
+                f.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
+        futures.clear();
+    }
 
     /**
      * Simple utility function that is used in a couple of places.
