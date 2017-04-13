@@ -205,7 +205,7 @@ public class Monoscopic360Generator extends Generator {
     public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
         projectionFrame.loadPixels();
         executeTask(
-                pixelMapping.length,
+                projectionFrame.pixels.length,
                 (int start, int end) -> {
                     for (int i = start; i < end; ++i) {
                         if (arrayIndex[i] >= 0) {
