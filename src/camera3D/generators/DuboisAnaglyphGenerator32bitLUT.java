@@ -74,38 +74,43 @@ public class DuboisAnaglyphGenerator32bitLUT extends AnaglyphGenerator {
     }
 
     public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
-        long encodedColor;
+        executeTask(
+                pixelDest.length,
+                (int start, int end) -> {
+                    long encodedColor;
+                    for (int ii = start; ii < end; ++ii) {
+                        /*
+                         * This addition is a SIMD operation, adding the R, G,
+                         * and B color values that are embedded in the longs in
+                         * leftLUT and rightLUT.
+                         */
+                        encodedColor = leftLUT[pixelDest[ii] & 0x00FFFFFF]
+                                + rightLUT[pixelStorage[0][ii] & 0x00FFFFFF];
 
-        for (int ii = 0; ii < pixelDest.length; ++ii) {
-            /*
-             * This addition is a SIMD operation, adding the R, G, and B color
-             * values that are embedded in the longs in leftLUT and rightLUT.
-             */
-            encodedColor = leftLUT[pixelDest[ii] & 0x00FFFFFF]
-                    + rightLUT[pixelStorage[0][ii] & 0x00FFFFFF];
+                        /*
+                         * For each color, first check if the rollover bit is
+                         * set. If so, that color is fully saturated. Otherwise,
+                         * extract the color from encodedColor, apply gamma
+                         * correction, and build the pixel color.
+                         */
+                        if (0 < (encodedColor & 0x20000000)) {
+                            pixelDest[ii] = 0xFFFF0000;
+                        } else {
+                            pixelDest[ii] = 0xFF000000 | (applyGammaCorrectionLUT[(int) ((encodedColor & 0x1FF00000) >> 20)] << 16);
+                        }
 
-            /*
-             * For each color, first check if the rollover bit is set. If so,
-             * that color is fully saturated. Otherwise, extract the color from
-             * encodedColor, apply gamma correction, and build the pixel color.
-             */
-            if (0 < (encodedColor & 0x20000000)) {
-                pixelDest[ii] = 0xFFFF0000;
-            } else {
-                pixelDest[ii] = 0xFF000000 | (applyGammaCorrectionLUT[(int) ((encodedColor & 0x1FF00000) >> 20)] << 16);
-            }
+                        if (0 < (encodedColor & 0x80000)) {
+                            pixelDest[ii] |= 0x0000FF00;
+                        } else {
+                            pixelDest[ii] |= (applyGammaCorrectionLUT[(int) ((encodedColor & 0x7FC00) >> 10)] << 8);
+                        }
 
-            if (0 < (encodedColor & 0x80000)) {
-                pixelDest[ii] |= 0x0000FF00;
-            } else {
-                pixelDest[ii] |= (applyGammaCorrectionLUT[(int) ((encodedColor & 0x7FC00) >> 10)] << 8);
-            }
-
-            if (0 < (encodedColor & 0x200)) {
-                pixelDest[ii] |= 0x000000FF;
-            } else {
-                pixelDest[ii] |= (applyGammaCorrectionLUT[(int) (encodedColor & 0x1FF)]);
-            }
-        }
+                        if (0 < (encodedColor & 0x200)) {
+                            pixelDest[ii] |= 0x000000FF;
+                        } else {
+                            pixelDest[ii] |= (applyGammaCorrectionLUT[(int) (encodedColor & 0x1FF)]);
+                        }
+                    }
+                });
     }
 }
