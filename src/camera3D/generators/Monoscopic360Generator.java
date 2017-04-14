@@ -207,9 +207,9 @@ public class Monoscopic360Generator extends Generator {
         executeTask(
                 projectionFrame.pixels.length,
                 (int start, int end) -> {
-                    for (int i = start; i < end; ++i) {
-                        if (arrayIndex[i] >= 0) {
-                            projectionFrame.pixels[i] = pixelStorage[arrayIndex[i]][pixelMapping[i]];
+                    for (int ii = start; ii < end; ++ii) {
+                        if (arrayIndex[ii] >= 0) {
+                            projectionFrame.pixels[ii] = pixelStorage[arrayIndex[ii]][pixelMapping[ii]];
                         }
                     }
                 });
