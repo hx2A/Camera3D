@@ -35,10 +35,6 @@ public class Monoscopic360Generator extends Generator {
     private int frameCount;
 
     public Monoscopic360Generator(int width, int height) {
-        if (width != height) {
-            throw new RuntimeException("Width must equal height.");
-        }
-
         this.frameWidth = width;
         this.frameHeight = height;
         this.projectionWidth = 3 * width;
@@ -226,8 +222,8 @@ public class Monoscopic360Generator extends Generator {
         projectionFrame.resize(frameWidth, 0); // slow - find faster way
         System.arraycopy(new int[pixelDest.length], 0, pixelDest, 0,
                 pixelDest.length);
-        System.arraycopy(projectionFrame.pixels, 0, pixelDest, frameWidth
-                * frameWidth / 4, projectionFrame.pixels.length);
+        System.arraycopy(projectionFrame.pixels, 0, pixelDest, 0,
+                Math.min(projectionFrame.pixels.length, pixelDest.length));
     }
 
     public void completedDraw(int frameNum, PApplet parent) {
@@ -336,7 +332,7 @@ public class Monoscopic360Generator extends Generator {
                     / (endPanelY - startPanelY));
 
             if (frameX < 0 || frameX >= frameWidth || frameY < 0
-                    || frameY >= frameWidth) {
+                    || frameY >= frameHeight) {
                 return null;
             } else {
                 used = true;
