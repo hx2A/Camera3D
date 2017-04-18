@@ -19,7 +19,7 @@ public class Monoscopic360Generator extends Generator {
     private final static double PI = 3.14159265359;
 
     private int frameWidth;
-    private double halfFrameWidth;
+    private int frameHeight;
 
     private PImage projectionFrame;
     private int projectionWidth; // width of composite frame in pixels
@@ -40,7 +40,7 @@ public class Monoscopic360Generator extends Generator {
         }
 
         this.frameWidth = width;
-        this.halfFrameWidth = frameWidth / 2d;
+        this.frameHeight = height;
         this.projectionWidth = 3 * width;
         this.saveLocation = null;
         this.panelExplainPlanLocation = null;
@@ -78,12 +78,12 @@ public class Monoscopic360Generator extends Generator {
     private void initPanels() {
         // initialize the 6 panels with the correct settings
         panels = new ArrayList<Panel>();
-        panels.add(new Panel(0, CameraOrientation.ABOVE));
-        panels.add(new Panel(0, CameraOrientation.FRONT));
-        panels.add(new Panel(0, CameraOrientation.REAR));
-        panels.add(new Panel(0, CameraOrientation.LEFT));
-        panels.add(new Panel(0, CameraOrientation.RIGHT));
-        panels.add(new Panel(0, CameraOrientation.BELOW));
+        panels.add(new Panel(0, CameraOrientation.ABOVE, 0, 1, 0, 1));
+        panels.add(new Panel(0, CameraOrientation.FRONT, 0, 1, 0, 1));
+        panels.add(new Panel(0, CameraOrientation.REAR, 0, 1, 0, 1));
+        panels.add(new Panel(0, CameraOrientation.LEFT, 0, 1, 0, 1));
+        panels.add(new Panel(0, CameraOrientation.RIGHT, 0, 1, 0, 1));
+        panels.add(new Panel(0, CameraOrientation.BELOW, 0, 1, 0, 1));
 
         // invalidate lookup tables so they are recalculated
         arrayIndex = null;
@@ -150,16 +150,19 @@ public class Monoscopic360Generator extends Generator {
             }
         }
 
-        panels.removeIf(p -> !p.isUsed());
+        panels.removeIf(Panel::unused);
 
         if (panelExplainPlanLocation != null) {
             PImage arrayIndexFrame = parent.createImage(projectionWidth,
                     projectionWidth / 2, PConstants.RGB);
             arrayIndexFrame.loadPixels();
             for (int i = 0; i < arrayIndex.length; ++i) {
-                int gray = 255 * arrayIndex[i] / (panels.size() - 1);
-                arrayIndexFrame.pixels[i] = 0xFF000000 | (gray << 16)
-                        | (gray << 8) | gray;
+                if (arrayIndex[i] < 0) {
+                    arrayIndexFrame.pixels[i] = 0xFF000000;
+                } else {
+                    int gray = 255 * arrayIndex[i] / (panels.size() - 1);
+                    arrayIndexFrame.pixels[i] = 0xFFFF0000 | (gray << 8) | gray;
+                }
             }
             arrayIndexFrame.updatePixels();
             arrayIndexFrame.save(panelExplainPlanLocation);
@@ -247,76 +250,90 @@ public class Monoscopic360Generator extends Generator {
         private int id;
         private CameraOrientation orientation;
         private boolean used;
+        private double startPanelX;
+        private double endPanelX;
+        private double startPanelY;
+        private double endPanelY;
 
-        public Panel(int id, CameraOrientation orientation) {
+        public Panel(int id, CameraOrientation orientation, double startPanelX,
+                double endPanelX, double startPanelY, double endPanelY) {
             this.id = id;
             this.orientation = orientation;
             this.used = false;
+            this.startPanelX = startPanelX;
+            this.endPanelX = endPanelX;
+            this.startPanelY = startPanelY;
+            this.endPanelY = endPanelY;
         }
 
         public String getName() {
             return orientation + "-" + id;
         }
 
-        public boolean isUsed() {
-            return used;
+        public boolean unused() {
+            return !used;
         }
 
         public Integer locate(double sinTheta, double cosTheta, double sinPhi,
                 double cosPhi) {
-            double polarX = -halfFrameWidth * sinPhi * sinTheta;
-            double polarY = -halfFrameWidth * cosPhi;
-            double polarZ = -halfFrameWidth * sinPhi * cosTheta;
+            double polarX = -0.5 * sinPhi * sinTheta;
+            double polarY = -0.5 * cosPhi;
+            double polarZ = -0.5 * sinPhi * cosTheta;
 
-            int frameX = -1;
-            int frameY = -1;
+            double panelX = -1;
+            double panelY = -1;
 
             switch (orientation) {
             case FRONT:
                 if (polarZ < 0) {
-                    double scale = -halfFrameWidth / polarZ;
-                    frameX = (int) Math.floor(halfFrameWidth + scale * polarX);
-                    frameY = (int) Math.floor(halfFrameWidth + scale * polarY);
+                    double scale = -0.5 / polarZ;
+                    panelX = 0.5 + scale * polarX;
+                    panelY = 0.5 + scale * polarY;
                 }
                 break;
             case REAR:
                 if (polarZ > 0) {
-                    double scale = halfFrameWidth / polarZ;
-                    frameX = (int) Math.floor(halfFrameWidth - scale * polarX);
-                    frameY = (int) Math.floor(halfFrameWidth + scale * polarY);
+                    double scale = 0.5 / polarZ;
+                    panelX = 0.5 - scale * polarX;
+                    panelY = 0.5 + scale * polarY;
                 }
                 break;
             case ABOVE:
                 if (polarY < 0) {
-                    double scale = -halfFrameWidth / polarY;
-                    frameX = (int) Math.floor(halfFrameWidth + scale * polarX);
-                    frameY = (int) Math.floor(halfFrameWidth - scale * polarZ);
+                    double scale = -0.5 / polarY;
+                    panelX = 0.5 + scale * polarX;
+                    panelY = 0.5 - scale * polarZ;
                 }
                 break;
             case BELOW:
                 if (polarY > 0) {
-                    double scale = halfFrameWidth / polarY;
-                    frameX = (int) Math.floor(halfFrameWidth + scale * polarX);
-                    frameY = (int) Math.floor(halfFrameWidth + scale * polarZ);
+                    double scale = 0.5 / polarY;
+                    panelX = 0.5 + scale * polarX;
+                    panelY = 0.5 + scale * polarZ;
                 }
                 break;
             case LEFT:
                 if (polarX < 0) {
-                    double scale = -halfFrameWidth / polarX;
-                    frameX = (int) Math.floor(halfFrameWidth - scale * polarZ);
-                    frameY = (int) Math.floor(halfFrameWidth + scale * polarY);
+                    double scale = -0.5 / polarX;
+                    panelX = 0.5 - scale * polarZ;
+                    panelY = 0.5 + scale * polarY;
                 }
                 break;
             case RIGHT:
                 if (polarX > 0) {
-                    double scale = halfFrameWidth / polarX;
-                    frameX = (int) Math.floor(halfFrameWidth + scale * polarZ);
-                    frameY = (int) Math.floor(halfFrameWidth + scale * polarY);
+                    double scale = 0.5 / polarX;
+                    panelX = 0.5 + scale * polarZ;
+                    panelY = 0.5 + scale * polarY;
                 }
                 break;
             default:
                 break;
             }
+
+            int frameX = (int) Math.floor(frameWidth * (panelX - startPanelX)
+                    / (endPanelX - startPanelX));
+            int frameY = (int) Math.floor(frameHeight * (panelY - startPanelY)
+                    / (endPanelY - startPanelY));
 
             if (frameX < 0 || frameX >= frameWidth || frameY < 0
                     || frameY >= frameWidth) {
@@ -366,9 +383,13 @@ public class Monoscopic360Generator extends Generator {
                             + direction.v2, config.cameraPositionZ
                             + direction.v3, up.v1, up.v2, up.v3);
 
-            parent.frustum(-config.frustumNear, config.frustumNear,
-                    -config.frustumNear, config.frustumNear,
-                    config.frustumNear, config.frustumFar);
+            float frustumLeft = (float) (config.frustumNear * (2 * startPanelX - 1));
+            float frustumRight = (float) (config.frustumNear * (2 * endPanelX - 1));
+            float frustumBottom = (float) (config.frustumNear * (1 - 2 * endPanelY));
+            float frustumTop = (float) (config.frustumNear * (1 - 2 * startPanelY));
+
+            parent.frustum(frustumLeft, frustumRight, frustumBottom,
+                    frustumTop, config.frustumNear, config.frustumFar);
         }
     }
 
