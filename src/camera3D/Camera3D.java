@@ -19,8 +19,8 @@ public class Camera3D implements PConstants {
     private int height;
     private int pixelCount;
     private int[][] pixelStorage;
-    float avgGeneratorTimeMillis;
-    float avgDrawTimeMillis;
+    private float avgGeneratorTimeMillis;
+    private float avgDrawTimeMillis;
 
     private String saveFrameLocation;
     private boolean enableSaveFrame;
