@@ -25,6 +25,7 @@ public class Monoscopic360Generator extends Generator {
     private int projectionWidth; // width of composite frame in pixels
     private String saveLocation;
     private String panelExplainPlanLocation;
+    private boolean displayCompositeFrame;
 
     private Vector cameraDirection;
     private Vector cameraUp;
@@ -41,6 +42,7 @@ public class Monoscopic360Generator extends Generator {
         this.saveLocation = null;
         this.panelExplainPlanLocation = null;
         this.frameCount = 0;
+        this.displayCompositeFrame = true;
 
         initPanels();
     }
@@ -61,6 +63,12 @@ public class Monoscopic360Generator extends Generator {
     public Monoscopic360Generator setPanelExplainPlanLocation(
             String panelExplainPlanLocation) {
         this.panelExplainPlanLocation = panelExplainPlanLocation;
+
+        return this;
+    }
+
+    public Monoscopic360Generator skipDisplayingCompositeFrame() {
+        this.displayCompositeFrame = false;
 
         return this;
     }
@@ -219,11 +227,13 @@ public class Monoscopic360Generator extends Generator {
             projectionFrame.save(insertFrame(saveLocation, frameCount));
         }
 
-        projectionFrame.resize(frameWidth, 0); // slow - find faster way
-        System.arraycopy(new int[pixelDest.length], 0, pixelDest, 0,
-                pixelDest.length);
-        System.arraycopy(projectionFrame.pixels, 0, pixelDest, 0,
-                Math.min(projectionFrame.pixels.length, pixelDest.length));
+        if (displayCompositeFrame) {
+            projectionFrame.resize(frameWidth, 0); // slow - find faster way
+            System.arraycopy(new int[pixelDest.length], 0, pixelDest, 0,
+                    pixelDest.length);
+            System.arraycopy(projectionFrame.pixels, 0, pixelDest, 0,
+                    Math.min(projectionFrame.pixels.length, pixelDest.length));
+        }
     }
 
     public void completedDraw(int frameNum, PApplet parent) {
