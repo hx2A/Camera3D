@@ -28,6 +28,7 @@ public class Camera3D implements PConstants {
     private char saveFrameKey;
     private int saveFrameNum;
     private boolean reportStats;
+    private int frameLimit;
     private String parentClassName;
 
     private CameraConfiguration config;
@@ -320,6 +321,10 @@ public class Camera3D implements PConstants {
         reportStats = true;
     }
 
+    public void setFrameLimit(int frameLimit) {
+        this.frameLimit = frameLimit;
+    }
+
     /*
      * Camera Methods
      */
@@ -517,6 +522,12 @@ public class Camera3D implements PConstants {
                                 parent.frameCount, parent.frameRate,
                                 avgDrawTimeMillis, avgGeneratorTimeMillis);
             }
+        }
+
+        if (parent.frameCount >= frameLimit) {
+            System.out.println("***** Camera3D exiting sketch as requested *****");
+            System.out.flush();
+            parent.exit();
         }
     }
 
