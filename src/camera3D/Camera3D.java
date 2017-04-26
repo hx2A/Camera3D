@@ -28,7 +28,6 @@ public class Camera3D implements PConstants {
     private char saveFrameKey;
     private int saveFrameNum;
     private boolean reportStats;
-    private int frameLimit;
     private String parentClassName;
 
     private CameraConfiguration config;
@@ -321,10 +320,6 @@ public class Camera3D implements PConstants {
         reportStats = true;
     }
 
-    public void setFrameLimit(int frameLimit) {
-        this.frameLimit = frameLimit;
-    }
-
     /*
      * Camera Methods
      */
@@ -352,6 +347,10 @@ public class Camera3D implements PConstants {
         config.cameraUpZ = upZ;
 
         generator.notifyCameraConfigChange(config);
+    }
+
+    public void setFrameLimit(int frameLimit) {
+        config.frameLimit = frameLimit;
     }
 
     public void setCameraLocation(float cameraX, float cameraY, float cameraZ) {
@@ -524,8 +523,9 @@ public class Camera3D implements PConstants {
             }
         }
 
-        if (parent.frameCount >= frameLimit) {
-            System.out.println("***** Camera3D exiting sketch as requested *****");
+        if (config.frameLimit > 0 && parent.frameCount >= config.frameLimit) {
+            System.out
+                    .println("***** Camera3D exiting sketch as requested *****");
             System.out.flush();
             parent.exit();
         }

@@ -1,5 +1,6 @@
 package camera3D.generators;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import processing.core.PApplet;
@@ -224,7 +225,12 @@ public class Monoscopic360Generator extends Generator {
 
         // save compositeFrame to file
         if (saveLocation != null) {
-            projectionFrame.save(insertFrame(saveLocation, frameCount));
+            String filename = insertFrame(saveLocation, frameCount);
+            projectionFrame.save(filename);
+
+            if (frameCount == 1) {
+                checkDiskSpace(filename);
+            }
         }
 
         if (displayCompositeFrame) {
@@ -249,6 +255,36 @@ public class Monoscopic360Generator extends Generator {
 
     private enum CameraOrientation {
         FRONT, LEFT, REAR, RIGHT, ABOVE, BELOW
+    }
+
+    private void checkDiskSpace(String filename) {
+        File file = new File(filename);
+        File dir = file.getAbsoluteFile().getParentFile();
+
+        long mb = (long) Math.pow(2, 20);
+        double gb = Math.pow(2, 30);
+        long filesize = file.length();
+        long usablespace = dir.getUsableSpace();
+
+        System.out.println("Saving frames to directory "
+                + dir.getAbsolutePath());
+        System.out.printf("There is %.2fGB available\n", usablespace / gb);
+        System.out
+                .printf("Saving each frame takes about %dMB\n", filesize / mb);
+
+        if (config.frameLimit > 0) {
+            long totalBytes = filesize * config.frameLimit;
+            System.out.printf("Saving %d frames will take %.2fGB\n",
+                    config.frameLimit, totalBytes / gb);
+            if (totalBytes > usablespace) {
+                throw new RuntimeException(
+                        "Not enough disk space to save requested frames!");
+            }
+        } else {
+            long totalFrames = usablespace / filesize;
+            System.out.printf("Available space for about %d frames\n",
+                    totalFrames);
+        }
     }
 
     private class Panel {

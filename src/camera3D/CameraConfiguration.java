@@ -19,6 +19,8 @@ public class CameraConfiguration {
     public float frustumNear = Float.NaN;
     public float frustumFar = Float.NaN;
 
+    public int frameLimit = 0;
+
     /**
      * This determines if both the camera and perspective functions have been
      * called.
