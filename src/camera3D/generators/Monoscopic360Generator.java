@@ -43,9 +43,15 @@ public class Monoscopic360Generator extends Generator {
         this.frameWidth = width;
         this.frameHeight = height;
         this.projectionWidth = 3 * width;
-        this.projectionHeight = projectionWidth / 2;
+        this.projectionHeight = 3 * height;
         this.widthOffset = 0d;
         this.heightOffset = 0d;
+
+        if (projectionWidth / (float) projectionHeight < 2.0) {
+            widthOffset = (2 * projectionHeight - projectionWidth) / 2.0;
+        } else if (projectionWidth / (float) projectionHeight > 2.0) {
+            heightOffset = (projectionWidth / 2.0 - projectionHeight) / 2.0;
+        }
 
         this.saveLocation = null;
         this.panelExplainPlanLocation = null;
@@ -323,7 +329,8 @@ public class Monoscopic360Generator extends Generator {
 
         System.out.println("Saving frames to directory "
                 + dir.getAbsolutePath());
-        System.out.printf("Available space on that drive: %.2fGB\n", usablespace / gb);
+        System.out.printf("Available space on that drive: %.2fGB\n",
+                usablespace / gb);
         System.out
                 .printf("Saving each frame takes about %dMB\n", filesize / mb);
 
