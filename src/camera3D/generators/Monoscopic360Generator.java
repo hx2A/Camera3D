@@ -241,6 +241,8 @@ public class Monoscopic360Generator extends Generator {
         frameCount = parent.frameCount;
 
         if (frameNum == 0) {
+            // TODO: only do this if displaying composite frame
+            // otherwise, recycle!
             projectionFrame = parent.createImage(projectionWidth,
                     projectionHeight, PConstants.RGB);
         }
@@ -276,11 +278,24 @@ public class Monoscopic360Generator extends Generator {
         }
 
         if (displayCompositeFrame) {
-            projectionFrame.resize(frameWidth, 0); // slow - find faster way
             System.arraycopy(new int[pixelDest.length], 0, pixelDest, 0,
                     pixelDest.length);
-            System.arraycopy(projectionFrame.pixels, 0, pixelDest, 0,
-                    Math.min(projectionFrame.pixels.length, pixelDest.length));
+            // compare aspect ratios and copy to be centered in the frame
+            if (projectionWidth / (float) projectionHeight > frameWidth
+                    / (float) frameHeight) {
+                projectionFrame.resize(frameWidth, 0);
+                int offset = (frameHeight - projectionFrame.height) / 2;
+                System.arraycopy(projectionFrame.pixels, 0, pixelDest, offset
+                        * frameWidth, projectionFrame.pixels.length);
+            } else {
+                projectionFrame.resize(0, frameHeight);
+                int offset = (frameWidth - projectionFrame.width) / 2;
+                for (int i = 0; i < frameHeight; ++i) {
+                    System.arraycopy(projectionFrame.pixels, i
+                            * projectionFrame.width, pixelDest, i * frameWidth
+                            + offset, projectionFrame.width);
+                }
+            }
         }
     }
 
