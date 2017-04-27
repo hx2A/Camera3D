@@ -323,7 +323,7 @@ public class Monoscopic360Generator extends Generator {
 
         System.out.println("Saving frames to directory "
                 + dir.getAbsolutePath());
-        System.out.printf("There is %.2fGB available\n", usablespace / gb);
+        System.out.printf("Available space on that drive: %.2fGB\n", usablespace / gb);
         System.out
                 .printf("Saving each frame takes about %dMB\n", filesize / mb);
 
