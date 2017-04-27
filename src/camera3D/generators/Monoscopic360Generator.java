@@ -50,9 +50,6 @@ public class Monoscopic360Generator extends Generator {
 
     public Monoscopic360Generator setOutputSizeAndLocation(int size,
             String saveLocation) {
-        if (size / 2 != size / 2.0) {
-            throw new RuntimeException("Size must be an even number");
-        }
         this.projectionWidth = size;
         this.saveLocation = saveLocation;
 
