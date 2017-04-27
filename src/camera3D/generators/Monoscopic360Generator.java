@@ -83,9 +83,6 @@ public class Monoscopic360Generator extends Generator {
             heightOffset = (width / 2.0 - height) / 2.0;
         }
 
-        System.out.printf("widthOffset %f heightOffset %f\n", widthOffset,
-                heightOffset);
-
         this.saveLocation = saveLocation;
 
         initPanels();
@@ -189,9 +186,18 @@ public class Monoscopic360Generator extends Generator {
             }
         }
 
-        // TODO: need to properly skip over unused panels.
-        // adjust the arrayIndex values to compensate for the missing panel
-        // panels.removeIf(Panel::unused);
+        // Skip over unused panels. But first, adjust the arrayIndex values to
+        // compensate for the missing panel
+        for (int i = 0; i < panels.size(); ++i) {
+            if (panels.get(i).unused()) {
+                for (int j = 0; j < arrayIndex.length; ++j) {
+                    if (arrayIndex[j] > i) {
+                        arrayIndex[j]--;
+                    }
+                }
+            }
+        }
+        panels.removeIf(Panel::unused);
 
         if (panelExplainPlanLocation != null) {
             PImage arrayIndexFrame = parent.createImage(projectionWidth,
