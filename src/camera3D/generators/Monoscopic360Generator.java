@@ -240,9 +240,7 @@ public class Monoscopic360Generator extends Generator {
     public void prepareForDraw(int frameNum, PApplet parent) {
         frameCount = parent.frameCount;
 
-        if (frameNum == 0) {
-            // TODO: only do this if displaying composite frame
-            // otherwise, recycle!
+        if (frameNum == 0 && (projectionFrame == null || displayCompositeFrame)) {
             projectionFrame = parent.createImage(projectionWidth,
                     projectionHeight, PConstants.RGB);
         }
