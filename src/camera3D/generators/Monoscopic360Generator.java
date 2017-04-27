@@ -25,6 +25,8 @@ public class Monoscopic360Generator extends Generator {
     private PImage projectionFrame;
     private int projectionWidth;
     private int projectionHeight;
+    private double widthOffset;
+    private double heightOffset;
     private String saveLocation;
     private String panelExplainPlanLocation;
     private boolean displayCompositeFrame;
@@ -42,8 +44,12 @@ public class Monoscopic360Generator extends Generator {
         this.frameHeight = height;
         this.projectionWidth = 3 * width;
         this.projectionHeight = projectionWidth / 2;
+        this.widthOffset = 0d;
+        this.heightOffset = 0d;
+
         this.saveLocation = null;
         this.panelExplainPlanLocation = null;
+
         this.frameCount = 0;
         this.displayCompositeFrame = true;
 
@@ -54,11 +60,38 @@ public class Monoscopic360Generator extends Generator {
             String saveLocation) {
         this.projectionWidth = size;
         this.projectionHeight = size / 2;
+        this.widthOffset = 0;
+        this.heightOffset = 0;
+
         this.saveLocation = saveLocation;
 
         initPanels();
 
         return this;
+    }
+
+    public Monoscopic360Generator setOutputWidthHeightAndLocation(int width,
+            int height, String saveLocation) {
+        this.projectionWidth = width;
+        this.projectionHeight = height;
+        this.widthOffset = 0d;
+        this.heightOffset = 0d;
+
+        if (width / (float) height < 2.0) {
+            widthOffset = (2 * height - width) / 2.0;
+        } else if (width / (float) height > 2.0) {
+            heightOffset = (width / 2.0 - height) / 2.0;
+        }
+
+        System.out.printf("widthOffset %f heightOffset %f\n", widthOffset,
+                heightOffset);
+
+        this.saveLocation = saveLocation;
+
+        initPanels();
+
+        return this;
+
     }
 
     public Monoscopic360Generator setPanelExplainPlanLocation(
@@ -100,14 +133,15 @@ public class Monoscopic360Generator extends Generator {
         double[] sinThetaLUT = new double[projectionWidth];
         double[] cosThetaLUT = new double[projectionWidth];
         for (int x = 0; x < projectionWidth; ++x) {
-            double theta = -((2 * PI) * (x + 0.5) / projectionWidth - PI);
+            double theta = -((2 * PI) * (x + widthOffset + 0.5)
+                    / (2 * widthOffset + projectionWidth) - PI);
             sinThetaLUT[x] = Math.sin(theta);
             cosThetaLUT[x] = Math.cos(theta);
         }
         double[] sinPhiLUT = new double[projectionHeight];
         double[] cosPhiLUT = new double[projectionHeight];
         for (int y = 0; y < projectionHeight; ++y) {
-            double phi = (PI * (y + 0.5) / projectionHeight);
+            double phi = (PI * (y + heightOffset + 0.5) / (2 * heightOffset + projectionHeight));
             sinPhiLUT[y] = Math.sin(phi);
             cosPhiLUT[y] = Math.cos(phi);
         }
@@ -155,7 +189,9 @@ public class Monoscopic360Generator extends Generator {
             }
         }
 
-        panels.removeIf(Panel::unused);
+        // TODO: need to properly skip over unused panels.
+        // adjust the arrayIndex values to compensate for the missing panel
+        // panels.removeIf(Panel::unused);
 
         if (panelExplainPlanLocation != null) {
             PImage arrayIndexFrame = parent.createImage(projectionWidth,
