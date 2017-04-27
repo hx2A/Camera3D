@@ -23,7 +23,8 @@ public class Monoscopic360Generator extends Generator {
     private int frameHeight;
 
     private PImage projectionFrame;
-    private int projectionWidth; // width of composite frame in pixels
+    private int projectionWidth;
+    private int projectionHeight;
     private String saveLocation;
     private String panelExplainPlanLocation;
     private boolean displayCompositeFrame;
@@ -40,6 +41,7 @@ public class Monoscopic360Generator extends Generator {
         this.frameWidth = width;
         this.frameHeight = height;
         this.projectionWidth = 3 * width;
+        this.projectionHeight = projectionWidth / 2;
         this.saveLocation = null;
         this.panelExplainPlanLocation = null;
         this.frameCount = 0;
@@ -51,6 +53,7 @@ public class Monoscopic360Generator extends Generator {
     public Monoscopic360Generator setOutputSizeAndLocation(int size,
             String saveLocation) {
         this.projectionWidth = size;
+        this.projectionHeight = size / 2;
         this.saveLocation = saveLocation;
 
         initPanels();
@@ -93,9 +96,6 @@ public class Monoscopic360Generator extends Generator {
     }
 
     private void calculatePixelMaps(PApplet parent) {
-        arrayIndex = new int[projectionWidth * projectionWidth / 2];
-        pixelMapping = new int[projectionWidth * projectionWidth / 2];
-
         // precompute the sin and cos LUTs
         double[] sinThetaLUT = new double[projectionWidth];
         double[] cosThetaLUT = new double[projectionWidth];
@@ -104,20 +104,23 @@ public class Monoscopic360Generator extends Generator {
             sinThetaLUT[x] = Math.sin(theta);
             cosThetaLUT[x] = Math.cos(theta);
         }
-        double[] sinPhiLUT = new double[projectionWidth / 2];
-        double[] cosPhiLUT = new double[projectionWidth / 2];
-        for (int y = 0; y < projectionWidth / 2; ++y) {
-            double phi = (PI * (y + 0.5) / (projectionWidth / 2));
+        double[] sinPhiLUT = new double[projectionHeight];
+        double[] cosPhiLUT = new double[projectionHeight];
+        for (int y = 0; y < projectionHeight; ++y) {
+            double phi = (PI * (y + 0.5) / projectionHeight);
             sinPhiLUT[y] = Math.sin(phi);
             cosPhiLUT[y] = Math.cos(phi);
         }
+
+        arrayIndex = new int[projectionWidth * projectionHeight];
+        pixelMapping = new int[projectionWidth * projectionHeight];
 
         // for each pixel in the composite frame, reverse the equirectangular
         // projection to get the spherical coordinates. Then find which
         // panel to use and the best pixel.
         int prevPanel = 0;
         for (int x = 0; x < projectionWidth; ++x) {
-            for (int y = 0; y < projectionWidth / 2; ++y) {
+            for (int y = 0; y < projectionHeight; ++y) {
                 // guess the correct panel is the same as the previous pixel
                 Integer index = panels.get(prevPanel).locate(sinThetaLUT[x],
                         cosThetaLUT[x], sinPhiLUT[y], cosPhiLUT[y]);
@@ -156,7 +159,7 @@ public class Monoscopic360Generator extends Generator {
 
         if (panelExplainPlanLocation != null) {
             PImage arrayIndexFrame = parent.createImage(projectionWidth,
-                    projectionWidth / 2, PConstants.RGB);
+                    projectionHeight, PConstants.RGB);
             arrayIndexFrame.loadPixels();
             for (int i = 0; i < arrayIndex.length; ++i) {
                 if (arrayIndex[i] < 0) {
@@ -197,7 +200,7 @@ public class Monoscopic360Generator extends Generator {
 
         if (frameNum == 0) {
             projectionFrame = parent.createImage(projectionWidth,
-                    projectionWidth / 2, PConstants.RGB);
+                    projectionHeight, PConstants.RGB);
         }
 
         panels.get(frameNum).setCamera(parent);
