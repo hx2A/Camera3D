@@ -433,6 +433,12 @@ public class Camera3D implements PConstants {
         if (callPreDraw) {
             callMethod("preDraw");
         }
+
+        // generator might have changed the number of components
+        if (pixelStorage.length != generator.getComponentCount()) {
+            pixelStorage = new int[generator.getComponentCount()][pixelCount];
+        }
+
         parent.background(backgroundColor);
 
         frameNum = 0;
