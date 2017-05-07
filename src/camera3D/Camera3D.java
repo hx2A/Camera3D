@@ -443,8 +443,10 @@ public class Camera3D implements PConstants {
         generator.completedDraw(frameNum, parent);
 
         // retrieve what was just drawn and copy to pixelStorage
-        parent.loadPixels();
-        System.arraycopy(parent.pixels, 0, pixelStorage[0], 0, pixelCount);
+        if (generator.copyFrameNumber(0)) {
+            parent.loadPixels();
+            System.arraycopy(parent.pixels, 0, pixelStorage[0], 0, pixelCount);
+        }
 
         if (saveNextFrame)
             parent.saveFrame(saveFrameLocation + "####-" + parentClassName
@@ -465,9 +467,11 @@ public class Camera3D implements PConstants {
 
             generator.completedDraw(frameNum, parent);
 
-            parent.loadPixels();
-            System.arraycopy(parent.pixels, 0, pixelStorage[frameNum], 0,
-                    pixelCount);
+            if (generator.copyFrameNumber(frameNum)) {
+                parent.loadPixels();
+                System.arraycopy(parent.pixels, 0, pixelStorage[frameNum], 0,
+                        pixelCount);
+            }
 
             if (saveNextFrame)
                 parent.saveFrame(saveFrameLocation + "####-" + parentClassName

@@ -50,6 +50,20 @@ public abstract class Generator {
     abstract public String getComponentFrameName(int frameNum);
 
     /**
+     * Communicate to Camera3D instance if frame pixels should be copied to
+     * pixelStorage.
+     * 
+     * This will almost always be true but some Generators can improve
+     * performance by skipping the loadPixels() call and the System.arraycopy()
+     * 
+     * @param frameNum
+     * @return
+     */
+    public boolean copyFrameNumber(int frameNum) {
+        return true;
+    }
+
+    /**
      * Notify renderer that something about the camera changed. For example, the
      * stereoscopic generators need to do some recalculations when the camera
      * moves.
