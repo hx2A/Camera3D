@@ -25,6 +25,9 @@ public class Monoscopic360Generator extends Generator {
     private PImage projectionFrame;
     private int projectionWidth;
     private int projectionHeight;
+    private float projectionResolutionFactor;
+    private int panelStepsX;
+    private int panelStepsY;
     private double widthOffset;
     private double heightOffset;
     private String saveLocation;
@@ -44,6 +47,9 @@ public class Monoscopic360Generator extends Generator {
         this.frameHeight = height;
         this.projectionWidth = 3 * width;
         this.projectionHeight = 3 * height;
+        this.projectionResolutionFactor = 1f;
+        this.panelStepsX = 1;
+        this.panelStepsY = 1;
         this.widthOffset = 0d;
         this.heightOffset = 0d;
 
@@ -83,10 +89,10 @@ public class Monoscopic360Generator extends Generator {
         this.widthOffset = 0d;
         this.heightOffset = 0d;
 
-        if (width / (float) height < 2.0) {
-            widthOffset = (2 * height - width) / 2.0;
-        } else if (width / (float) height > 2.0) {
-            heightOffset = (width / 2.0 - height) / 2.0;
+        if (projectionWidth / (float) projectionHeight < 2.0) {
+            widthOffset = (2 * projectionHeight - projectionWidth) / 2.0;
+        } else if (projectionWidth / (float) projectionHeight > 2.0) {
+            heightOffset = (projectionWidth / 2.0 - projectionHeight) / 2.0;
         }
 
         this.saveLocation = saveLocation;
@@ -94,7 +100,14 @@ public class Monoscopic360Generator extends Generator {
         initPanels();
 
         return this;
+    }
 
+    public Monoscopic360Generator setProjectionResolutionFactor(float factor) {
+        this.projectionResolutionFactor = factor;
+
+        initPanels();
+
+        return this;
     }
 
     public Monoscopic360Generator setPanelExplainPlanLocation(
@@ -117,14 +130,42 @@ public class Monoscopic360Generator extends Generator {
     }
 
     private void initPanels() {
-        // initialize the 6 panels with the correct settings
+        // initialize the panels with the correct settings
         panels = new ArrayList<Panel>();
+        // always one panel for top and bottom
         panels.add(new Panel(0, CameraOrientation.ABOVE, 0, 1, 0, 1));
-        panels.add(new Panel(0, CameraOrientation.FRONT, 0, 1, 0, 1));
-        panels.add(new Panel(0, CameraOrientation.REAR, 0, 1, 0, 1));
-        panels.add(new Panel(0, CameraOrientation.LEFT, 0, 1, 0, 1));
-        panels.add(new Panel(0, CameraOrientation.RIGHT, 0, 1, 0, 1));
         panels.add(new Panel(0, CameraOrientation.BELOW, 0, 1, 0, 1));
+
+        // this determines how many panels will be used for each camera
+        // orientation. do this in a way that tries to preserve good resolution
+        // for the output.
+        panelStepsX = Math.max(
+                (int) Math.round(projectionResolutionFactor
+                        * (2 * widthOffset + projectionWidth)
+                        / (4 * frameWidth)), 1);
+        panelStepsY = Math.max(
+                (int) Math.round(projectionResolutionFactor
+                        * (2 * heightOffset + projectionHeight)
+                        / (3 * frameHeight)), 1);
+
+        for (int i = 0; i < panelStepsX; ++i) {
+            float startX = i / (float) panelStepsX;
+            float endX = (i + 1) / (float) panelStepsX;
+            for (int j = 0; j < panelStepsY; ++j) {
+                float startY = j / (float) panelStepsY;
+                float endY = (j + 1) / (float) panelStepsY;
+                int id = i * panelStepsY + j;
+
+                panels.add(new Panel(id, CameraOrientation.FRONT, startX, endX,
+                        startY, endY));
+                panels.add(new Panel(id, CameraOrientation.REAR, startX, endX,
+                        startY, endY));
+                panels.add(new Panel(id, CameraOrientation.LEFT, startX, endX,
+                        startY, endY));
+                panels.add(new Panel(id, CameraOrientation.RIGHT, startX, endX,
+                        startY, endY));
+            }
+        }
 
         // invalidate lookup tables so they are recalculated
         arrayIndex = null;
@@ -132,6 +173,24 @@ public class Monoscopic360Generator extends Generator {
     }
 
     private void calculatePixelMaps(PApplet parent) {
+        // print out a helpful suggestion for improving performance
+        if (projectionResolutionFactor == 1) {
+            String suggestion = null;
+            if (panelStepsY > 1 && panelStepsX > 1) {
+                suggestion = "width and height";
+            } else if (panelStepsX > 1) {
+                suggestion = "width";
+            } else if (panelStepsY > 1) {
+                suggestion = "height";
+            }
+            if (suggestion != null) {
+                System.out.printf(
+                        "If your screen and computer allows it, please"
+                                + " consider increasing your sketch %s.\n",
+                        suggestion);
+            }
+        }
+
         // precompute the sin and cos LUTs
         double[] sinThetaLUT = new double[projectionWidth];
         double[] cosThetaLUT = new double[projectionWidth];
@@ -194,13 +253,15 @@ public class Monoscopic360Generator extends Generator {
 
         // Skip over unused panels. But first, adjust the arrayIndex values to
         // compensate for the missing panel
+        int removals = 0;
         for (int i = 0; i < panels.size(); ++i) {
             if (panels.get(i).unused()) {
                 for (int j = 0; j < arrayIndex.length; ++j) {
-                    if (arrayIndex[j] > i) {
+                    if (arrayIndex[j] + removals > i) {
                         arrayIndex[j]--;
                     }
                 }
+                removals++;
             }
         }
         panels.removeIf(Panel::unused);
@@ -323,6 +384,7 @@ public class Monoscopic360Generator extends Generator {
         File dir = file.getAbsoluteFile().getParentFile();
 
         long mb = (long) Math.pow(2, 20);
+        long kb = (long) Math.pow(2, 10);
         double gb = Math.pow(2, 30);
         long filesize = file.length();
         long usablespace = dir.getUsableSpace();
@@ -331,8 +393,13 @@ public class Monoscopic360Generator extends Generator {
                 + dir.getAbsolutePath());
         System.out.printf("Available space on that drive: %.2fGB\n",
                 usablespace / gb);
-        System.out
-                .printf("Saving each frame takes about %dMB\n", filesize / mb);
+        if (filesize / mb > 0) {
+            System.out.printf("Saving each frame takes about %dMB\n", filesize
+                    / mb);
+        } else {
+            System.out.printf("Saving each frame takes about %dKB\n", filesize
+                    / kb);
+        }
 
         if (config.frameLimit > 0) {
             long totalBytes = filesize * config.frameLimit;
