@@ -26,6 +26,8 @@ public class Monoscopic360Generator extends Generator {
     private int projectionWidth;
     private int projectionHeight;
     private float projectionResolutionFactor;
+    private float zNear;
+    private float zFar;
     private int panelStepsX;
     private int panelStepsY;
     private double widthOffset;
@@ -48,6 +50,8 @@ public class Monoscopic360Generator extends Generator {
         this.projectionWidth = 3 * width;
         this.projectionHeight = 3 * height;
         this.projectionResolutionFactor = 1f;
+        this.zNear = 1;
+        this.zFar = 5000;
         this.panelStepsX = 1;
         this.panelStepsY = 1;
         this.widthOffset = 0d;
@@ -106,6 +110,13 @@ public class Monoscopic360Generator extends Generator {
         this.projectionResolutionFactor = factor;
 
         initPanels();
+
+        return this;
+    }
+
+    public Monoscopic360Generator setZNearZFar(float zNear, float zFar) {
+        this.zNear = zNear;
+        this.zFar = zFar;
 
         return this;
     }
@@ -566,7 +577,7 @@ public class Monoscopic360Generator extends Generator {
             float frustumTop = (float) (config.frustumNear * (1 - 2 * startPanelY));
 
             parent.frustum(frustumLeft, frustumRight, frustumBottom,
-                    frustumTop, config.frustumNear, config.frustumFar);
+                    frustumTop, zNear, zFar);
         }
     }
 
