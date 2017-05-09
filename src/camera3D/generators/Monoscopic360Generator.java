@@ -143,9 +143,6 @@ public class Monoscopic360Generator extends Generator {
     private void initPanels() {
         // initialize the panels with the correct settings
         panels = new ArrayList<Panel>();
-        // always one panel for top and bottom
-        panels.add(new Panel(0, CameraOrientation.ABOVE, 0, 1, 0, 1));
-        panels.add(new Panel(0, CameraOrientation.BELOW, 0, 1, 0, 1));
 
         // this determines how many panels will be used for each camera
         // orientation. do this in a way that tries to preserve good resolution
@@ -167,13 +164,17 @@ public class Monoscopic360Generator extends Generator {
                 float endY = (j + 1) / (float) panelStepsY;
                 int id = i * panelStepsY + j;
 
+                panels.add(new Panel(id, CameraOrientation.ABOVE, startX, endX,
+                        startY, endY));
                 panels.add(new Panel(id, CameraOrientation.FRONT, startX, endX,
+                        startY, endY));
+                panels.add(new Panel(id, CameraOrientation.RIGHT, startX, endX,
                         startY, endY));
                 panels.add(new Panel(id, CameraOrientation.REAR, startX, endX,
                         startY, endY));
                 panels.add(new Panel(id, CameraOrientation.LEFT, startX, endX,
                         startY, endY));
-                panels.add(new Panel(id, CameraOrientation.RIGHT, startX, endX,
+                panels.add(new Panel(id, CameraOrientation.BELOW, startX, endX,
                         startY, endY));
             }
         }
@@ -285,9 +286,10 @@ public class Monoscopic360Generator extends Generator {
                 if (arrayIndex[i] < 0) {
                     arrayIndexFrame.pixels[i] = 0xFF000000;
                 } else {
-                    int gray = 255 * arrayIndex[i] / (panels.size() - 1);
+                    int value = 255 * arrayIndex[i] / (panels.size() - 1);
                     arrayIndexFrame.pixels[i] = (0xFF << (8 * (arrayIndex[i] % 3)))
-                            | (gray << 16) | (gray << 8) | gray;
+                            | (0xFF << (8 * (arrayIndex[i] % 7)))
+                            | (value << 16) | (value << 8) | value;
                 }
             }
             arrayIndexFrame.updatePixels();
