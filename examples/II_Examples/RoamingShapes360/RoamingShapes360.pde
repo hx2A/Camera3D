@@ -72,23 +72,26 @@ void setup() {
   // your hard drive very quickly. I did this to myself while developing this
   // sketch. :-(
 
-  // like all Camera3D Generators, this 360 video generator mimics the default
+  // Like all Camera3D Generators, this 360 video generator mimics the default
   // Processing camera and perspective/frustum settings. For 360 video, the
   // perspective or frustum settings do not make any sense and are ignored. The
   // default camera settings are honored, but you may find your sketch easier
   // to think about if you move the camera to the origin. The camera direction
-  // will determine the center of the equirectangular projection.
+  // will determine the center of the equirectangular projection; the magnitude
+  // of the direction parameters are irrelevant.
 
   camera3D.camera(0, 0, 0, // camera location
                   0, 0, -1, // camera direction 
                   0, -1, 0); // camera "up" direction
 
-  // setting perspective and frustum would be pointless but there is a need for
-  // a zNear and zFar for the clipping plane. This generator sets this to 1 and
-  // 1000 by default, but you may want to set it to something else. Bottom line,
-  // set zNear to something small and zFar to something greater than the largest
-  // distance of an object can get from the camera location. Read the
-  // documentation for more information.
+  // Setting perspective and frustum would be pointless but there is a need for
+  // a `near` and `far` for the clipping plane. This generator sets this to 1
+  // and 1000 by default, but you may want to set it to something else. Bottom
+  // line, set `near` to something small and `far` to something greater than
+  // the largest distance an object can get from the camera location. Any
+  // object that is closer to the camera than `near` or farther away than `far`
+  // will be excluded from the end result. Read the documentation for more
+  // information.
 
   generator.setNearFarLimits(1, 500);
 
