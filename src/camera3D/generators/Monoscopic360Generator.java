@@ -275,7 +275,8 @@ public class Monoscopic360Generator extends Generator {
                     arrayIndexFrame.pixels[i] = 0xFF000000;
                 } else {
                     int gray = 255 * arrayIndex[i] / (panels.size() - 1);
-                    arrayIndexFrame.pixels[i] = 0xFFFF0000 | (gray << 8) | gray;
+                    arrayIndexFrame.pixels[i] = (0xFF << (8 * (arrayIndex[i] % 3)))
+                            | (gray << 16) | (gray << 8) | gray;
                 }
             }
             arrayIndexFrame.updatePixels();
