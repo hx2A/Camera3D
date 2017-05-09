@@ -571,10 +571,10 @@ public class Monoscopic360Generator extends Generator {
                             + direction.v2, config.cameraPositionZ
                             + direction.v3, up.v1, up.v2, up.v3);
 
-            float frustumLeft = (float) (config.frustumNear * (2 * startPanelX - 1));
-            float frustumRight = (float) (config.frustumNear * (2 * endPanelX - 1));
-            float frustumBottom = (float) (config.frustumNear * (1 - 2 * endPanelY));
-            float frustumTop = (float) (config.frustumNear * (1 - 2 * startPanelY));
+            float frustumLeft = (float) (zNear * (2 * startPanelX - 1));
+            float frustumRight = (float) (zNear * (2 * endPanelX - 1));
+            float frustumBottom = (float) (zNear * (1 - 2 * endPanelY));
+            float frustumTop = (float) (zNear * (1 - 2 * startPanelY));
 
             parent.frustum(frustumLeft, frustumRight, frustumBottom,
                     frustumTop, zNear, zFar);
