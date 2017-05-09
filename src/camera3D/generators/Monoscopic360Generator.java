@@ -30,7 +30,7 @@ public class Monoscopic360Generator extends Generator {
     private int panelStepsY;
     private double widthOffset;
     private double heightOffset;
-    private String saveLocation;
+    private String saveFilename;
     private String panelExplainPlanLocation;
     private boolean displayCompositeFrame;
 
@@ -59,7 +59,7 @@ public class Monoscopic360Generator extends Generator {
             heightOffset = (projectionWidth / 2.0 - projectionHeight) / 2.0;
         }
 
-        this.saveLocation = null;
+        this.saveFilename = null;
         this.panelExplainPlanLocation = null;
 
         this.frameCount = 0;
@@ -75,7 +75,7 @@ public class Monoscopic360Generator extends Generator {
         this.widthOffset = 0;
         this.heightOffset = 0;
 
-        this.saveLocation = saveLocation;
+        this.saveFilename = saveLocation;
 
         initPanels();
 
@@ -95,7 +95,7 @@ public class Monoscopic360Generator extends Generator {
             heightOffset = (projectionWidth / 2.0 - projectionHeight) / 2.0;
         }
 
-        this.saveLocation = saveLocation;
+        this.saveFilename = saveLocation;
 
         initPanels();
 
@@ -333,13 +333,9 @@ public class Monoscopic360Generator extends Generator {
         projectionFrame.updatePixels();
 
         // save compositeFrame to file
-        if (saveLocation != null) {
-            String filename = insertFrame(saveLocation, frameCount);
+        if (saveFilename != null) {
+            String filename = insertFrame(saveFilename, frameCount);
             projectionFrame.save(filename);
-
-            if (frameCount == 1) {
-                checkDiskSpace(filename);
-            }
         }
 
         if (displayCompositeFrame) {
@@ -373,14 +369,23 @@ public class Monoscopic360Generator extends Generator {
                 config.cameraPositionZ, config.cameraTargetX,
                 config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
                 config.cameraUpY, config.cameraUpZ);
+
+        if (saveFilename != null && frameCount == 1) {
+            checkDiskSpace(parent, insertFrame(saveFilename, frameCount));
+        }
     }
 
     private enum CameraOrientation {
         FRONT, LEFT, REAR, RIGHT, ABOVE, BELOW
     }
 
-    private void checkDiskSpace(String filename) {
+    private void checkDiskSpace(PApplet parent, String filename) {
         File file = new File(filename);
+
+        if (!file.isAbsolute()) {
+            file = parent.saveFile(filename);
+        }
+
         File dir = file.getAbsoluteFile().getParentFile();
 
         long mb = (long) Math.pow(2, 20);
