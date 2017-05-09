@@ -46,7 +46,7 @@ void setup() {
   camera3D.setBackgroundColor(128);
   Monoscopic360Generator generator = camera3D.renderMonoscopic360();
 
-  // You'll probably want to save oversized frames to files to make into a
+  // You'll probably want to save over-sized frames to files to make into a
   // movie. Below are the settings for 4K 360 video. Note that these size
   // settings are different from the `size(1000, 500, P3D)` settings above.
   // For better performance, try to set the sketch width to be about 25% of
@@ -55,21 +55,42 @@ void setup() {
   //generator.setOutputWidthHeightAndLocation(4 * 1024, 2 * 1024,
   //                                          "roaming_cubes_#####.png");
 
-  // Saving each frame as a 4K frame will slow down the sketch considerably.
+  // Saving each frame as a 4K image will slow down the sketch considerably.
   // There is no way around this. For a long running video you may want to get
   // a cup of coffee instead of sitting at your computer. To facilitate this,
-  // Camera3D supports a frame limit. The sketch will exit when the
-  // `frameCount` reaches the below value.
+  // Camera3D supports a frame limit. The sketch will exit when Processing's
+  // `frameCount` reaches the below value. This works for all Generators, not
+  // just this one.
   
   // camera3D.setFrameLimit(60 * 30);
 
   // When you use the `setFrameLimit` feature, Camera3D will check your disk
   // drive to make sure you have enough space for all the frames. It will throw
   // an exception if you do not. This is a serious issue if you are saving 4K
-  // *.tiff files, which are 25 MB each, or 8K *.tiff files which are 100 MB
+  // *.tiff files, which are 24 MB each, or 8K *.tiff files which are 96 MB
   // each. One minute's worth of frames (60 seconds * 30 frames/sec) can hose
-  // your harddrive very quickly. I did this to myself while developing this
+  // your hard drive very quickly. I did this to myself while developing this
   // sketch. :-(
+
+  // like all Camera3D Generators, this 360 video generator mimics the default
+  // Processing camera and perspective/frustum settings. For 360 video, the
+  // perspective or frustum settings do not make any sense and are ignored. The
+  // default camera settings are honored, but you may find your sketch easier
+  // to think about if you move the camera to the origin. The camera direction
+  // will determine the center of the equirectangular projection.
+
+  camera3D.camera(0, 0, 0, // camera location
+                  0, 0, -1, // camera direction 
+                  0, -1, 0); // camera "up" direction
+
+  // setting perspective and frustum would be pointless but there is a need for
+  // a zNear and zFar for the clipping plane. This generator sets this to 1 and
+  // 1000 by default, but you may want to set it to something else. Bottom line,
+  // set zNear to something small and zFar to something greater than the largest
+  // distance of an object can get from the camera location. Read the
+  // documentation for more information.
+
+  generator.setNearFarLimits(1, 500);
 
   // initialize variables.
   int cubeSize = 400;
@@ -79,10 +100,6 @@ void setup() {
   yMax = cubeSize / 2;
   zMin = -cubeSize / 2;
   zMax = cubeSize / 2;
-
-  camera3D.camera(0, 0, 0, // camera location
-                  0, 0, -1, // camera direction 
-                  0, -1, 0); // camera up direction
 
   float maxVelocity = 0.5f;
   float maxRotation = 0.8f;
