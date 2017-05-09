@@ -51,7 +51,7 @@ public class Monoscopic360Generator extends Generator {
         this.projectionHeight = 3 * height;
         this.projectionResolutionFactor = 1f;
         this.zNear = 1;
-        this.zFar = 5000;
+        this.zFar = 1000;
         this.panelStepsX = 1;
         this.panelStepsY = 1;
         this.widthOffset = 0d;
@@ -114,9 +114,9 @@ public class Monoscopic360Generator extends Generator {
         return this;
     }
 
-    public Monoscopic360Generator setZNearZFar(float zNear, float zFar) {
-        this.zNear = zNear;
-        this.zFar = zFar;
+    public Monoscopic360Generator setNearFarLimits(float near, float far) {
+        this.zNear = near;
+        this.zFar = far;
 
         return this;
     }
