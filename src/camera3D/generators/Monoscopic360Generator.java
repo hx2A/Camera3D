@@ -35,6 +35,7 @@ public class Monoscopic360Generator extends Generator {
     private String saveFilename;
     private String panelExplainPlanLocation;
     private boolean displayCompositeFrame;
+    private int[] emptyPixelArray;
 
     private Vector cameraDirection;
     private Vector cameraUp;
@@ -68,6 +69,7 @@ public class Monoscopic360Generator extends Generator {
 
         this.frameCount = 0;
         this.displayCompositeFrame = true;
+        this.emptyPixelArray = new int[width * height];
 
         initPanels();
     }
@@ -352,12 +354,13 @@ public class Monoscopic360Generator extends Generator {
             projectionFrame.save(filename);
         }
 
+        System.arraycopy(emptyPixelArray, 0, pixelDest, 0, pixelDest.length);
         if (displayCompositeFrame) {
-            System.arraycopy(new int[pixelDest.length], 0, pixelDest, 0,
-                    pixelDest.length);
             // compare aspect ratios and copy to be centered in the frame
             if (projectionWidth / (float) projectionHeight > frameWidth
                     / (float) frameHeight) {
+                // This resize operation means the PImage needs to be recreated
+                // for the next projection frame
                 projectionFrame.resize(frameWidth, 0);
                 int offset = (frameHeight - projectionFrame.height) / 2;
                 System.arraycopy(projectionFrame.pixels, 0, pixelDest, offset
