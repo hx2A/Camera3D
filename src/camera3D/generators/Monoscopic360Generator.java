@@ -363,6 +363,8 @@ public class Monoscopic360Generator extends Generator {
                 System.arraycopy(projectionFrame.pixels, 0, pixelDest, offset
                         * frameWidth, projectionFrame.pixels.length);
             } else {
+                // This resize operation means the PImage needs to be recreated
+                // for the next projection frame
                 projectionFrame.resize(0, frameHeight);
                 int offset = (frameWidth - projectionFrame.width) / 2;
                 for (int i = 0; i < frameHeight; ++i) {
