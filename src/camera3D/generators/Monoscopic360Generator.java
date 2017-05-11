@@ -265,8 +265,29 @@ public class Monoscopic360Generator extends Generator {
             }
         }
 
-        // Skip over unused panels. But first, adjust the arrayIndex values to
-        // compensate for the missing panel
+        if (panelExplainPlanLocation != null) {
+            PImage arrayIndexFrame = parent.createImage(projectionWidth,
+                    projectionHeight, PConstants.RGB);
+            arrayIndexFrame.loadPixels();
+            for (int i = 0; i < arrayIndex.length; ++i) {
+                if (arrayIndex[i] < 0) {
+                    arrayIndexFrame.pixels[i] = 0xFF000000;
+                } else {
+                    int value = 255 * (1 + panels.get(arrayIndex[i]).getId())
+                            / (panelStepsX * panelStepsY + 2);
+                    int orientationOrdinal = panels.get(arrayIndex[i])
+                            .getOrientationOrdinal();
+                    arrayIndexFrame.pixels[i] = 0xFF000000
+                            | (value << (8 * (orientationOrdinal / 2)))
+                            | (value << (8 * (((orientationOrdinal + 1) / 2) % 3)));
+                }
+            }
+            arrayIndexFrame.updatePixels();
+            arrayIndexFrame.save(panelExplainPlanLocation);
+        }
+
+        // Finally, remove unused panels. But first, adjust the arrayIndex
+        // values to compensate for the missing panel
         int removals = 0;
         for (int i = 0; i < panels.size(); ++i) {
             if (panels.get(i).unused()) {
@@ -279,24 +300,6 @@ public class Monoscopic360Generator extends Generator {
             }
         }
         panels.removeIf(Panel::unused);
-
-        if (panelExplainPlanLocation != null) {
-            PImage arrayIndexFrame = parent.createImage(projectionWidth,
-                    projectionHeight, PConstants.RGB);
-            arrayIndexFrame.loadPixels();
-            for (int i = 0; i < arrayIndex.length; ++i) {
-                if (arrayIndex[i] < 0) {
-                    arrayIndexFrame.pixels[i] = 0xFF000000;
-                } else {
-                    int value = 255 * arrayIndex[i] / (panels.size() - 1);
-                    arrayIndexFrame.pixels[i] = (0xFF << (8 * (arrayIndex[i] % 3)))
-                            | (0xFF << (8 * (arrayIndex[i] % 7)))
-                            | (value << 16) | (value << 8) | value;
-                }
-            }
-            arrayIndexFrame.updatePixels();
-            arrayIndexFrame.save(panelExplainPlanLocation);
-        }
     }
 
     public int getComponentCount() {
@@ -467,6 +470,14 @@ public class Monoscopic360Generator extends Generator {
 
         public boolean unused() {
             return !used;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public int getOrientationOrdinal() {
+            return orientation.ordinal();
         }
 
         public Integer locate(double sinTheta, double cosTheta, double sinPhi,
