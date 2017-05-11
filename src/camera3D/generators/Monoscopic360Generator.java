@@ -399,7 +399,7 @@ public class Monoscopic360Generator extends Generator {
     }
 
     private enum CameraOrientation {
-        FRONT, LEFT, REAR, RIGHT, ABOVE, BELOW
+        ABOVE, FRONT, RIGHT, REAR, LEFT, BELOW
     }
 
     private void checkDiskSpace(PApplet parent, String filename) {
