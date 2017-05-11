@@ -279,6 +279,7 @@ public class Monoscopic360Generator extends Generator {
             }
         }
         panels.removeIf(Panel::unused);
+        System.out.printf("There are %d panels.\n", panels.size());
 
         if (panelExplainPlanLocation != null) {
             PImage arrayIndexFrame = parent.createImage(projectionWidth,
