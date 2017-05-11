@@ -265,6 +265,21 @@ public class Monoscopic360Generator extends Generator {
             }
         }
 
+        // Remove unused panels. But first, adjust the arrayIndex values to
+        // compensate for the missing panel
+        int removals = 0;
+        for (int i = 0; i < panels.size(); ++i) {
+            if (panels.get(i).unused()) {
+                for (int j = 0; j < arrayIndex.length; ++j) {
+                    if (arrayIndex[j] + removals > i) {
+                        arrayIndex[j]--;
+                    }
+                }
+                removals++;
+            }
+        }
+        panels.removeIf(Panel::unused);
+
         if (panelExplainPlanLocation != null) {
             PImage arrayIndexFrame = parent.createImage(projectionWidth,
                     projectionHeight, PConstants.RGB);
@@ -285,21 +300,6 @@ public class Monoscopic360Generator extends Generator {
             arrayIndexFrame.updatePixels();
             arrayIndexFrame.save(panelExplainPlanLocation);
         }
-
-        // Finally, remove unused panels. But first, adjust the arrayIndex
-        // values to compensate for the missing panel
-        int removals = 0;
-        for (int i = 0; i < panels.size(); ++i) {
-            if (panels.get(i).unused()) {
-                for (int j = 0; j < arrayIndex.length; ++j) {
-                    if (arrayIndex[j] + removals > i) {
-                        arrayIndex[j]--;
-                    }
-                }
-                removals++;
-            }
-        }
-        panels.removeIf(Panel::unused);
     }
 
     public int getComponentCount() {
