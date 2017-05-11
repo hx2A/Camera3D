@@ -290,7 +290,7 @@ public class Monoscopic360Generator extends Generator {
                     arrayIndexFrame.pixels[i] = 0xFF000000;
                 } else {
                     int value = 255 * (1 + panels.get(arrayIndex[i]).getId())
-                            / (panelStepsX * panelStepsY + 2);
+                            / (1 + panelStepsX * panelStepsY);
                     int orientationOrdinal = panels.get(arrayIndex[i])
                             .getOrientationOrdinal();
                     arrayIndexFrame.pixels[i] = 0xFF000000
