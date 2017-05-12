@@ -257,8 +257,10 @@ public class Monoscopic360Generator extends Generator {
                     }
                 }
                 if (p == panels.size()) {
-                    System.out.println(String.format("panel miss: (%d, %d)", x,
-                            y));
+                    System.out
+                            .println(String
+                                    .format("panel miss: (%d, %d) please report bug with sketch and projection size information",
+                                            x, y));
                     arrayIndex[y * projectionWidth + x] = -1;
                     pixelMapping[y * projectionWidth + x] = 0;
                 }
