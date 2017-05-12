@@ -108,6 +108,11 @@ public class Monoscopic360Generator extends Generator {
 
     public Monoscopic360Generator setPanelXYSteps(int panelXSteps,
             int panelYSteps) {
+        if (panelXSteps < 1 || panelYSteps < 1) {
+            throw new RuntimeException(
+                    "Panel step sizes must be greater than or equal to 1.");
+        }
+
         this.panelXSteps = panelXSteps;
         this.panelYSteps = panelYSteps;
 
@@ -115,6 +120,11 @@ public class Monoscopic360Generator extends Generator {
     }
 
     public Monoscopic360Generator setNearFarLimits(float near, float far) {
+        if (near < 0 || far < 0 || near > far) {
+            throw new RuntimeException(
+                    "Near and far must both be positive with near < far.");
+        }
+
         this.zNear = near;
         this.zFar = far;
 
