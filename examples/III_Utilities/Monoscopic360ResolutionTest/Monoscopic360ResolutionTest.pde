@@ -46,7 +46,7 @@ public void setup() {
     .renderMonoscopic360()
     .setPanelXYSteps(1, 2)
     .setPanelExplainPlanLocation(
-    "frames/explainplan.png")
+    "frames/explain_plan.png")
     .setOutputSizeAndLocation(4 * 1024, 
     "frames/resolution_test_#####.tiff");
 
