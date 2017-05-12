@@ -25,11 +25,10 @@ public class Monoscopic360Generator extends Generator {
     private PImage projectionFrame;
     private int projectionWidth;
     private int projectionHeight;
-    private float projectionResolutionFactor;
     private float zNear;
     private float zFar;
-    private int panelStepsX;
-    private int panelStepsY;
+    private int panelXSteps;
+    private int panelYSteps;
     private double widthOffset;
     private double heightOffset;
     private String saveFilename;
@@ -50,11 +49,10 @@ public class Monoscopic360Generator extends Generator {
         this.frameHeight = height;
         this.projectionWidth = 3 * width;
         this.projectionHeight = 3 * height;
-        this.projectionResolutionFactor = 1f;
         this.zNear = 1;
         this.zFar = 1000;
-        this.panelStepsX = 1;
-        this.panelStepsY = 1;
+        this.panelXSteps = 1;
+        this.panelYSteps = 1;
         this.widthOffset = 0d;
         this.heightOffset = 0d;
 
@@ -108,10 +106,10 @@ public class Monoscopic360Generator extends Generator {
         return this;
     }
 
-    public Monoscopic360Generator setProjectionResolutionFactor(float factor) {
-        this.projectionResolutionFactor = factor;
-
-        initPanels();
+    public Monoscopic360Generator setPanelXYSteps(int panelXSteps,
+            int panelYSteps) {
+        this.panelXSteps = panelXSteps;
+        this.panelYSteps = panelYSteps;
 
         return this;
     }
@@ -146,25 +144,13 @@ public class Monoscopic360Generator extends Generator {
         // initialize the panels with the correct settings
         panels = new ArrayList<Panel>();
 
-        // this determines how many panels will be used for each camera
-        // orientation. do this in a way that tries to preserve good resolution
-        // for the output.
-        panelStepsX = Math.max(
-                (int) Math.round(projectionResolutionFactor
-                        * (2 * widthOffset + projectionWidth)
-                        / (4 * frameWidth)), 1);
-        panelStepsY = Math.max(
-                (int) Math.round(projectionResolutionFactor
-                        * (2 * heightOffset + projectionHeight)
-                        / (3 * frameHeight)), 1);
-
-        for (int i = 0; i < panelStepsX; ++i) {
-            float startX = i / (float) panelStepsX;
-            float endX = (i + 1) / (float) panelStepsX;
-            for (int j = 0; j < panelStepsY; ++j) {
-                float startY = j / (float) panelStepsY;
-                float endY = (j + 1) / (float) panelStepsY;
-                int id = i * panelStepsY + j;
+        for (int i = 0; i < panelXSteps; ++i) {
+            float startX = i / (float) panelXSteps;
+            float endX = (i + 1) / (float) panelXSteps;
+            for (int j = 0; j < panelYSteps; ++j) {
+                float startY = j / (float) panelYSteps;
+                float endY = (j + 1) / (float) panelYSteps;
+                int id = i * panelYSteps + j;
 
                 panels.add(new Panel(id, CameraOrientation.ABOVE, startX, endX,
                         startY, endY));
@@ -188,21 +174,26 @@ public class Monoscopic360Generator extends Generator {
 
     private void calculatePixelMaps(PApplet parent) {
         // print out a helpful suggestion for improving performance
-        if (projectionResolutionFactor == 1) {
-            String suggestion = null;
-            if (panelStepsY > 1 && panelStepsX > 1) {
-                suggestion = "width and height";
-            } else if (panelStepsX > 1) {
-                suggestion = "width";
-            } else if (panelStepsY > 1) {
+        float optimalSize = 2 / (float) Math.tan(2 * PI
+                / (2 * widthOffset + projectionWidth));
+        String suggestion = null;
+        if (frameWidth * panelXSteps < 0.8 * optimalSize) {
+            suggestion = "width";
+        }
+        if (frameHeight * panelYSteps < 0.8 * optimalSize) {
+            if (suggestion == null) {
                 suggestion = "height";
+            } else {
+                suggestion = "width and height";
             }
-            if (suggestion != null) {
-                System.out.printf(
-                        "If your screen and computer allows it, please"
-                                + " consider increasing your sketch %s.\n",
-                        suggestion);
-            }
+        }
+        if (suggestion != null) {
+            System.out.printf("If your screen and computer allows it, please"
+                    + " consider increasing your sketch %s.\n", suggestion);
+            System.out
+                    .println("You can also add more rendering panels with setPanelXYSteps().");
+            System.out
+                    .println("Consult online documentation for 360 resolution best practices.");
         }
 
         // precompute the sin and cos LUTs
@@ -292,7 +283,7 @@ public class Monoscopic360Generator extends Generator {
                     arrayIndexFrame.pixels[i] = 0xFF000000;
                 } else {
                     int value = 255 * (1 + panels.get(arrayIndex[i]).getId())
-                            / (1 + panelStepsX * panelStepsY);
+                            / (1 + panelXSteps * panelYSteps);
                     int orientationOrdinal = panels.get(arrayIndex[i])
                             .getOrientationOrdinal();
                     arrayIndexFrame.pixels[i] = 0xFF000000
