@@ -35,7 +35,7 @@ Camera3D camera3D;
 int componentCount;
 
 public void setup() {
-  size(1200, 600, P3D);
+  size(1300, 650, P3D);
 
   colorMode(HSB, 360, 100, 100);
 
@@ -44,6 +44,7 @@ public void setup() {
 
   Monoscopic360Generator generator = camera3D
     .renderMonoscopic360()
+    .setPanelXYSteps(1, 2)
     .setPanelExplainPlanLocation(
     "frames/explainplan.png")
     .setOutputSizeAndLocation(4 * 1024, 
@@ -51,8 +52,8 @@ public void setup() {
 
   componentCount = generator.getComponentCount();
 
-  // save 5 seconds worth of video
-  camera3D.setFrameLimit(30 * 5);
+  // save 5 frames worth of video
+  camera3D.setFrameLimit(5);
 }
 
 void draw() {
