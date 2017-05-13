@@ -17,6 +17,10 @@
  * Uploading 360 video to Facebook or Youtube requires you to add special
  * metatags to the movie file. Check online documentation to learn how
  * to do this.
+ *
+ * Read the online documentation to learn how to upload your own sketches.
+ * 
+ * http://ixora.io/projects/camera-3D/monoscopic-360-best-practices/
  * 
  * Note the Vimeo player adds some distortion to the straight lines. I asked
  * them about it and it seems to be a result of the trade-off between a wider
