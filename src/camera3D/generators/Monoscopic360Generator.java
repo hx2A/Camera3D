@@ -67,6 +67,7 @@ public class Monoscopic360Generator extends Generator {
 
         this.frameCount = 0;
         this.displayCompositeFrame = true;
+        this.projectionFrame = null;
         this.emptyPixelArray = new int[width * height];
 
         initPanels();
@@ -330,7 +331,7 @@ public class Monoscopic360Generator extends Generator {
     public void prepareForDraw(int frameNum, PApplet parent) {
         frameCount = parent.frameCount;
 
-        if (frameNum == 0 && (projectionFrame == null || displayCompositeFrame)) {
+        if (projectionFrame == null) {
             projectionFrame = parent.createImage(projectionWidth,
                     projectionHeight, PConstants.RGB);
         }
@@ -383,6 +384,8 @@ public class Monoscopic360Generator extends Generator {
                             + offset, projectionFrame.width);
                 }
             }
+            // discard projection frame
+            projectionFrame = null;
         }
     }
 
