@@ -314,7 +314,7 @@ public class Monoscopic360Generator extends Generator {
 
     public String getComponentFrameName(int frameNum) {
         if (0 <= frameNum && frameNum < panels.size()) {
-            return panels.get(frameNum).getName();
+            return panels.get(frameNum).getName().toLowerCase();
         } else {
             return "";
         }
