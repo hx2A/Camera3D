@@ -24,7 +24,6 @@
  * http://ixora.io/projects/camera-3D/monoscopic-360-best-practices/
  */
 
-
 import camera3D.*;
 import camera3D.generators.*;
 
