@@ -19,6 +19,8 @@ public class Monoscopic360Generator extends Generator {
 
     private final static double PI = 3.14159265359;
 
+    private PApplet parent;
+
     private int frameWidth;
     private int frameHeight;
 
@@ -42,7 +44,6 @@ public class Monoscopic360Generator extends Generator {
     private ArrayList<Panel> panels;
     private int[] arrayIndex;
     private int[] pixelMapping;
-    private int frameCount;
 
     public Monoscopic360Generator(int width, int height) {
         this.frameWidth = width;
@@ -65,7 +66,7 @@ public class Monoscopic360Generator extends Generator {
         this.saveFilename = null;
         this.panelExplainPlanLocation = null;
 
-        this.frameCount = 0;
+        this.parent = null;
         this.displayCompositeFrame = true;
         this.projectionFrame = null;
         this.emptyPixelArray = new int[width * height];
@@ -183,7 +184,7 @@ public class Monoscopic360Generator extends Generator {
         pixelMapping = null;
     }
 
-    private void calculatePixelMaps(PApplet parent) {
+    private void calculatePixelMaps() {
         // print out a helpful suggestion for improving performance
         float optimalSize = 2 / (float) Math.tan(2 * PI
                 / (2 * widthOffset + projectionWidth));
@@ -329,21 +330,24 @@ public class Monoscopic360Generator extends Generator {
     }
 
     public void prepareForDraw(int frameNum, PApplet parent) {
-        frameCount = parent.frameCount;
+        // maintain reference to parent
+        if (this.parent == null) {
+            this.parent = parent;
+        }
 
+        panels.get(frameNum).setCamera();
+    }
+
+    public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
         if (projectionFrame == null) {
             projectionFrame = parent.createImage(projectionWidth,
                     projectionHeight, PConstants.RGB);
         }
 
-        panels.get(frameNum).setCamera(parent);
-
         if (arrayIndex == null || pixelMapping == null) {
-            calculatePixelMaps(parent);
+            calculatePixelMaps();
         }
-    }
 
-    public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
         projectionFrame.loadPixels();
         executeTask(
                 projectionFrame.pixels.length,
@@ -358,8 +362,11 @@ public class Monoscopic360Generator extends Generator {
 
         // save compositeFrame to file
         if (saveFilename != null) {
-            String filename = insertFrame(saveFilename, frameCount);
+            String filename = insertFrame(saveFilename, parent.frameCount);
             projectionFrame.save(filename);
+            if (parent.frameCount == 1) {
+                checkDiskSpace(parent.saveFile(filename));
+            }
         }
 
         System.arraycopy(emptyPixelArray, 0, pixelDest, 0, pixelDest.length);
@@ -398,23 +405,13 @@ public class Monoscopic360Generator extends Generator {
                 config.cameraPositionZ, config.cameraTargetX,
                 config.cameraTargetY, config.cameraTargetZ, config.cameraUpX,
                 config.cameraUpY, config.cameraUpZ);
-
-        if (saveFilename != null && frameCount == 1) {
-            checkDiskSpace(parent, insertFrame(saveFilename, frameCount));
-        }
     }
 
     private enum CameraOrientation {
         ABOVE, FRONT, RIGHT, REAR, LEFT, BELOW
     }
 
-    private void checkDiskSpace(PApplet parent, String filename) {
-        File file = new File(filename);
-
-        if (!file.isAbsolute()) {
-            file = parent.saveFile(filename);
-        }
-
+    private void checkDiskSpace(File file) {
         File dir = file.getAbsoluteFile().getParentFile();
 
         long mb = (long) Math.pow(2, 20);
@@ -557,7 +554,7 @@ public class Monoscopic360Generator extends Generator {
             }
         }
 
-        public void setCamera(PApplet parent) {
+        public void setCamera() {
             Vector direction;
             Vector up;
 
