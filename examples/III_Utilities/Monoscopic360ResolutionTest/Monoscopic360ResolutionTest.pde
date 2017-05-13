@@ -9,22 +9,19 @@
  * isolated on a white background.
  * 
  * After generating the equirectangular projection, you will see that some of
- * the individual pixels will be stretched out to 2x1, 1x2, or 2x2 colored
- * regions. This will happen most quickly near the projection's equator.
+ * the individual pixels will be stretched out to larger color regions.
  * 
  * This experiment will show you that resolution is most quickly lost near the
  * equator. The key is to consider the size of the area the projection
  * devotes to a orientation. A large area is devoted to above and below,
  * resulting in the best resolution for those areas in the output.
  * 
- * You can also use this to test the various 360 photo and video viewers. These
- * below videos were all created using this sketch and posted online. Consult
- * the online documentation for more discussion.
+ * You can also use this to test the various 360 photo and video viewers.
+ * Consult the online documentation for more discussion.
  * 
- * https://www.youtube.com/watch?v=PAhGcpR75IQ
- * https://www.facebook.com/james.e.schmitz/videos/a.10155267585414691.1073741835.722099690/10155331394759691
- * https://www.facebook.com/photo.php?fbid=10155331511844691&set=a.10155267585414691.1073741835.722099690
  * https://vimeo.com/217045725
+ * 
+ * http://ixora.io/projects/camera-3D/monoscopic-360-best-practices/
  */
 
 
@@ -46,7 +43,7 @@ public void setup() {
     .renderMonoscopic360()
     .setPanelXYSteps(1, 2)
     .setPanelExplainPlanLocation(
-    "frames/explain_plan.png")
+    "frames/explain-plan.png")
     .setOutputSizeAndLocation(4 * 1024, 
     "frames/resolution_test_#####.tiff");
 
