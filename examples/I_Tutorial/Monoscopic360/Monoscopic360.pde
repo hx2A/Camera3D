@@ -1,15 +1,19 @@
 /*
- * This generator makes an equirectangular projection of every possible angle
- * emanating from the camera. The intended purpose is for you to save each
- * frame and make a movie out of it to play in an online 360 video player. To
- * see this sketch in a 360 video player, click below: 
+ * This generator constructs an equirectangular projection of every possible
+ * angle emanating from the camera. The intended purpose is for you to save
+ * each frame and make a movie out of it to play in an online 360 video player.
+ * To see this sketch in a 360 video player, click below: 
  * 
  * https://www.youtube.com/watch?v=YLTnoa7eoSQ
  * https://vimeo.com/216711676
+ *
+ * Read the online documentation to learn how to upload your own sketches.
+ * 
+ * http://ixora.io/projects/camera-3D/monoscopic-360-video/
  */
 
 import camera3D.*;
-
+	
 Camera3D camera3D;
 
 float rot = 75f;
