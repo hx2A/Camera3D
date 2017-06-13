@@ -327,6 +327,10 @@ public class Monoscopic360Generator extends Generator {
                 (float) (config.cameraTargetZ - config.cameraPositionZ));
         cameraUp = new Vector((float) config.cameraUpX,
                 (float) config.cameraUpY, (float) config.cameraUpZ);
+
+        // make sure up vector is orthogonal to the camera's direction
+        cameraUp = cameraUp.sub(cameraDirection.mult((cameraUp
+                .dot(cameraDirection) / cameraDirection.dot(cameraDirection)))).normalized();
     }
 
     public void prepareForDraw(int frameNum, PApplet parent) {
@@ -630,6 +634,14 @@ public class Monoscopic360Generator extends Generator {
         public Vector cross(Vector other) {
             return new Vector(v2 * other.v3 - v3 * other.v2, v3 * other.v1 - v1
                     * other.v3, v1 * other.v2 - v2 * other.v1);
+        }
+
+        public float dot(Vector other) {
+            return v1 * other.v1 + v2 * other.v2 + v3 * other.v3;
+        }
+
+        public Vector sub(Vector other) {
+            return new Vector(v1 - other.v1, v2 - other.v2, v3 - other.v3);
         }
     }
 }
