@@ -28,7 +28,7 @@ void setup() {
   camera3D = new Camera3D(this);
   camera3D.renderMonoscopic360();
   camera3D.setBackgroundColor(color(360, 0, 100));
-  camera3D.camera(0, 0, 0, 0, 0, -1, 0, -1, 0);
+  camera3D.camera(0, 0, 0, 0, 0, -1, 0, 1, 0);
 }
 
 void preDraw() {

@@ -86,7 +86,7 @@ void setup() {
 
   camera3D.camera(0, 0, 0, // camera location
                   0, 0, -1, // camera direction 
-                  0, -1, 0); // camera "up" direction
+                  0, 1, 0); // camera "up" direction
 
   // Setting perspective and frustum would be pointless but there is a need for
   // a `near` and `far` for the clipping plane. This generator sets this to 1
