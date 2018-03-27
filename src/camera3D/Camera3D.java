@@ -301,7 +301,7 @@ public class Camera3D implements PConstants {
     }
 
     public void enableSaveFrame(char key) {
-        enableSaveFrame(key, "");
+        enableSaveFrame(key, "frames");
     }
 
     public void enableSaveFrame() {
