@@ -22,7 +22,7 @@ public abstract class StereoscopicGenerator extends Generator implements
 
     private float divergence;
     private int swapLeftRight;
-    private boolean useAsymmetricFrustrum;
+    private boolean useAsymmetricFrustum;
     private float adjustTargetFactor;
 
     private float cameraDivergenceX;
@@ -34,7 +34,7 @@ public abstract class StereoscopicGenerator extends Generator implements
         divergence = 1;
         swapLeftRight = 1;
         adjustTargetFactor = 1;
-        useAsymmetricFrustrum = true;
+        useAsymmetricFrustum = true;
     }
 
     public int getComponentCount() {
@@ -73,7 +73,7 @@ public abstract class StereoscopicGenerator extends Generator implements
     }
 
     public StereoscopicGenerator useSymmetricFrustum() {
-        useAsymmetricFrustrum = false;
+        useAsymmetricFrustum = false;
 
         return this;
     }
@@ -114,7 +114,7 @@ public abstract class StereoscopicGenerator extends Generator implements
     }
 
     public void prepareForDraw(int frameNum, PApplet parent) {
-        if (useAsymmetricFrustrum) {
+        if (useAsymmetricFrustum) {
             if (frameNum == 0) {
                 parent.camera(config.cameraPositionX + cameraDivergenceX,
                         config.cameraPositionY + cameraDivergenceY,
