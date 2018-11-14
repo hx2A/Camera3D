@@ -28,7 +28,7 @@ public class RegularRenderer extends Generator {
     }
 
     public boolean copyFrameNumber(int frameNum) {
-        return false;
+        return true;
     }
 
     protected void recalculateCameraSettings() {
