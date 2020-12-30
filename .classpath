@@ -3,6 +3,7 @@
 	<classpathentry kind="src" output="bin" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/processing-core"/>
-	<classpathentry kind="lib" path="/processing_libraries/peasycam/library/peasycam.jar"/>
+	<classpathentry kind="lib" path="/home/jim/Projects/processing_libraries/libraries/peasycam.jar"/>
+	<classpathentry kind="lib" path="/home/jim/Projects/processing_libraries/processing/core/library/core.jar"/>
 	<classpathentry kind="output" path="resources/code"/>
 </classpath>
