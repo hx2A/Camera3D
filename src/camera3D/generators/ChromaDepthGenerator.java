@@ -1,5 +1,6 @@
 package camera3D.generators;
 
+import java.io.IOException;
 import java.net.URL;
 
 import processing.core.PApplet;
@@ -9,43 +10,46 @@ import processing.opengl.PShader;
 
 public class ChromaDepthGenerator extends Generator {
 
+  static protected float DEFAULT_NEAR = 500;
+  static protected float DEFAULT_FAR = 1000;
+
   private PApplet parent;
 
   static protected URL defPointShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/pointvert.glsl");
+      .getResource("/data/shaders/chromadepth/pointvert.glsl");
   static protected URL defPointShaderFragURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/pointfrag.glsl");
+      .getResource("/data/shaders/chromadepth/pointfrag.glsl");
   static protected URL defLineShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/linevert.glsl");
+      .getResource("/data/shaders/chromadepth/linevert.glsl");
   static protected URL defLineShaderFragURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/linefrag.glsl");
+      .getResource("/data/shaders/chromadepth/linefrag.glsl");
 
   static protected URL defColorShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/colorvert.glsl");
+      .getResource("/data/shaders/chromadepth/colorvert.glsl");
   static protected URL defColorShaderFragURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/colorfrag.glsl");
+      .getResource("/data/shaders/chromadepth/colorfrag.glsl");
   static protected URL defTextureShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/texvert.glsl");
+      .getResource("/data/shaders/chromadepth/texvert.glsl");
   static protected URL defTextureShaderFragURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/texfrag.glsl");
+      .getResource("/data/shaders/chromadepth/texfrag.glsl");
   static protected URL defLightShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/lightvert.glsl");
+      .getResource("/data/shaders/chromadepth/lightvert.glsl");
   static protected URL defLightShaderFragURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/lightfrag.glsl");
+      .getResource("/data/shaders/chromadepth/lightfrag.glsl");
   static protected URL defTexlightShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/texlightvert.glsl");
+      .getResource("/data/shaders/chromadepth/texlightvert.glsl");
   static protected URL defTexlightShaderFragURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/texlightfrag.glsl");
+      .getResource("/data/shaders/chromadepth/texlightfrag.glsl");
 
   // extra shaders for Raspberry Pis
   static protected URL defLightShaderVertBrcmURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/lightvert-brcm.glsl");
+      .getResource("/data/shaders/chromadepth/lightvert-brcm.glsl");
   static protected URL defLightShaderVertVc4URL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/lightvert-vc4.glsl");
+      .getResource("/data/shaders/chromadepth/lightvert-vc4.glsl");
   static protected URL defTexlightShaderVertBrcmURL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/texlightvert-brcm.glsl");
+      .getResource("/data/shaders/chromadepth/texlightvert-brcm.glsl");
   static protected URL defTexlightShaderVertVc4URL = ChromaDepthGenerator.class
-      .getResource("/camera3D/shaders/chromadepth/texlightvert-vc4.glsl");
+      .getResource("/data/shaders/chromadepth/texlightvert-vc4.glsl");
 
   protected PShader pointShader;
   protected PShader lineShader;
@@ -54,8 +58,9 @@ public class ChromaDepthGenerator extends Generator {
   protected PShader lightShader;
   protected PShader texlightShader;
 
-  public ChromaDepthGenerator() {
-    this.parent = null;
+  public ChromaDepthGenerator(PApplet parent) {
+    this.parent = parent;
+    initShaders();
   }
 
   @Override
@@ -74,11 +79,10 @@ public class ChromaDepthGenerator extends Generator {
 
   @Override
   public void prepareForDraw(int frameNum, PApplet parent) {
-    // maintain reference to parent
-    if (this.parent == null) {
-      this.parent = parent;
-      initShaders(parent);
-    }
+    parent.camera(config.cameraPositionX, config.cameraPositionY, config.cameraPositionZ, config.cameraTargetX,
+        config.cameraTargetY, config.cameraTargetZ, config.cameraUpX, config.cameraUpY, config.cameraUpZ);
+    parent.frustum(config.frustumLeft, config.frustumRight, config.frustumBottom, config.frustumTop, config.frustumNear,
+        config.frustumFar);
   }
 
   @Override
@@ -93,29 +97,43 @@ public class ChromaDepthGenerator extends Generator {
   public void cleanup(PApplet parent) {
   }
 
-  protected void initShaders(PApplet parent) {
-    String OPENGL_RENDERER = ((PGraphics3D) parent.g).pgl.getString(PGL.RENDERER);
+  protected String[] loadShader(URL url) {
+    try {
+      return PApplet.loadStrings(url.openStream());
+    } catch (IOException e) {
+      System.err.println("Cannot load shader " + url.getFile());
+    }
+    return null;
+  }
 
-    pointShader = parent.loadShader(defPointShaderFragURL.getPath(), defPointShaderVertURL.getPath());
-    lineShader = parent.loadShader(defLineShaderFragURL.getPath(), defLineShaderVertURL.getPath());
-    colorShader = parent.loadShader(defColorShaderFragURL.getPath(), defColorShaderVertURL.getPath());
-    textureShader = parent.loadShader(defTextureShaderFragURL.getPath(), defTextureShaderVertURL.getPath());
+  protected void initShaders() {
+    PGL pgl = ((PGraphics3D) parent.g).pgl;
+    String OPENGL_RENDERER = pgl.getString(PGL.RENDERER);
+
+    pointShader = new PShader(parent, loadShader(defPointShaderVertURL), loadShader(defPointShaderFragURL));
+    lineShader = new PShader(parent, loadShader(defLineShaderVertURL), loadShader(defLineShaderFragURL));
+    colorShader = new PShader(parent, loadShader(defColorShaderVertURL), loadShader(defColorShaderFragURL));
+    textureShader = new PShader(parent, loadShader(defTextureShaderVertURL), loadShader(defTextureShaderFragURL));
 
     // use vendor specific shaders if needed
     if (OPENGL_RENDERER.equals("VideoCore IV HW")) { // Broadcom's binary driver for Raspberry Pi
-      lightShader = parent.loadShader(defLightShaderFragURL.getPath(), defLightShaderVertBrcmURL.getPath());
-      texlightShader = parent.loadShader(defTexlightShaderFragURL.getPath(), defTexlightShaderVertBrcmURL.getPath());
+      lightShader = new PShader(parent, loadShader(defLightShaderVertBrcmURL), loadShader(defLightShaderFragURL));
+      texlightShader = new PShader(parent, loadShader(defTexlightShaderVertBrcmURL),
+          loadShader(defTexlightShaderFragURL));
     } else if (OPENGL_RENDERER.contains("VC4")) { // Mesa driver for same hardware
-      lightShader = parent.loadShader(defLightShaderFragURL.getPath(), defLightShaderVertVc4URL.getPath());
-      texlightShader = parent.loadShader(defTexlightShaderFragURL.getPath(), defTexlightShaderVertVc4URL.getPath());
+      lightShader = new PShader(parent, loadShader(defLightShaderVertVc4URL), loadShader(defLightShaderFragURL));
+      texlightShader = new PShader(parent, loadShader(defTexlightShaderVertVc4URL),
+          loadShader(defTexlightShaderFragURL));
     } else {
-      lightShader = parent.loadShader(defLightShaderFragURL.getPath(), defLightShaderVertURL.getPath());
-      texlightShader = parent.loadShader(defTexlightShaderFragURL.getPath(), defTexlightShaderVertURL.getPath());
+      lightShader = new PShader(parent, loadShader(defLightShaderVertURL), loadShader(defLightShaderFragURL));
+      texlightShader = new PShader(parent, loadShader(defTexlightShaderVertURL), loadShader(defTexlightShaderFragURL));
     }
 
     parent.shader(pointShader);
     parent.shader(lineShader);
     parent.shader(colorShader);
+
+    setNearFar(DEFAULT_NEAR, DEFAULT_FAR);
   }
 
   public ChromaDepthGenerator setNearFar(float near, float far) {
@@ -123,6 +141,7 @@ public class ChromaDepthGenerator extends Generator {
     pointShader.set("far", far);
     lineShader.set("near", near);
     lineShader.set("far", far);
+
     colorShader.set("near", near);
     colorShader.set("far", far);
     lightShader.set("near", near);

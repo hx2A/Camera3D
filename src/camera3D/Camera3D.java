@@ -263,8 +263,8 @@ public class Camera3D implements PConstants {
         return generator;
     }
 
-    public ChromaDepthGenerator chromadepthGenerator() {
-        ChromaDepthGenerator generator = new ChromaDepthGenerator();
+    public ChromaDepthGenerator renderChromaDepth() {
+        ChromaDepthGenerator generator = new ChromaDepthGenerator(parent);
 
         setGenerator(generator);
 
