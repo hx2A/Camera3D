@@ -11,6 +11,7 @@ public class ChromaDepthGenerator extends Generator {
 
   // TODO: I need additional shaders for Broadcom and Mesa drivers. Check
   // PGraphicsOpenGL code L6929 for more info
+  // TODO: the point, line, and color fragment shaders are identical
 
   static protected URL defColorShaderVertURL = ChromaDepthGenerator.class
       .getResource("/camera3D/shaders/chromadepth/colorvert.glsl");
@@ -29,10 +30,10 @@ public class ChromaDepthGenerator extends Generator {
   static protected URL defTexlightShaderFragURL = ChromaDepthGenerator.class
       .getResource("/camera3D/shaders/chromadepth/texlightfrag.glsl");
 
-  // static protected URL defPointShaderVertURL = ChromaDepthGenerator.class
-  // .getResource("/camera3D/shaders/chromadepth/pointvert.glsl");
-  // static protected URL defPointShaderFragURL = ChromaDepthGenerator.class
-  // .getResource("/camera3D/shaders/chromadepth/pointfrag.glsl");
+  static protected URL defPointShaderVertURL = ChromaDepthGenerator.class
+  .getResource("/camera3D/shaders/chromadepth/pointvert.glsl");
+  static protected URL defPointShaderFragURL = ChromaDepthGenerator.class
+  .getResource("/camera3D/shaders/chromadepth/pointfrag.glsl");
   static protected URL defLineShaderVertURL = ChromaDepthGenerator.class
       .getResource("/camera3D/shaders/chromadepth/linevert.glsl");
   static protected URL defLineShaderFragURL = ChromaDepthGenerator.class
@@ -86,23 +87,22 @@ public class ChromaDepthGenerator extends Generator {
 
   protected void initShaders(PApplet parent) {
     lineShader = parent.loadShader(defLineShaderFragURL.getPath(), defLineShaderVertURL.getPath());
-    // pointShader = parent.loadShader(defPointShaderFragURL.getPath(),
-    // defPointShaderVertURL.getPath());
+    pointShader = parent.loadShader(defPointShaderFragURL.getPath(), defPointShaderVertURL.getPath());
     colorShader = parent.loadShader(defColorShaderFragURL.getPath(), defColorShaderVertURL.getPath());
     textureShader = parent.loadShader(defTextureShaderFragURL.getPath(), defTextureShaderVertURL.getPath());
     lightShader = parent.loadShader(defLightShaderFragURL.getPath(), defLightShaderVertURL.getPath());
     texlightShader = parent.loadShader(defTexlightShaderFragURL.getPath(), defTexlightShaderVertURL.getPath());
 
     parent.shader(lineShader);
-    // parent.shader(pointShader);
+    parent.shader(pointShader);
     parent.shader(colorShader);
   }
 
   public ChromaDepthGenerator setNearFar(float near, float far) {
     lineShader.set("near", near);
     lineShader.set("far", far);
-    // pointShader.set("near", near);
-    // pointShader.set("far", far);
+    pointShader.set("near", near);
+    pointShader.set("far", far);
     colorShader.set("near", near);
     colorShader.set("far", far);
     lightShader.set("near", near);
