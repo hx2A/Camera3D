@@ -107,8 +107,7 @@ public class ChromaDepthGenerator extends Generator {
   }
 
   protected void initShaders() {
-    PGL pgl = ((PGraphics3D) parent.g).pgl;
-    String OPENGL_RENDERER = pgl.getString(PGL.RENDERER);
+    String OPENGL_RENDERER = ((PGraphics3D) parent.g).pgl.getString(PGL.RENDERER);
 
     pointShader = new PShader(parent, loadShader(defPointShaderVertURL), loadShader(defPointShaderFragURL));
     lineShader = new PShader(parent, loadShader(defLineShaderVertURL), loadShader(defLineShaderFragURL));
