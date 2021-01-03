@@ -271,6 +271,15 @@ public class Camera3D implements PConstants {
         return generator;
     }
 
+    public DepthMapGenerator renderDepthMap() {
+        DepthMapGenerator generator = new DepthMapGenerator(parent);
+
+        setGenerator(generator);
+        setBackgroundColor(0);
+
+        return generator;
+    }
+
     public RegularRenderer renderRegular() {
         RegularRenderer generator = new RegularRenderer();
 
