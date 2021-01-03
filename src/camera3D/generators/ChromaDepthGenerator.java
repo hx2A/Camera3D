@@ -16,40 +16,40 @@ public class ChromaDepthGenerator extends Generator {
   private PApplet parent;
 
   static protected URL defPointShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/pointvert.glsl");
+      .getResource("/data/shaders/depthmap/pointvert.glsl");
   static protected URL defPointShaderFragURL = ChromaDepthGenerator.class
       .getResource("/data/shaders/chromadepth/pointfrag.glsl");
   static protected URL defLineShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/linevert.glsl");
+      .getResource("/data/shaders/depthmap/linevert.glsl");
   static protected URL defLineShaderFragURL = ChromaDepthGenerator.class
       .getResource("/data/shaders/chromadepth/linefrag.glsl");
 
   static protected URL defColorShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/colorvert.glsl");
+      .getResource("/data/shaders/depthmap/colorvert.glsl");
   static protected URL defColorShaderFragURL = ChromaDepthGenerator.class
       .getResource("/data/shaders/chromadepth/colorfrag.glsl");
   static protected URL defTextureShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/texvert.glsl");
+      .getResource("/data/shaders/depthmap/texvert.glsl");
   static protected URL defTextureShaderFragURL = ChromaDepthGenerator.class
       .getResource("/data/shaders/chromadepth/texfrag.glsl");
   static protected URL defLightShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/lightvert.glsl");
+      .getResource("/data/shaders/depthmap/lightvert.glsl");
   static protected URL defLightShaderFragURL = ChromaDepthGenerator.class
       .getResource("/data/shaders/chromadepth/lightfrag.glsl");
   static protected URL defTexlightShaderVertURL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/texlightvert.glsl");
+      .getResource("/data/shaders/depthmap/texlightvert.glsl");
   static protected URL defTexlightShaderFragURL = ChromaDepthGenerator.class
       .getResource("/data/shaders/chromadepth/texlightfrag.glsl");
 
   // extra shaders for Raspberry Pis
   static protected URL defLightShaderVertBrcmURL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/lightvert-brcm.glsl");
+      .getResource("/data/shaders/depthmap/lightvert-brcm.glsl");
   static protected URL defLightShaderVertVc4URL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/lightvert-vc4.glsl");
+      .getResource("/data/shaders/depthmap/lightvert-vc4.glsl");
   static protected URL defTexlightShaderVertBrcmURL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/texlightvert-brcm.glsl");
+      .getResource("/data/shaders/depthmap/texlightvert-brcm.glsl");
   static protected URL defTexlightShaderVertVc4URL = ChromaDepthGenerator.class
-      .getResource("/data/shaders/chromadepth/texlightvert-vc4.glsl");
+      .getResource("/data/shaders/depthmap/texlightvert-vc4.glsl");
 
   protected PShader pointShader;
   protected PShader lineShader;
