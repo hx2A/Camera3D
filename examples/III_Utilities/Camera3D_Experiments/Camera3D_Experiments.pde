@@ -55,7 +55,7 @@ int stroke_v4 = 255;
 Camera3D camera3D;
 ControlP5 cp5;
 DropdownList objectList;
-Ellipsoid earth;
+ShapeGroup earthSpaceStationGroup;
 
 Map<Integer, String> rendererMenuItems;
 String rendererChoices = "Regular P3D Renderer, Default Anaglyph,"
@@ -86,18 +86,19 @@ void setup() {
 	camera3D.renderDefaultAnaglyph();
 	camera3D.reportStats();
 
-	earth = new Ellipsoid(this, 40, 40);
-	earth.setRadius(150);
-	earth.setTexture("land_ocean_ice_2048.png");
+	Ellipsoid earth = new Ellipsoid(150, 20, 20);
+	earth.texture(this, "land_ocean_ice_2048.png");
 	earth.drawMode(Shape3D.TEXTURE);
 
-	Box spaceStation = new Box(this, 20, 10, 10);
+	Box spaceStation = new Box(20, 10, 10);
 	spaceStation.fill(128);
 	spaceStation.strokeWeight(2);
 	spaceStation.stroke(0);
 	spaceStation.moveTo(0, 0, 250);
 
-	earth.addShape(spaceStation);
+	earthSpaceStationGroup = new ShapeGroup();
+	earthSpaceStationGroup.addChild(earth);
+	earthSpaceStationGroup.addChild(spaceStation);
 }
 
 void createControls() {
@@ -218,7 +219,7 @@ void preDraw() {
 	cp5.getController("yRot").setValue(yRot);
 	cp5.getController("zRot").setValue(zRot);
 
-	earth.rotateTo(0, radians(yRot), 0);
+	earthSpaceStationGroup.rotateTo(radians(xRot), radians(yRot), radians(zRot));
 }
 
 void draw() {
@@ -275,7 +276,7 @@ void draw() {
 		}
 		break;
 	case 3:
-		earth.draw();
+		earthSpaceStationGroup.draw(getGraphics());
 		break;
 	default:
 		println("unknown object " + objectChoice + ". please report bug.");
