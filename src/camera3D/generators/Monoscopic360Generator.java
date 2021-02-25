@@ -378,25 +378,26 @@ public class Monoscopic360Generator extends Generator {
             // compare aspect ratios and copy to be centered in the frame
             if (projectionWidth / (float) projectionHeight > frameWidth
                     / (float) frameHeight) {
-                // This resize operation means the PImage needs to be recreated
-                // for the next projection frame
-                projectionFrame.resize(frameWidth, 0);
-                int offset = (frameHeight - projectionFrame.height) / 2;
-                System.arraycopy(projectionFrame.pixels, 0, pixelDest, offset
-                        * frameWidth, projectionFrame.pixels.length);
+                int projectionFrameResizeHeight = projectionFrame.height * frameWidth / projectionFrame.width;
+                int offset = (frameHeight - projectionFrameResizeHeight) / 2;
+                for (int x = 0; x < frameWidth; ++x) {
+                    for (int y = 0; y < projectionFrameResizeHeight; ++y) {
+                        int sampleX = (int) (y * (float) projectionFrame.height / projectionFrameResizeHeight);
+                        int sampleY = (int) (x * (float) projectionFrame.width / frameWidth);
+                        pixelDest[(y + offset) * frameWidth + x] = projectionFrame.pixels[sampleX * projectionFrame.width + sampleY];
+                    }
+                }
             } else {
-                // This resize operation means the PImage needs to be recreated
-                // for the next projection frame
-                projectionFrame.resize(0, frameHeight);
-                int offset = (frameWidth - projectionFrame.width) / 2;
-                for (int i = 0; i < frameHeight; ++i) {
-                    System.arraycopy(projectionFrame.pixels, i
-                            * projectionFrame.width, pixelDest, i * frameWidth
-                            + offset, projectionFrame.width);
+                int projectionFrameResizeWidth = projectionFrame.width * frameHeight / projectionFrame.height;
+                int offset = (frameWidth - projectionFrameResizeWidth) / 2;
+                for (int x = 0; x < projectionFrameResizeWidth; ++x) {
+                    for (int y = 0; y < frameHeight; ++y) {
+                        int sampleX = (int) (y * (float) projectionFrame.height / frameHeight);
+                        int sampleY = (int) (x * (float) projectionFrame.width / projectionFrameResizeWidth);
+                        pixelDest[y * frameWidth + x + offset] = projectionFrame.pixels[sampleX * projectionFrame.width + sampleY];
+                    }
                 }
             }
-            // discard projection frame
-            projectionFrame = null;
         }
     }
 
