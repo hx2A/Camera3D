@@ -2,6 +2,16 @@ package camera3D.generators;
 
 import processing.core.PApplet;
 
+/**
+ * 
+ * Simple frame saver generator.
+ * 
+ * Save both left and right frames to the same directory. Useful for making a
+ * Frame sequential movie file.
+ * 
+ * @author James Schmitz
+ *
+ */
 public class StereoscopicFrameSaver extends StereoscopicGenerator {
 
     private String leftFilename;

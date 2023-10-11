@@ -8,6 +8,15 @@ import processing.opengl.PGL;
 import processing.opengl.PGraphics3D;
 import processing.opengl.PShader;
 
+/**
+ * 
+ * Grayscale depth maps.
+ * 
+ * Create grayscale depth maps from the camera's perspective.
+ * 
+ * @author James Schmitz
+ *
+ */
 public class DepthMapGenerator extends Generator {
 
   static protected float DEFAULT_NEAR = 500;

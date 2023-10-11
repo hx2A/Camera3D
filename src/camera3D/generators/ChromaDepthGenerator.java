@@ -8,6 +8,15 @@ import processing.opengl.PGL;
 import processing.opengl.PGraphics3D;
 import processing.opengl.PShader;
 
+/**
+ * 
+ * Chromadepth generator.
+ * 
+ * Create Chromadepth 3D images.
+ * 
+ * @author James Schmitz
+ *
+ */
 public class ChromaDepthGenerator extends Generator {
 
   static protected float DEFAULT_NEAR = 500;
