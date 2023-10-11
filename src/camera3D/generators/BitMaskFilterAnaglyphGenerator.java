@@ -1,7 +1,5 @@
 package camera3D.generators;
 
-import camera3D.generators.AnaglyphGenerator;
-
 /**
  * 
  * Simple bitmask filter anaglyph algorithm.

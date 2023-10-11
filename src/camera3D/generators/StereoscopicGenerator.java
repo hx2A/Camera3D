@@ -2,7 +2,6 @@ package camera3D.generators;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PVector;
 
 /**
  * 

@@ -2,7 +2,6 @@ package camera3D.generators;
 
 import processing.core.PApplet;
 import processing.core.PImage;
-import camera3D.CameraConfiguration;
 
 /**
  * 

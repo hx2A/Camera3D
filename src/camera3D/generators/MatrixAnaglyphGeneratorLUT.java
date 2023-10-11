@@ -1,8 +1,6 @@
 package camera3D.generators;
 
-import camera3D.generators.StereoscopicGenerator;
 import camera3D.generators.util.AnaglyphMatrix;
-import camera3D.generators.util.ColorVector;
 
 /**
  * 

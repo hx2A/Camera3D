@@ -1,7 +1,5 @@
 package camera3D.generators;
 
-import camera3D.generators.StereoscopicGenerator;
-
 /**
  * Optimized implementation of the barrel distortion algorithm.
  * 
