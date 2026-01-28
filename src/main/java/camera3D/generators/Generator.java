@@ -93,8 +93,8 @@ public abstract class Generator {
     /**
      * Combine the component frames into one composite frame.
      * 
-     * @param pixels
-     * @param pixelsAlt
+     * @param pixelDest
+     * @param pixelStorage
      */
     abstract public void generateCompositeFrame(int[] pixelDest,
             int[][] pixelStorage);

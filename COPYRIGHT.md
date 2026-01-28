@@ -1,6 +1,6 @@
 # Licensing Information
 
-Copyright (c) 2012-2023 Jim Schmitz [jim@ixora.io]
+Copyright (c) 2012-2026 Jim Schmitz [jim@ixora.io]
 Copyright (c) 2011-2015 Elie Zananiri
 Copyright (c) 2008-2011 Andreas Schlegel
 
