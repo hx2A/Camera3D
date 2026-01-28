@@ -25,40 +25,40 @@ public class DepthMapGenerator extends Generator {
   private PApplet parent;
 
   static protected URL defPointShaderVertURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/pointvert.glsl");
+      .getResource("/shaders/depthmap/pointvert.glsl");
   static protected URL defPointShaderFragURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/pointfrag.glsl");
+      .getResource("/shaders/depthmap/pointfrag.glsl");
   static protected URL defLineShaderVertURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/linevert.glsl");
+      .getResource("/shaders/depthmap/linevert.glsl");
   static protected URL defLineShaderFragURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/linefrag.glsl");
+      .getResource("/shaders/depthmap/linefrag.glsl");
 
   static protected URL defColorShaderVertURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/colorvert.glsl");
+      .getResource("/shaders/depthmap/colorvert.glsl");
   static protected URL defColorShaderFragURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/colorfrag.glsl");
+      .getResource("/shaders/depthmap/colorfrag.glsl");
   static protected URL defTextureShaderVertURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/texvert.glsl");
+      .getResource("/shaders/depthmap/texvert.glsl");
   static protected URL defTextureShaderFragURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/texfrag.glsl");
+      .getResource("/shaders/depthmap/texfrag.glsl");
   static protected URL defLightShaderVertURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/lightvert.glsl");
+      .getResource("/shaders/depthmap/lightvert.glsl");
   static protected URL defLightShaderFragURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/lightfrag.glsl");
+      .getResource("/shaders/depthmap/lightfrag.glsl");
   static protected URL defTexlightShaderVertURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/texlightvert.glsl");
+      .getResource("/shaders/depthmap/texlightvert.glsl");
   static protected URL defTexlightShaderFragURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/texlightfrag.glsl");
+      .getResource("/shaders/depthmap/texlightfrag.glsl");
 
   // extra shaders for Raspberry Pis
   static protected URL defLightShaderVertBrcmURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/lightvert-brcm.glsl");
+      .getResource("/shaders/depthmap/lightvert-brcm.glsl");
   static protected URL defLightShaderVertVc4URL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/lightvert-vc4.glsl");
+      .getResource("/shaders/depthmap/lightvert-vc4.glsl");
   static protected URL defTexlightShaderVertBrcmURL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/texlightvert-brcm.glsl");
+      .getResource("/shaders/depthmap/texlightvert-brcm.glsl");
   static protected URL defTexlightShaderVertVc4URL = DepthMapGenerator.class
-      .getResource("/data/shaders/depthmap/texlightvert-vc4.glsl");
+      .getResource("/shaders/depthmap/texlightvert-vc4.glsl");
 
   protected PShader pointShader;
   protected PShader lineShader;
