@@ -76,13 +76,6 @@ public class Camera3D implements PConstants {
         config = new CameraConfiguration();
         camera();
         perspective();
-
-        welcome();
-    }
-
-    private void welcome() {
-        System.out
-                .println("##library.name## ##library.prettyVersion## by ##author##");
     }
 
     public static String version() {
