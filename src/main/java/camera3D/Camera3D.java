@@ -63,7 +63,7 @@ public class Camera3D implements PConstants {
 
         width = parent.width;
         height = parent.height;
-        pixelCount = parent.width * parent.height;
+        pixelCount = parent.width * parent.height * parent.pixelDensity * parent.pixelDensity;
         pixelStorage = new int[1][pixelCount];
         avgGeneratorTimeMillis = 1;
 
