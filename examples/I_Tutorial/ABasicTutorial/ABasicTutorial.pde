@@ -9,6 +9,8 @@ float rotZ = 0;
 
 void setup() {
   size(500, 500, P3D);
+  pixelDensity(displayDensity());
+
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(color(192));
   camera3D.renderDefaultAnaglyph().setDivergence(1);
@@ -58,6 +60,5 @@ This method is called ONCE per frame, after all calls to the
 draw method.
 */
 void postDraw() {
-  copy(label, 0, 0, label.width, label.height, width - label.width,
-       height - label.height, label.width, label.height);
+  image(label, width - label.width, height - label.height);
 }

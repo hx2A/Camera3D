@@ -70,6 +70,7 @@ String objectChoices = "Box, Sphere, Ring of Spheres, Earth";
 
 void setup() {
 	size(800, 600, P3D);
+	pixelDensity(displayDensity());
 
 	windowWidth = width;
 	windowHeight = height;

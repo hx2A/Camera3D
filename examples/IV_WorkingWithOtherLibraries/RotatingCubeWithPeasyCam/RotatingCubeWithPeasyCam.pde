@@ -7,6 +7,7 @@ PMatrix3D modelview;
 
 void setup() {
   size(500, 500, P3D);
+  pixelDensity(displayDensity());
 
   cam = new PeasyCam(this, 100);
   cam.setMinimumDistance(100);

@@ -32,6 +32,7 @@ int componentCount;
 
 public void setup() {
   size(1300, 650, P3D);
+  pixelDensity(displayDensity());
 
   colorMode(HSB, 360, 100, 100);
 

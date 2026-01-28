@@ -9,6 +9,8 @@ float rotZ = rot * 0.3f;
 
 void setup() {
   size(300, 300, P3D);
+  pixelDensity(displayDensity());
+
   camera3D = new Camera3D(this);
   camera3D.renderInterlaced().setDivergence(1);
   camera3D.setBackgroundColor(255);

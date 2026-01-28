@@ -12,6 +12,7 @@ int zTrans;
 
 void setup() {
   size(500, 500, P3D);
+  pixelDensity(displayDensity());
 
   cp5 = new ControlP5(this);
 

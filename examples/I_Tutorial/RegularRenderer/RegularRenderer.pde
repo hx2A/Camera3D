@@ -18,6 +18,8 @@ float rotZ = rot * 0.3f;
 
 void setup() {
   size(300, 300, P3D);
+  pixelDensity(displayDensity());
+
   camera3D = new Camera3D(this);
   camera3D.renderRegular();
   camera3D.setBackgroundColor(255);
@@ -84,6 +86,5 @@ void draw() {
 }
 
 void postDraw() {
-  copy(label, 0, 0, label.width, label.height, width - label.width,
-       height - label.height - 10, label.width, label.height);
+  image(label, width - label.width, height - label.height);
 }

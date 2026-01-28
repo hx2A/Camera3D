@@ -11,6 +11,8 @@ Camera3D camera3D;
 
 void setup() {
   size(300, 300, P3D);
+  pixelDensity(displayDensity());
+
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(255);
 

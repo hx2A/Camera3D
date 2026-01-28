@@ -7,6 +7,8 @@ PImage background;
 
 void setup() {
   size(800, 600, P3D);
+  pixelDensity(displayDensity());
+
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(0);
   camera3D.renderDuboisRedCyanAnaglyph().setDivergence(1f);

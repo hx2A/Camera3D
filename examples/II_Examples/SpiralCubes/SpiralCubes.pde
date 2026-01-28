@@ -21,6 +21,7 @@ Shape[] shapes;
 
 void setup() {
   size(500, 500, P3D);
+  pixelDensity(displayDensity());
 
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(128);

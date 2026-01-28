@@ -17,6 +17,8 @@ float rotZ = rot * 0.3f;
 
 void setup() {
   size(300, 300, P3D);
+  pixelDensity(displayDensity());
+
   camera3D = new Camera3D(this);
   BarrelDistortionGenerator generator = camera3D.renderBarrelDistortion().setDivergence(1);
   // Change these numbers to learn how this works. Set them to 0, 0 for no distortion.

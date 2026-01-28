@@ -23,6 +23,8 @@ float rotZ = rot * 0.3f;
 
 void setup() {
   size(600, 300, P3D);
+  pixelDensity(displayDensity());
+
   colorMode(HSB, 360, 100, 100);
 
   camera3D = new Camera3D(this);

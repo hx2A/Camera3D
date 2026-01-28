@@ -12,6 +12,7 @@ int zMax;
 
 void setup() {
 	size(500, 500, P3D);
+	pixelDensity(displayDensity());
 	noiseSeed(42);
 
 	camera3D = new Camera3D(this);
