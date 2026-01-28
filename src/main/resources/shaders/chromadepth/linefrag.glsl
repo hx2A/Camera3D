@@ -1,3 +1,5 @@
+#version 410
+
 #define PROCESSING_LINE_SHADER
 
 #ifdef GL_ES

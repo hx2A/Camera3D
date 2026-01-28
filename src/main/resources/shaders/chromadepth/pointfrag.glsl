@@ -1,3 +1,5 @@
+#version 410
+
 #define PROCESSING_POINT_SHADER
 
 #ifdef GL_ES

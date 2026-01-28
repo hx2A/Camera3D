@@ -1,3 +1,5 @@
+#version 410
+
 #define PROCESSING_LIGHT_SHADER
 
 uniform mat4 modelviewMatrix;
