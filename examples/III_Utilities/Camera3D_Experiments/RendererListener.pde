@@ -2,7 +2,9 @@ class RendererListener implements ControlListener {
 	public void controlEvent(ControlEvent theEvent) {
 		String rendererChoice = rendererMenuItems.get((int) theEvent.getValue());
 
-		println("setting renderer to: " + rendererChoice + " renderer");
+    resetShader(POINTS);
+    resetShader(LINES);
+    resetShader(TRIANGLES);
 
 		switch ((int) theEvent.getValue()) {
 		case 0:
@@ -66,5 +68,7 @@ class RendererListener implements ControlListener {
 			println("Unknown Renderer " + rendererChoice
 					+ ". Please report bug.");
 		}
+
+    println("setting renderer to: " + rendererChoice + " renderer");
 	}
 }
