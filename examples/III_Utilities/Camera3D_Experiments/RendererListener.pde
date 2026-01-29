@@ -36,24 +36,30 @@ class RendererListener implements ControlListener {
 			camera3D.renderDuboisAmberBlueAnaglyph();
 			break;
 		case 10:
-			camera3D.renderBarrelDistortion();
+			camera3D.renderChromaDepth();
 			break;
 		case 11:
-			camera3D.renderSplitDepthIllusion();
+			camera3D.renderDepthMap();
 			break;
 		case 12:
-			camera3D.renderInterlaced();
+			camera3D.renderBarrelDistortion();
 			break;
 		case 13:
-			camera3D.renderSplitFrameSideBySide();
+			camera3D.renderSplitDepthIllusion();
 			break;
 		case 14:
-			camera3D.renderSplitFrameSideBySideHalfWidth();
+			camera3D.renderInterlaced();
 			break;
 		case 15:
-			camera3D.renderSplitFrameOverUnder();
+			camera3D.renderSplitFrameSideBySide();
 			break;
 		case 16:
+			camera3D.renderSplitFrameSideBySideHalfWidth();
+			break;
+		case 17:
+			camera3D.renderSplitFrameOverUnder();
+			break;
+		case 18:
 			camera3D.renderSplitFrameOverUnderHalfHeight();
 			break;
 		default:

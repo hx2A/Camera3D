@@ -62,6 +62,7 @@ String rendererChoices = "Regular P3D Renderer, Default Anaglyph,"
 		+ "BitMask Filter Red-Cyan, BitMask Filter Magenta-Green,"
 		+ "True Anaglyph, Gray Anaglyph, Half Color Anaglyph,"
 		+ "Dubois Red-Cyan, Dubois Magenta-Green, Dubois Amber-Blue,"
+		+ "ChromaDepth, Depth Map,"
 		+ "Barrel Distortion, Split Depth Illusion, Interlaced,"
 		+ "Side by Side, Side by Side Half Width,"
 		+ "Over Under, Over Under Half Height";
