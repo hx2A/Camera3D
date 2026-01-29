@@ -25,6 +25,7 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 
     private int width;
     private int height;
+    private int pixelDensity;
     private int pixelCount;
 
     private float pow2;
@@ -34,10 +35,11 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
     private int[] arrayIndex;
     private int[] pixelMapping;
 
-    public BarrelDistortionGenerator(int width, int height, int pixelCount) {
+    public BarrelDistortionGenerator(int width, int height, int pixelDensity) {
         this.width = width;
         this.height = height;
-        this.pixelCount = pixelCount;
+        this.pixelDensity = pixelDensity;
+        this.pixelCount = width * height * pixelDensity * pixelDensity;
 
         this.pow2 = 0.22f;
         this.pow4 = 0.24f;
@@ -83,14 +85,14 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
         arrayIndex = new int[pixelCount];
         pixelMapping = new int[pixelCount];
 
-        int xCenter = width / 2;
-        int quarterWidth = width / 4;
-        int yCenter = height / 2;
+        int xCenter = width * pixelDensity / 2;
+        int quarterWidth = width * pixelDensity / 4;
+        int yCenter = height * pixelDensity / 2;
         double rMax2inv = 1 / (Math.pow(xCenter / 2, 2) + Math.pow(yCenter, 2));
 
-        for (int x = 0; x < width; ++x) {
+        for (int x = 0; x < width * pixelDensity; ++x) {
             double xOffset = x - xCenter;
-            for (int y = 0; y < height; ++y) {
+            for (int y = 0; y < height * pixelDensity; ++y) {
                 double yOffset = y - yCenter;
                 double r2 = xOffset * xOffset + yOffset * yOffset;
                 double sr2 = r2 * rMax2inv;
@@ -100,23 +102,23 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 
                 if (xPrime < xCenter - quarterWidth
                         || xPrime >= xCenter + quarterWidth || yPrime < 0
-                        || yPrime >= height) {
+                        || yPrime >= height * pixelDensity) {
                     // black void
                     if (x >= quarterWidth && x < xCenter)
-                        arrayIndex[y * width + x - quarterWidth] = -1;
-                    if (x + quarterWidth < width)
-                        arrayIndex[y * width + x + quarterWidth] = -1;
+                        arrayIndex[y * width * pixelDensity + x - quarterWidth] = -1;
+                    if (x + quarterWidth < width * pixelDensity)
+                        arrayIndex[y * width * pixelDensity + x + quarterWidth] = -1;
                 } else {
                     // right
-                    arrayIndex[y * width + x + quarterWidth] = 0;
-                    pixelMapping[y * width + x + quarterWidth] = ((int) Math
-                            .floor(yPrime) * width)
+                    arrayIndex[y * width * pixelDensity + x + quarterWidth] = 0;
+                    pixelMapping[y * width * pixelDensity + x + quarterWidth] = ((int) Math
+                            .floor(yPrime) * width * pixelDensity)
                             + ((int) Math.floor(xPrime));
                     // left
                     if (x < xCenter + quarterWidth) {
-                        arrayIndex[y * width + x - quarterWidth] = 1;
-                        pixelMapping[y * width + x - quarterWidth] = ((int) Math
-                                .floor(yPrime) * width)
+                        arrayIndex[y * width * pixelDensity + x - quarterWidth] = 1;
+                        pixelMapping[y * width * pixelDensity + x - quarterWidth] = ((int) Math
+                                .floor(yPrime) * width * pixelDensity)
                                 + ((int) Math.floor(xPrime));
                     }
                 }
