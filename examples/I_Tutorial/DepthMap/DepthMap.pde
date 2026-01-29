@@ -12,7 +12,7 @@ void setup() {
   pixelDensity(displayDensity());
 
   camera3D = new Camera3D(this);
-  DepthMapGenerator generator = camera3D.renderDepthMap();
+  DepthMapGenerator generator = camera3D.renderDepthMap().setNearFar(300, 400);
 
   camera3D.setBackgroundColor(0);
   camera3D.enableSaveFrame('s', "debug");
