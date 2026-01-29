@@ -19,86 +19,88 @@ public class SplitFrameGenerator extends StereoscopicGenerator {
 
     private int width;
     private int height;
+    private int pixelDensity;
     private int technique;
 
-    public SplitFrameGenerator(int width, int height, int technique) {
+    public SplitFrameGenerator(int width, int height, int pixelDensity, int technique) {
         this.width = width;
         this.height = height;
+        this.pixelDensity = pixelDensity;
         this.technique = technique;
     }
 
     public static SplitFrameGenerator createSideBySideHalfWidthGenerator(
-            int width, int height) {
-        return new SplitFrameGenerator(width, height, SIDE_BY_SIDE_HALF_WIDTH);
+            int width, int height, int pixelDensity) {
+        return new SplitFrameGenerator(width, height, pixelDensity, SIDE_BY_SIDE_HALF_WIDTH);
     }
 
     public static SplitFrameGenerator createSideBySideGenerator(int width,
-            int height) {
-        return new SplitFrameGenerator(width, height, SIDE_BY_SIDE);
+            int height, int pixelDensity) {
+        return new SplitFrameGenerator(width, height, pixelDensity, SIDE_BY_SIDE);
     }
 
     public static SplitFrameGenerator createOverUnderHalfHeightGenerator(
-            int width, int height) {
-        return new SplitFrameGenerator(width, height, OVER_UNDER_HALF_HEIGHT);
+            int width, int height, int pixelDensity) {
+        return new SplitFrameGenerator(width, height, pixelDensity, OVER_UNDER_HALF_HEIGHT);
     }
 
     public static SplitFrameGenerator createOverUnderGenerator(int width,
-            int height) {
-        return new SplitFrameGenerator(width, height, OVER_UNDER);
+            int height, int pixelDensity) {
+        return new SplitFrameGenerator(width, height, pixelDensity, OVER_UNDER);
     }
 
     public static SplitFrameGenerator createInterlacedGenerator(int width,
-            int height) {
-        return new SplitFrameGenerator(width, height, INTERLACED);
+            int height, int pixelDensity) {
+        return new SplitFrameGenerator(width, height, pixelDensity, INTERLACED);
     }
 
     public void generateCompositeFrame(int[] pixelDest, int[][] pixelStorage) {
         if (technique == SIDE_BY_SIDE_HALF_WIDTH) {
-            for (int y = 0; y < height; y++) {
+            for (int y = 0; y < height * pixelDensity; y++) {
                 // left
-                int offset = y * width;
-                for (int x = 0; x < width / 2; x++) {
+                int offset = y * width * pixelDensity;
+                for (int x = 0; x < width * pixelDensity / 2; x++) {
                     pixelDest[offset + x] = pixelDest[offset + x * 2];
                 }
                 // right
-                int offset2 = offset + width / 2;
-                for (int x = 0; x < width / 2; x++) {
+                int offset2 = offset + width * pixelDensity / 2;
+                for (int x = 0; x < width * pixelDensity / 2; x++) {
                     pixelDest[offset2 + x] = pixelStorage[0][offset + x * 2];
                 }
             }
         } else if (technique == OVER_UNDER_HALF_HEIGHT) {
             // over
-            for (int y = 0; y < height / 2; ++y) {
-                System.arraycopy(pixelDest, 2 * y * width, pixelDest,
-                        y * width, width);
+            for (int y = 0; y < height * pixelDensity / 2; ++y) {
+                System.arraycopy(pixelDest, 2 * y * width * pixelDensity, pixelDest,
+                        y * width * pixelDensity, width * pixelDensity);
             }
             // under
-            for (int y = 0; y < height / 2; ++y) {
-                System.arraycopy(pixelStorage[0], 2 * y * width, pixelDest,
-                        (y + height / 2) * width, width);
+            for (int y = 0; y < height * pixelDensity / 2; ++y) {
+                System.arraycopy(pixelStorage[0], 2 * y * width * pixelDensity, pixelDest,
+                        (y + height * pixelDensity / 2) * width * pixelDensity, width * pixelDensity);
             }
         } else if (technique == SIDE_BY_SIDE) {
-            for (int y = 0; y < height; ++y) {
-                System.arraycopy(pixelDest, y * width + (width / 4), pixelDest,
-                        y * width, width / 2);
-                System.arraycopy(pixelStorage[0], y * width + (width / 4),
-                        pixelDest, y * width + width / 2, width / 2);
+            for (int y = 0; y < height * pixelDensity; ++y) {
+                System.arraycopy(pixelDest, y * width * pixelDensity + (width * pixelDensity / 4), pixelDest,
+                        y * width * pixelDensity, width * pixelDensity / 2);
+                System.arraycopy(pixelStorage[0], y * width * pixelDensity + (width * pixelDensity / 4),
+                        pixelDest, y * width * pixelDensity + width * pixelDensity / 2, width * pixelDensity / 2);
             }
         } else if (technique == OVER_UNDER) {
             // over
-            for (int y = 0; y < height / 2; ++y) {
-                System.arraycopy(pixelDest, (y + height / 4) * width,
-                        pixelDest, y * width, width);
+            for (int y = 0; y < height * pixelDensity / 2; ++y) {
+                System.arraycopy(pixelDest, (y + height * pixelDensity / 4) * width * pixelDensity,
+                        pixelDest, y * width * pixelDensity, width * pixelDensity);
             }
             // under
-            for (int y = 0; y < height / 2; ++y) {
-                System.arraycopy(pixelStorage[0], (y + height / 4) * width,
-                        pixelDest, (y + height / 2) * width, width);
+            for (int y = 0; y < height * pixelDensity / 2; ++y) {
+                System.arraycopy(pixelStorage[0], (y + height * pixelDensity / 4) * width * pixelDensity,
+                        pixelDest, (y + height * pixelDensity / 2) * width * pixelDensity, width * pixelDensity);
             }
         } else if (technique == INTERLACED) {
-            for (int y = 1; y < height; y += 2) {
-                System.arraycopy(pixelStorage[0], y * width, pixelDest, y
-                        * width, width);
+            for (int y = 1; y < height * pixelDensity; y += 2) {
+                System.arraycopy(pixelStorage[0], y * width * pixelDensity, pixelDest, y
+                        * width * pixelDensity, width * pixelDensity);
             }
         }
     }

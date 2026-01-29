@@ -167,7 +167,7 @@ public class Camera3D implements PConstants {
 
     public BarrelDistortionGenerator renderBarrelDistortion() {
         BarrelDistortionGenerator generator = new BarrelDistortionGenerator(
-                parent.width, parent.height);
+                parent.width, parent.height, pixelCount);
 
         setGenerator(generator);
 
@@ -176,7 +176,7 @@ public class Camera3D implements PConstants {
 
     public Monoscopic360Generator renderMonoscopic360() {
         Monoscopic360Generator generator = new Monoscopic360Generator(
-                parent.width, parent.height);
+                parent.width, parent.height, pixelCount);
 
         setGenerator(generator);
 
@@ -185,7 +185,7 @@ public class Camera3D implements PConstants {
 
     public StereoscopicGenerator renderSplitFrameSideBySide() {
         StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
-                parent.height, SplitFrameGenerator.SIDE_BY_SIDE);
+                parent.height, parent.pixelDensity, SplitFrameGenerator.SIDE_BY_SIDE);
 
         setGenerator(generator);
 
@@ -194,7 +194,7 @@ public class Camera3D implements PConstants {
 
     public StereoscopicGenerator renderSplitFrameOverUnder() {
         StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
-                parent.height, SplitFrameGenerator.OVER_UNDER);
+                parent.height, parent.pixelDensity, SplitFrameGenerator.OVER_UNDER);
 
         setGenerator(generator);
 
@@ -203,7 +203,7 @@ public class Camera3D implements PConstants {
 
     public StereoscopicGenerator renderSplitFrameOverUnderHalfHeight() {
         StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
-                parent.height, SplitFrameGenerator.OVER_UNDER_HALF_HEIGHT);
+                parent.height, parent.pixelDensity, SplitFrameGenerator.OVER_UNDER_HALF_HEIGHT);
 
         setGenerator(generator);
 
@@ -212,7 +212,7 @@ public class Camera3D implements PConstants {
 
     public StereoscopicGenerator renderSplitFrameSideBySideHalfWidth() {
         StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
-                parent.height, SplitFrameGenerator.SIDE_BY_SIDE_HALF_WIDTH);
+                parent.height, parent.pixelDensity, SplitFrameGenerator.SIDE_BY_SIDE_HALF_WIDTH);
 
         setGenerator(generator);
 
@@ -221,7 +221,7 @@ public class Camera3D implements PConstants {
 
     public StereoscopicGenerator renderInterlaced() {
         StereoscopicGenerator generator = new SplitFrameGenerator(parent.width,
-                parent.height, SplitFrameGenerator.INTERLACED);
+                parent.height, parent.pixelDensity, SplitFrameGenerator.INTERLACED);
 
         setGenerator(generator);
 
@@ -230,7 +230,7 @@ public class Camera3D implements PConstants {
 
     public SplitDepthGenerator renderSplitDepthIllusion() {
         SplitDepthGenerator generator = new SplitDepthGenerator(parent.width,
-                parent.height);
+                parent.height, pixelCount);
 
         setGenerator(generator);
 

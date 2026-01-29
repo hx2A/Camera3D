@@ -25,6 +25,7 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
 
     private int width;
     private int height;
+    private int pixelCount;
 
     private float pow2;
     private float pow4;
@@ -33,9 +34,10 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
     private int[] arrayIndex;
     private int[] pixelMapping;
 
-    public BarrelDistortionGenerator(int width, int height) {
+    public BarrelDistortionGenerator(int width, int height, int pixelCount) {
         this.width = width;
         this.height = height;
+        this.pixelCount = pixelCount;
 
         this.pow2 = 0.22f;
         this.pow4 = 0.24f;
@@ -78,8 +80,8 @@ public class BarrelDistortionGenerator extends StereoscopicGenerator {
     }
 
     private void calculatePixelMaps(float pow2, float pow4, float zoom) {
-        arrayIndex = new int[width * height];
-        pixelMapping = new int[width * height];
+        arrayIndex = new int[pixelCount];
+        pixelMapping = new int[pixelCount];
 
         int xCenter = width / 2;
         int quarterWidth = width / 4;

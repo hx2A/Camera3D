@@ -45,7 +45,7 @@ public class Monoscopic360Generator extends Generator {
     private int[] arrayIndex;
     private int[] pixelMapping;
 
-    public Monoscopic360Generator(int width, int height) {
+    public Monoscopic360Generator(int width, int height, int pixelCount) {
         this.frameWidth = width;
         this.frameHeight = height;
         this.projectionWidth = 3 * width;
@@ -69,7 +69,7 @@ public class Monoscopic360Generator extends Generator {
         this.parent = null;
         this.displayCompositeFrame = true;
         this.projectionFrame = null;
-        this.emptyPixelArray = new int[width * height];
+        this.emptyPixelArray = new int[pixelCount];
 
         initPanels();
     }

@@ -25,11 +25,11 @@ public class SplitDepthGenerator extends Generator {
     private float occlusionZfactor;
     private float occlusionZ;
 
-    public SplitDepthGenerator(int width, int height) {
+    public SplitDepthGenerator(int width, int height, int pixelCount) {
         this.width = width;
         this.height = height;
 
-        occlusionPlaneMask = new boolean[width * height];
+        occlusionPlaneMask = new boolean[pixelCount];
 
         occlusionPlaneColor = 0xFFFFFFFF;
         occlusionZfactor = 1;
