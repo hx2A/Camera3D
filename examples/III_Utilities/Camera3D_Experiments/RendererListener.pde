@@ -38,10 +38,10 @@ class RendererListener implements ControlListener {
 			camera3D.renderDuboisAmberBlueAnaglyph();
 			break;
 		case 10:
-			camera3D.renderChromaDepth();
+			camera3D.renderChromaDepth().setNearFar(500 + zTrans, 1000 + zTrans);
 			break;
 		case 11:
-			camera3D.renderDepthMap();
+			camera3D.renderDepthMap().setNearFar(500 + zTrans, 1000 + zTrans);
 			break;
 		case 12:
 			camera3D.renderBarrelDistortion();
