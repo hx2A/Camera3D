@@ -176,7 +176,7 @@ public class Camera3D implements PConstants {
 
     public Monoscopic360Generator renderMonoscopic360() {
         Monoscopic360Generator generator = new Monoscopic360Generator(
-                parent.width, parent.height, pixelCount);
+                parent.width, parent.height, parent.pixelDensity);
 
         setGenerator(generator);
 

@@ -23,6 +23,8 @@ public class Monoscopic360Generator extends Generator {
 
     private int frameWidth;
     private int frameHeight;
+    private int pixelDensity;
+    private int pixelCount;
 
     private PImage projectionFrame;
     private int projectionWidth;
@@ -45,17 +47,20 @@ public class Monoscopic360Generator extends Generator {
     private int[] arrayIndex;
     private int[] pixelMapping;
 
-    public Monoscopic360Generator(int width, int height, int pixelCount) {
-        this.frameWidth = width;
-        this.frameHeight = height;
-        this.projectionWidth = 3 * width;
-        this.projectionHeight = 3 * height;
+    public Monoscopic360Generator(int width, int height, int pixelDensity) {
+        this.frameWidth = width * pixelDensity;
+        this.frameHeight = height * pixelDensity;
+        this.pixelDensity = pixelDensity;
+        this.projectionWidth = 3 * width * pixelDensity;
+        this.projectionHeight = 3 * height * pixelDensity;
         this.zNear = 1;
         this.zFar = 1000;
         this.panelXSteps = 1;
         this.panelYSteps = 1;
         this.widthOffset = 0d;
         this.heightOffset = 0d;
+
+        this.pixelCount = width * height * pixelDensity * pixelDensity;
 
         if (projectionWidth / (float) projectionHeight < 2.0) {
             widthOffset = (2 * projectionHeight - projectionWidth) / 2.0;
@@ -76,8 +81,8 @@ public class Monoscopic360Generator extends Generator {
 
     public Monoscopic360Generator setOutputSizeAndLocation(int size,
             String saveLocation) {
-        this.projectionWidth = size;
-        this.projectionHeight = size / 2;
+        this.projectionWidth = size * pixelDensity;
+        this.projectionHeight = size * pixelDensity / 2;
         this.widthOffset = 0;
         this.heightOffset = 0;
 
@@ -90,8 +95,8 @@ public class Monoscopic360Generator extends Generator {
 
     public Monoscopic360Generator setOutputWidthHeightAndLocation(int width,
             int height, String saveLocation) {
-        this.projectionWidth = width;
-        this.projectionHeight = height;
+        this.projectionWidth = width * pixelDensity;
+        this.projectionHeight = height * pixelDensity;
         this.widthOffset = 0d;
         this.heightOffset = 0d;
 
