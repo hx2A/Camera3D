@@ -230,7 +230,7 @@ public class Camera3D implements PConstants {
 
     public SplitDepthGenerator renderSplitDepthIllusion() {
         SplitDepthGenerator generator = new SplitDepthGenerator(parent.width,
-                parent.height, pixelCount);
+                parent.height, parent.pixelDensity);
 
         setGenerator(generator);
 

@@ -19,27 +19,31 @@ public class SplitDepthGenerator extends Generator {
 
     private int width;
     private int height;
+    private int pixelDensity;
+    private int pixelCount;
 
     private int occlusionPlaneColor;
     private boolean[] occlusionPlaneMask;
     private float occlusionZfactor;
     private float occlusionZ;
 
-    public SplitDepthGenerator(int width, int height, int pixelCount) {
+    public SplitDepthGenerator(int width, int height, int pixelDensity) {
         this.width = width;
         this.height = height;
+        this.pixelDensity = pixelDensity;
+        this.pixelCount = width * height * pixelDensity * pixelDensity;
 
         occlusionPlaneMask = new boolean[pixelCount];
 
         occlusionPlaneColor = 0xFFFFFFFF;
         occlusionZfactor = 1;
 
-        for (int i = 0; i < height; ++i) {
-            int pos = (int) (i * width + width * 0.3f - 5);
+        for (int i = 0; i < height * pixelDensity; ++i) {
+            int pos = (int) (i * width * pixelDensity + width * pixelDensity * 0.3f - 5);
             for (int j = 0; j < 10; ++j) {
                 occlusionPlaneMask[pos + j] = true;
             }
-            pos = (int) (i * width + width * 0.7f - 5);
+            pos = (int) (i * width * pixelDensity + width * pixelDensity * 0.7f - 5);
             for (int j = 0; j < 10; ++j) {
                 occlusionPlaneMask[pos + j] = true;
             }
@@ -53,7 +57,7 @@ public class SplitDepthGenerator extends Generator {
     }
 
     public SplitDepthGenerator setOcclusionPlaneMask(PImage mask) {
-        if (width != mask.width || height != mask.height) {
+        if (width * pixelDensity != mask.width * pixelDensity || height * pixelDensity != mask.height * pixelDensity) {
             throw new RuntimeException(
                     "The occlusion plane mask must have the same height and width as the sketch.");
         }
