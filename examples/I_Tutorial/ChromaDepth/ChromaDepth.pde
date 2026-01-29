@@ -12,7 +12,7 @@ void setup() {
   pixelDensity(displayDensity());
 
   camera3D = new Camera3D(this);
-  ChromaDepthGenerator generator = camera3D.renderChromaDepth();
+  ChromaDepthGenerator generator = camera3D.renderChromaDepth().setNearFar(300, 400);
 
   camera3D.setBackgroundColor(0);
   camera3D.enableSaveFrame('s', "debug");
