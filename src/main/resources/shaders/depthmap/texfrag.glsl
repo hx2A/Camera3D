@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_TEXTURE_SHADER
 
@@ -11,12 +11,14 @@ uniform sampler2D texture;
 
 uniform vec2 texOffset;
 
-varying float depth;
-varying vec4 vertColor;
-varying vec4 vertTexCoord;
+in float depth;
+in vec4 vertColor;
+in vec4 vertTexCoord;
+
+layout(location = 0) out vec4 fragColor;
 
 void main() {
   vec4 tex = texture2D(texture, vertTexCoord.st) * vertColor;
   float depth_inv = 1.0 - depth;
-  gl_FragColor = vec4(depth_inv, depth_inv, depth_inv, tex.a);
+  fragColor = vec4(depth_inv, depth_inv, depth_inv, tex.a);
 }

@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_POINT_SHADER
 
@@ -11,12 +11,12 @@ uniform int perspective;
 uniform float near;
 uniform float far;
 
-attribute vec4 position;
-attribute vec4 color;
-attribute vec2 offset;
+in vec4 position;
+in vec4 color;
+in vec2 offset;
 
-varying float depth;
-varying vec4 vertColor;
+out float depth;
+out vec4 vertColor;
 
 void main() {
   vec4 pos = modelviewMatrix * position;

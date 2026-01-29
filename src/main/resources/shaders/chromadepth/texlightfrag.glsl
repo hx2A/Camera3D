@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_TEXLIGHT_SHADER
 
@@ -11,10 +11,12 @@ uniform sampler2D texture;
 
 uniform vec2 texOffset;
 
-varying float depth;
-varying vec4 vertColor;
-varying vec4 backVertColor;
-varying vec4 vertTexCoord;
+in float depth;
+in vec4 vertColor;
+in vec4 backVertColor;
+in vec4 vertTexCoord;
+
+layout(location = 0) out vec4 fragColor;
 
 void main() {
   vec4 rgb;
@@ -46,5 +48,5 @@ void main() {
   // If `tex` is partially or completely transparent, retain that
   rgb.a = tex.a;
 
-  gl_FragColor = rgb;
+  fragColor = rgb;
 }

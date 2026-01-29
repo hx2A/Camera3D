@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_COLOR_SHADER
 
@@ -8,11 +8,11 @@ uniform mat4 modelviewMatrix;
 uniform float near;
 uniform float far;
 
-attribute vec4 position;
-attribute vec4 color;
+in vec4 position;
+in vec4 color;
 
-varying float depth;
-varying vec4 vertColor;
+out float depth;
+out vec4 vertColor;
 
 void main() {
   gl_Position = transform * position;

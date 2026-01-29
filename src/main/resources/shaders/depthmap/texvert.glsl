@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_TEXTURE_SHADER
 
@@ -9,13 +9,13 @@ uniform mat4 texMatrix;
 uniform float near;
 uniform float far;
 
-attribute vec4 position;
-attribute vec4 color;
-attribute vec2 texCoord;
+in vec4 position;
+in vec4 color;
+in vec2 texCoord;
 
-varying float depth;
-varying vec4 vertColor;
-varying vec4 vertTexCoord;
+out float depth;
+out vec4 vertColor;
+out vec4 vertTexCoord;
 
 void main() {
   gl_Position = transformMatrix * position;

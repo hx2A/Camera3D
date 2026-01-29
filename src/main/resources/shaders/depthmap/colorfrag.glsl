@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_COLOR_SHADER
 
@@ -7,10 +7,12 @@ precision mediump float;
 precision mediump int;
 #endif
 
-varying float depth;
-varying vec4 vertColor;
+in float depth;
+in vec4 vertColor;
+
+layout(location = 0) out vec4 fragColor;
 
 void main() {
   float depth_inv = 1.0 - depth;
-  gl_FragColor = vec4(depth_inv, depth_inv, depth_inv, vertColor.a == 0.0 ? 0.0 : 1.0);
+  fragColor = vec4(depth_inv, depth_inv, depth_inv, vertColor.a == 0.0 ? 0.0 : 1.0);
 }

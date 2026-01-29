@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_LINE_SHADER
 
@@ -12,12 +12,12 @@ uniform vec3 scale;
 uniform float near;
 uniform float far;
 
-attribute vec4 position;
-attribute vec4 color;
-attribute vec4 direction;
+in vec4 position;
+in vec4 color;
+in vec4 direction;
 
-varying float depth;
-varying vec4 vertColor;
+out float depth;
+out vec4 vertColor;
   
 void main() {
   vec4 posp = modelviewMatrix * position;

@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_LIGHT_SHADER
 
@@ -7,9 +7,11 @@ precision mediump float;
 precision mediump int;
 #endif
 
-varying float depth;
-varying vec4 vertColor;
-varying vec4 backVertColor;
+in float depth;
+in vec4 vertColor;
+in vec4 backVertColor;
+
+layout(location = 0) out vec4 fragColor;
 
 void main() {
   vec4 rgb;
@@ -41,6 +43,6 @@ void main() {
   // If `color` is partially or completely transparent, retain that
   rgb.a = color.a;
 
-  gl_FragColor = rgb;
+  fragColor = rgb;
 
 }

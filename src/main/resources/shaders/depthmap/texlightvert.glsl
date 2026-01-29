@@ -1,4 +1,4 @@
-#version 410
+#version 330 core
 
 #define PROCESSING_TEXLIGHT_SHADER
 
@@ -19,20 +19,20 @@ uniform vec2 lightSpot[8];
 uniform float near;
 uniform float far;
 
-attribute vec4 position;
-attribute vec4 color;
-attribute vec3 normal;
-attribute vec2 texCoord;
+in vec4 position;
+in vec4 color;
+in vec3 normal;
+in vec2 texCoord;
 
-attribute vec4 ambient;
-attribute vec4 specular;
-attribute vec4 emissive;
-attribute float shininess;
+in vec4 ambient;
+in vec4 specular;
+in vec4 emissive;
+in float shininess;
 
-varying float depth;
-varying vec4 vertColor;
-varying vec4 backVertColor;
-varying vec4 vertTexCoord;
+out float depth;
+out vec4 vertColor;
+out vec4 backVertColor;
+out vec4 vertTexCoord;
 
 const float zero_float = 0.0;
 const float one_float = 1.0;
