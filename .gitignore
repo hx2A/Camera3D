@@ -1,4 +1,5 @@
 .gradle
+.metals
 build/
 libs/
 release/
