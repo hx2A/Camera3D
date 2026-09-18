@@ -7,7 +7,7 @@ import processing.core.PConstants;
  * 
  * @author James Schmitz
  *
- *         Base for all Steroscopic generators, including Anaglyph generators.
+ *         Base for all Stereoscopic generators, including Anaglyph generators.
  *
  *         Many thanks to Paul Bourke for explaining the correct way to do
  *         stereoscopic rendering using parallel axis asymmetric frustum
@@ -27,7 +27,7 @@ public abstract class StereoscopicGenerator extends Generator implements
     private float cameraDivergenceX;
     private float cameraDivergenceY;
     private float cameraDivergenceZ;
-    private float frustrumSkew;
+    private float frustumSkew;
 
     public StereoscopicGenerator() {
         divergence = 1;
@@ -79,13 +79,14 @@ public abstract class StereoscopicGenerator extends Generator implements
 
     public StereoscopicGenerator setAdjustTargetFactor(float adjustTargetFactor) {
         this.adjustTargetFactor = adjustTargetFactor;
-
+        
         if (config != null && config.isReady())
             recalculateCameraSettings();
-
+        
         return this;
     }
-
+    
+    @Override 
     protected void recalculateCameraSettings() {
         float dx = adjustTargetFactor
                 * (config.cameraPositionX - config.cameraTargetX);
@@ -108,7 +109,7 @@ public abstract class StereoscopicGenerator extends Generator implements
                 * divergence) * Math.sqrt(cameraDivergenceX * cameraDivergenceX
                 + cameraDivergenceY * cameraDivergenceY + cameraDivergenceZ
                 * cameraDivergenceZ));
-        frustrumSkew = cameraDivergenceDistance * config.frustumNear
+        frustumSkew = cameraDivergenceDistance * config.frustumNear
                 / distanceToTarget;
     }
 
@@ -123,8 +124,8 @@ public abstract class StereoscopicGenerator extends Generator implements
                         config.cameraTargetZ + cameraDivergenceZ,
                         config.cameraUpX, config.cameraUpY, config.cameraUpZ);
 
-                parent.frustum(config.frustumLeft - frustrumSkew,
-                        config.frustumRight - frustrumSkew,
+                parent.frustum(config.frustumLeft - frustumSkew,
+                        config.frustumRight - frustumSkew,
                         config.frustumBottom, config.frustumTop,
                         config.frustumNear, config.frustumFar);
             } else if (frameNum == 1) {
@@ -136,8 +137,8 @@ public abstract class StereoscopicGenerator extends Generator implements
                         config.cameraTargetZ - cameraDivergenceZ,
                         config.cameraUpX, config.cameraUpY, config.cameraUpZ);
 
-                parent.frustum(config.frustumLeft + frustrumSkew,
-                        config.frustumRight + frustrumSkew,
+                parent.frustum(config.frustumLeft + frustumSkew,
+                        config.frustumRight + frustumSkew,
                         config.frustumBottom, config.frustumTop,
                         config.frustumNear, config.frustumFar);
             }
