@@ -1,6 +1,5 @@
 package camera3D.generators;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import processing.core.PApplet;
@@ -389,7 +388,8 @@ public class Monoscopic360Generator extends Generator {
                     for (int y = 0; y < projectionFrameResizeHeight; ++y) {
                         int sampleX = (int) (y * (float) projectionFrame.height / projectionFrameResizeHeight);
                         int sampleY = (int) (x * (float) projectionFrame.width / frameWidth);
-                        pixelDest[(y + offset) * frameWidth + x] = projectionFrame.pixels[sampleX * projectionFrame.width + sampleY];
+                        pixelDest[(y + offset) * frameWidth
+                                + x] = projectionFrame.pixels[sampleX * projectionFrame.width + sampleY];
                     }
                 }
             } else {
@@ -399,17 +399,20 @@ public class Monoscopic360Generator extends Generator {
                     for (int y = 0; y < frameHeight; ++y) {
                         int sampleX = (int) (y * (float) projectionFrame.height / frameHeight);
                         int sampleY = (int) (x * (float) projectionFrame.width / projectionFrameResizeWidth);
-                        pixelDest[y * frameWidth + x + offset] = projectionFrame.pixels[sampleX * projectionFrame.width + sampleY];
+                        pixelDest[y * frameWidth + x + offset] = projectionFrame.pixels[sampleX * projectionFrame.width
+                                + sampleY];
                     }
                 }
             }
         }
     }
 
+    @Override
     public void completedDraw(int frameNum, PApplet parent) {
         // do nothing
     }
 
+    @Override
     public void cleanup(PApplet parent) {
         parent.camera(config.cameraPositionX, config.cameraPositionY,
                 config.cameraPositionZ, config.cameraTargetX,
@@ -419,42 +422,6 @@ public class Monoscopic360Generator extends Generator {
 
     private enum CameraOrientation {
         ABOVE, FRONT, RIGHT, REAR, LEFT, BELOW
-    }
-
-    private void checkDiskSpace(File file) {
-        File dir = file.getAbsoluteFile().getParentFile();
-
-        long mb = (long) Math.pow(2, 20);
-        long kb = (long) Math.pow(2, 10);
-        double gb = Math.pow(2, 30);
-        long filesize = file.length();
-        long usablespace = dir.getUsableSpace();
-
-        System.out.println("Saving frames to directory "
-                + dir.getAbsolutePath());
-        System.out.printf("Available space on that drive: %.2fGB\n",
-                usablespace / gb);
-        if (filesize / mb > 0) {
-            System.out.printf("Saving each frame takes about %dMB\n", filesize
-                    / mb);
-        } else {
-            System.out.printf("Saving each frame takes about %dKB\n", filesize
-                    / kb);
-        }
-
-        if (config.frameLimit > 0) {
-            long totalBytes = filesize * config.frameLimit;
-            System.out.printf("Saving %d frames will take %.2fGB\n",
-                    config.frameLimit, totalBytes / gb);
-            if (totalBytes > usablespace) {
-                throw new RuntimeException(
-                        "Not enough disk space to save requested frames!");
-            }
-        } else {
-            long totalFrames = usablespace / filesize;
-            System.out.printf("Available space for about %d frames\n",
-                    totalFrames);
-        }
     }
 
     private class Panel {
@@ -504,50 +471,50 @@ public class Monoscopic360Generator extends Generator {
             double panelY = -1;
 
             switch (orientation) {
-            case FRONT:
-                if (polarZ < 0) {
-                    double scale = -0.5 / polarZ;
-                    panelX = 0.5 + scale * polarX;
-                    panelY = 0.5 + scale * polarY;
-                }
-                break;
-            case REAR:
-                if (polarZ > 0) {
-                    double scale = 0.5 / polarZ;
-                    panelX = 0.5 - scale * polarX;
-                    panelY = 0.5 + scale * polarY;
-                }
-                break;
-            case ABOVE:
-                if (polarY < 0) {
-                    double scale = -0.5 / polarY;
-                    panelX = 0.5 + scale * polarX;
-                    panelY = 0.5 - scale * polarZ;
-                }
-                break;
-            case BELOW:
-                if (polarY > 0) {
-                    double scale = 0.5 / polarY;
-                    panelX = 0.5 + scale * polarX;
-                    panelY = 0.5 + scale * polarZ;
-                }
-                break;
-            case LEFT:
-                if (polarX < 0) {
-                    double scale = -0.5 / polarX;
-                    panelX = 0.5 - scale * polarZ;
-                    panelY = 0.5 + scale * polarY;
-                }
-                break;
-            case RIGHT:
-                if (polarX > 0) {
-                    double scale = 0.5 / polarX;
-                    panelX = 0.5 + scale * polarZ;
-                    panelY = 0.5 + scale * polarY;
-                }
-                break;
-            default:
-                break;
+                case FRONT:
+                    if (polarZ < 0) {
+                        double scale = -0.5 / polarZ;
+                        panelX = 0.5 + scale * polarX;
+                        panelY = 0.5 + scale * polarY;
+                    }
+                    break;
+                case REAR:
+                    if (polarZ > 0) {
+                        double scale = 0.5 / polarZ;
+                        panelX = 0.5 - scale * polarX;
+                        panelY = 0.5 + scale * polarY;
+                    }
+                    break;
+                case ABOVE:
+                    if (polarY < 0) {
+                        double scale = -0.5 / polarY;
+                        panelX = 0.5 + scale * polarX;
+                        panelY = 0.5 - scale * polarZ;
+                    }
+                    break;
+                case BELOW:
+                    if (polarY > 0) {
+                        double scale = 0.5 / polarY;
+                        panelX = 0.5 + scale * polarX;
+                        panelY = 0.5 + scale * polarZ;
+                    }
+                    break;
+                case LEFT:
+                    if (polarX < 0) {
+                        double scale = -0.5 / polarX;
+                        panelX = 0.5 - scale * polarZ;
+                        panelY = 0.5 + scale * polarY;
+                    }
+                    break;
+                case RIGHT:
+                    if (polarX > 0) {
+                        double scale = 0.5 / polarX;
+                        panelX = 0.5 + scale * polarZ;
+                        panelY = 0.5 + scale * polarY;
+                    }
+                    break;
+                default:
+                    break;
             }
 
             int frameX = (int) Math.floor(frameWidth * (panelX - startPanelX)
@@ -569,39 +536,42 @@ public class Monoscopic360Generator extends Generator {
             Vector up;
 
             switch (orientation) {
-            case ABOVE:
-                direction = cameraUp.mult(cameraDirection.magnitude()).mult(-1);
-                up = cameraDirection.normalized();
-                break;
-            case LEFT:
-                direction = cameraUp.cross(cameraDirection);
-                up = cameraUp;
-                break;
-            case RIGHT:
-                direction = cameraDirection.cross(cameraUp);
-                up = cameraUp;
-                break;
-            case REAR:
-                direction = cameraDirection.mult(-1);
-                up = cameraUp;
-                break;
-            case BELOW:
-                direction = cameraUp.mult(cameraDirection.magnitude());
-                up = cameraDirection.normalized().mult(-1);
-                break;
-            case FRONT:
-                direction = cameraDirection;
-                up = cameraUp;
-                break;
-            default:
-                throw new RuntimeException("Unknown Orientation");
+                case ABOVE:
+                    direction = cameraUp.mult(cameraDirection.magnitude()).mult(-1);
+                    up = cameraDirection.normalized();
+                    break;
+                case LEFT:
+                    direction = cameraUp.cross(cameraDirection);
+                    up = cameraUp;
+                    break;
+                case RIGHT:
+                    direction = cameraDirection.cross(cameraUp);
+                    up = cameraUp;
+                    break;
+                case REAR:
+                    direction = cameraDirection.mult(-1);
+                    up = cameraUp;
+                    break;
+                case BELOW:
+                    direction = cameraUp.mult(cameraDirection.magnitude());
+                    up = cameraDirection.normalized().mult(-1);
+                    break;
+                case FRONT:
+                    direction = cameraDirection;
+                    up = cameraUp;
+                    break;
+                default:
+                    throw new RuntimeException("Unknown Orientation");
             }
 
             parent.camera(config.cameraPositionX, config.cameraPositionY,
                     config.cameraPositionZ, config.cameraPositionX
-                            + direction.v1, config.cameraPositionY
-                            + direction.v2, config.cameraPositionZ
-                            + direction.v3, up.v1, up.v2, up.v3);
+                            + direction.v1,
+                    config.cameraPositionY
+                            + direction.v2,
+                    config.cameraPositionZ
+                            + direction.v3,
+                    up.v1, up.v2, up.v3);
 
             float frustumLeft = (float) (zNear * (2 * startPanelX - 1));
             float frustumRight = (float) (zNear * (2 * endPanelX - 1));

@@ -1,5 +1,6 @@
 package camera3D.generators;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
@@ -171,6 +172,42 @@ public abstract class Generator {
      * @param parent
      */
     abstract public void cleanup(PApplet parent);
+
+    protected void checkDiskSpace(File file) {
+        File dir = file.getAbsoluteFile().getParentFile();
+
+        long mb = (long) Math.pow(2, 20);
+        long kb = (long) Math.pow(2, 10);
+        double gb = Math.pow(2, 30);
+        long filesize = file.length();
+        long usablespace = dir.getUsableSpace();
+
+        System.out.println("Saving frames to directory "
+                + dir.getAbsolutePath());
+        System.out.printf("Available space on that drive: %.2fGB\n",
+                usablespace / gb);
+        if (filesize / mb > 0) {
+            System.out.printf("Saving each frame takes about %dMB\n", filesize
+                    / mb);
+        } else {
+            System.out.printf("Saving each frame takes about %dKB\n", filesize
+                    / kb);
+        }
+
+        if (config.frameLimit > 0) {
+            long totalBytes = filesize * config.frameLimit;
+            System.out.printf("Saving %d frames will take %.2fGB\n",
+                    config.frameLimit, totalBytes / gb);
+            if (totalBytes > usablespace) {
+                throw new RuntimeException(
+                        "Not enough disk space to save requested frames!");
+            }
+        } else {
+            long totalFrames = usablespace / filesize;
+            System.out.printf("Available space for about %d frames\n",
+                    totalFrames);
+        }
+    }
 
     /**
      * Initialize Parallel Executor for pixel copying.
