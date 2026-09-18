@@ -141,7 +141,6 @@ public class QuiltGenerator extends Generator implements PConstants {
 
     outputFrame.loadPixels();
     for (int ii = 0; ii < pixelStorage.length; ++ii) {
-      // int tileRow = (ii / rows) * frameHeight;
       int tileRow = ((rows - 1) - (ii / columns)) * frameHeight;
       int tileCol = (ii % columns) * frameWidth;
 
