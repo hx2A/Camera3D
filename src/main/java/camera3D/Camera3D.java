@@ -273,6 +273,14 @@ public class Camera3D implements PConstants {
         return generator;
     }
 
+    public QuiltGenerator renderLookingGlassQuilt() {
+        QuiltGenerator generator = new QuiltGenerator(parent);
+
+        setGenerator(generator);
+
+        return generator;
+    }
+
     public RegularRenderer renderRegular() {
         RegularRenderer generator = new RegularRenderer();
 
