@@ -20,7 +20,6 @@ public class QuiltGenerator extends Generator implements PConstants {
   private int quiltWidth;
 
   private File saveLocation;
-  private boolean useAsymmetricFrustum;
   private float intraFrameDivergence;
 
   private float cameraDivergenceX;
@@ -35,7 +34,6 @@ public class QuiltGenerator extends Generator implements PConstants {
     this.frameHeight = parent.height * parent.pixelDensity;
 
     this.saveLocation = null;
-    this.useAsymmetricFrustum = true;
 
     setQuiltDimensions(8, 6);
   }
@@ -58,14 +56,8 @@ public class QuiltGenerator extends Generator implements PConstants {
     return this;
   }
 
-  public QuiltGenerator useSymmetricFrustum() {
-    useAsymmetricFrustum = false;
-
-    return this;
-  }
-
-  public QuiltGenerator setQuiltDivergence(float divergence) {
-    this.intraFrameDivergence = divergence / (rows * columns);
+  public QuiltGenerator setViewCone(float viewCone) {
+    this.intraFrameDivergence = viewCone / (rows * columns);
 
     if (config != null && config.isReady())
       recalculateCameraSettings();
@@ -110,27 +102,18 @@ public class QuiltGenerator extends Generator implements PConstants {
   public void prepareForDraw(int frameNum, PApplet parent) {
     float divergenceOffset = frameNum - ((rows * columns - 1) / 2.0f);
 
-    if (useAsymmetricFrustum) {
-      parent.camera(config.cameraPositionX + divergenceOffset * cameraDivergenceX,
-          config.cameraPositionY + divergenceOffset * cameraDivergenceY,
-          config.cameraPositionZ + divergenceOffset * cameraDivergenceZ,
-          config.cameraTargetX + divergenceOffset * cameraDivergenceX,
-          config.cameraTargetY + divergenceOffset * cameraDivergenceY,
-          config.cameraTargetZ + divergenceOffset * cameraDivergenceZ,
-          config.cameraUpX, config.cameraUpY, config.cameraUpZ);
+    parent.camera(config.cameraPositionX + divergenceOffset * cameraDivergenceX,
+        config.cameraPositionY + divergenceOffset * cameraDivergenceY,
+        config.cameraPositionZ + divergenceOffset * cameraDivergenceZ,
+        config.cameraTargetX + divergenceOffset * cameraDivergenceX,
+        config.cameraTargetY + divergenceOffset * cameraDivergenceY,
+        config.cameraTargetZ + divergenceOffset * cameraDivergenceZ,
+        config.cameraUpX, config.cameraUpY, config.cameraUpZ);
 
-      parent.frustum(config.frustumLeft - divergenceOffset * frustumSkew,
-          config.frustumRight - divergenceOffset * frustumSkew,
-          config.frustumBottom, config.frustumTop,
-          config.frustumNear, config.frustumFar);
-    } else {
-      parent.camera(config.cameraPositionX + divergenceOffset * cameraDivergenceX,
-          config.cameraPositionY + divergenceOffset * cameraDivergenceY,
-          config.cameraPositionZ + divergenceOffset * cameraDivergenceZ,
-          config.cameraTargetX, config.cameraTargetY,
-          config.cameraTargetZ, config.cameraUpX,
-          config.cameraUpY, config.cameraUpZ);
-    }
+    parent.frustum(config.frustumLeft - divergenceOffset * frustumSkew,
+        config.frustumRight - divergenceOffset * frustumSkew,
+        config.frustumBottom, config.frustumTop,
+        config.frustumNear, config.frustumFar);
   }
 
   @Override
