@@ -561,8 +561,8 @@ public class Camera3D implements PConstants {
 
     public void keyEvent(KeyEvent e) {
         // the saveFrameNum thing below is to keep the program from saving many
-        // frames in a row
-        // if the user is too slow to lift their finger off the keyboard.
+        // frames in a row if the user is too slow to lift their finger off the
+        // keyboard.
         if (e.getKey() == saveFrameKey && enableSaveFrame
                 && parent.frameCount > saveFrameNum + 10) {
             saveNextFrame = true;
