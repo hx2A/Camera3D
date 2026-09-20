@@ -35,7 +35,7 @@ public class QuiltGenerator extends Generator implements PConstants {
 
     this.saveLocation = null;
 
-    setQuiltDimensions(8, 6);
+    setQuiltDimensions(11, 6);
   }
 
   public QuiltGenerator setQuiltDimensions(int columns, int rows) {
