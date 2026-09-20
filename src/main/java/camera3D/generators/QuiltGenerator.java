@@ -15,6 +15,8 @@ public class QuiltGenerator extends Generator implements PConstants {
 
   protected int columns;
   protected int rows;
+  protected float aspectRatio;
+
   private int frameWidth;
   private int frameHeight;
   private int quiltWidth;
@@ -35,12 +37,13 @@ public class QuiltGenerator extends Generator implements PConstants {
 
     this.saveLocation = null;
 
-    setQuiltDimensions(11, 6);
+    setQuiltDimensions(11, 6, 0.5625f);
   }
 
-  public QuiltGenerator setQuiltDimensions(int columns, int rows) {
+  public QuiltGenerator setQuiltDimensions(int columns, int rows, float aspectRatio) {
     this.columns = columns;
     this.rows = rows;
+    this.aspectRatio = aspectRatio;
 
     outputFrame = null;
 
@@ -138,7 +141,7 @@ public class QuiltGenerator extends Generator implements PConstants {
     outputFrame.updatePixels();
 
     // save compositeFrame to file
-    String metadata = "qs" + columns + "x" + rows + "a" + ((float) frameWidth / frameHeight) + ".png";
+    String metadata = "qs" + columns + "x" + rows + "a" + aspectRatio + ".png";
     if (saveLocation != null) {
       String filename = insertFrame((new File(saveLocation, "frame_####_" + metadata)).getAbsolutePath(),
           parent.frameCount);
