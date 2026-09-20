@@ -16,7 +16,8 @@ void setup() {
   camera3D.setBackgroundColor(color(192));
 
   // the default quilt dimensions are 11x6 with an aspect ratio of 0.5625
-  // these are the optimal settings for the Looking Glass Go
+  // these are the suggested settings for the Looking Glass Go
+  // set the output location to a directory that exists on your computer
   camera3D.renderLookingGlassQuilt().setQuiltDimensions(11, 6, 0.5625).setOutputLocation("/tmp/frames/");
   // 30 second recording at 30 fps
   camera3D.setFrameLimit(30 * 30);
