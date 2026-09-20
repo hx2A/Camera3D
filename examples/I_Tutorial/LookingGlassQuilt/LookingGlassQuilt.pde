@@ -7,12 +7,17 @@ float rotY = 0;
 float rotZ = 0;
 
 void setup() {
-  size(500, 500, P3D);
+  // default for Looking Glass Go is 11 columns by 6 rows and a frame size of
+  // 372 by 682. This makes the quilt size 4092 by 4092.
+  size(372, 682, P3D);
   pixelDensity(displayDensity());
 
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(color(192));
-  camera3D.renderLookingGlassQuilt().setOutputLocation("/tmp/frames/");
+
+  // the default quilt dimensions are 11x6
+  camera3D.renderLookingGlassQuilt().setQuiltDimensions(11, 6).setOutputLocation("/tmp/frames/");
+  // 30 second recording at 30 fps
   camera3D.setFrameLimit(30 * 30);
 
   strokeWeight(2);
