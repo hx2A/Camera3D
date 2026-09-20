@@ -15,8 +15,9 @@ void setup() {
   camera3D = new Camera3D(this);
   camera3D.setBackgroundColor(color(192));
 
-  // the default quilt dimensions are 11x6
-  camera3D.renderLookingGlassQuilt().setQuiltDimensions(11, 6).setOutputLocation("/tmp/frames/");
+  // the default quilt dimensions are 11x6 with an aspect ratio of 0.5625
+  // these are the optimal settings for the Looking Glass Go
+  camera3D.renderLookingGlassQuilt().setQuiltDimensions(11, 6, 0.5625).setOutputLocation("/tmp/frames/");
   // 30 second recording at 30 fps
   camera3D.setFrameLimit(30 * 30);
 
@@ -38,13 +39,14 @@ void draw() {
   rotateX(radians(rotX));
   rotateY(radians(rotY));
   rotateZ(radians(rotZ));
-  box(100);
+  box(125);
   pop();
 
-  int xySpacing = 100;
+  int xSpacing = 100;
+  int ySpacing = 200;
   int zSpacing = 100;
-  for (int x = -xySpacing; x <= xySpacing; x += 2 * xySpacing) {
-    for (int y = -xySpacing; y <= xySpacing; y += 2 * xySpacing) {
+  for (int x = -xSpacing; x <= xSpacing; x += 2 * xSpacing) {
+    for (int y = -ySpacing; y <= ySpacing; y += 2 * ySpacing) {
       for (int z = -zSpacing; z <= zSpacing; z += 2 * zSpacing) {
         push();
         translate(x, y, z);
