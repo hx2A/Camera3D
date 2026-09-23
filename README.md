@@ -12,7 +12,7 @@ dual licensed as below, without any additional terms or conditions.
 
 ## License
 
-* Copyright (c) 2012-2023 Jim Schmitz [jim@ixora.io]
+* Copyright (c) 2012-2027 Jim Schmitz [jim@ixora.io]
 * Copyright (c) 2011-2015 Elie Zananiri
 * Copyright (c) 2008-2011 Andreas Schlegel
 
